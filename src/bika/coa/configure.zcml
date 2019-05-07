@@ -1,0 +1,19 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+  <!-- Report resource directory -->
+  <plone:static
+      directory="reports"
+      type="senaite.impress.reports"/>
+
+  <genericsetup:registerProfile
+      name="default"
+      title="BIKA COA"
+      directory="profiles/default"
+      description="Installs the bika.coa add-on."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
+</configure>
