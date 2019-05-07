@@ -92,6 +92,9 @@
        height: 2mm;
        border-top: 1px solid black;
      }
+     .report .section-footer #footer-contacts {
+       margin-top: 3mm;
+     }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -647,7 +650,7 @@
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
       <div id="footer-line"></div>
-      <table class="w-100">
+      <table id="footer-contacts" class="w-100">
         <tr>
           <td>
             <div>
