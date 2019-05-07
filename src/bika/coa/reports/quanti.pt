@@ -68,9 +68,6 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
-     .report table { border-color: black; }
-     .report table td, .report table th { border-top: 1px solid black; border-bottom: 1px solid black; }
-     .report table th { border-bottom: 1px solid black; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { height: 100px; margin: 20px 0; }
@@ -134,7 +131,7 @@
           <tr>
             <!-- Header Left -->
             <td class="align-middle text-left">
-              <h1 i18n:translate="">Analysis Report</h1>
+              <h1 i18n:translate="">Certificate of Analysis</h1>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -396,7 +393,7 @@
               <thead>
                 <tr class="small">
                   <th class="analysis">
-                    <span class="font-weight-bold" tal:content="category/Title">Category</span>
+                    <span class="font-weight-normal" style="font-size: 14px;" tal:content="category/Title">Category</span>
                   </th>
                   <th class="text-right result">
                     <span i18n:translate="">Result</span>
@@ -548,7 +545,7 @@
   <tal:render condition="python:True">
     <div class="row section-signatures no-gutters">
       <div class="w-100">
-        <h1 i18n:translate="">Responsibles</h1>
+        <h1 i18n:translate="">Managers Responsible</h1>
         <table class="table table-sm table-condensed">
           <tr>
             <tal:manager repeat="manager python:model.managers">
@@ -567,6 +564,13 @@
                 </div>
                 <div>
                   <span tal:content="manager/DefaultDepartment/title|nothing"></span>
+                </div>
+                <div>
+                  <tal:email tal:condition="manager/EmailAddress|nothing"
+                             tal:define="email manager/EmailAddress|nothing">
+                    <a tal:content="email"
+                        tal:attributes="href string:mailto:${email}"></a>
+                  </tal:email>
                 </div>
               </td>
             </tal:manager>
