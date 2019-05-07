@@ -1,12 +1,19 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone">
 
   <!-- Report resource directory -->
   <plone:static
       directory="reports"
       type="senaite.impress.reports"/>
+
+  <!-- Static resource directory -->
+  <browser:resourceDirectory
+      name="bika.coa.static"
+      directory="static"
+      />
 
   <genericsetup:registerProfile
       name="default"

@@ -45,13 +45,21 @@
    console.info("######################################################################");
   </script>
 
+
+
   <tal:css>
     <style type="text/css">
+     @font-face {
+      font-family: 'TitilliumText22L-Regular';
+      font-style: normal;
+      font-weight: normal;
+      src: local('TitilliumText22L-Regular'), url('++resource++bika.coa/TitilliumText22L003.woff') format('woff');
+     }
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
-     .report { font-family: Calibri, sans-serif; }
+     .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
      .report .font-size-100 { font-size: 100%; }
