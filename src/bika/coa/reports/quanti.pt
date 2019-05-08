@@ -53,7 +53,7 @@
       font-family: 'TitilliumText22L-Regular';
       font-style: normal;
       font-weight: normal;
-      src: local('TitilliumText22L-Regular'), url('++resource++bika.coa/TitilliumText22L003.woff') format('woff');
+      src: local('TitilliumText22L-Regular'), url('++resource++bika.coa.static/webfonts/TitilliumText22L003.woff') format('woff');
      }
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
@@ -340,7 +340,7 @@
           </tr>
           <tr>
             <td class="label" i18n:translate="">Date Published</td>
-            <td tal:content="python:view.to_localized_time(model.DatePublished)"></td>
+            <td tal:content="python:view.to_localized_time(model.DatePublished or view.timestamp)"></td>
           </tr>
           <tr tal:condition="reporter">
             <td class="label" i18n:translate="">Published by</td>
@@ -393,7 +393,7 @@
               <thead>
                 <tr class="small">
                   <th class="analysis">
-                    <span class="font-weight-normal" style="font-size: 14px;" tal:content="category/Title">Category</span>
+                    <span class="font-weight-normal font-size-140" tal:content="category/Title">Category</span>
                   </th>
                   <th class="text-right result">
                     <span i18n:translate="">Result</span>
