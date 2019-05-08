@@ -2,6 +2,7 @@
   i18n:domain="senaite.impress"
   define="collection python:view.collection;
           laboratory view/laboratory;
+          reporter view/current_user;
           accredited_symbol string:★;
           outofrange_symbol string:⚠;
           footer python:view.get_footer_text();
@@ -45,10 +46,17 @@
 
   <tal:css>
     <style type="text/css">
+     @font-face {
+      font-family: 'TitilliumText22L-Regular';
+      font-style: normal;
+      font-weight: normal;
+      src: local('TitilliumText22L-Regular'), url('++resource++bika.coa.static/webfonts/TitilliumText22L003.woff') format('woff');
+     }
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
+     .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
      .report .font-size-100 { font-size: 100%; }
@@ -57,12 +65,9 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
-     .report table { border-color: black; }
-     .report table td, .report table th { border-top: 1px solid black; border-bottom: 1px solid black; }
-     .report table th { border-bottom: 1px solid black; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
-     .report .section-header img.logo { height: 100px; margin: 20px 0; }
+     .report .section-header img.logo { height: 100px; }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
@@ -120,7 +125,7 @@
           <tr>
             <!-- Header Left -->
             <td class="align-middle text-left">
-              <h1 i18n:translate="">Analysis Report</h1>
+              <h1 i18n:translate="">Certificate of Analysis</h1>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -168,60 +173,41 @@
                     </tal:by_contact>
                   </td>
                 </tr>
-                <!-- Client Reference(s) -->
+                <!-- Physical Address -->
                 <tr>
-                  <td class="label" i18n:translate="">Client Reference</td>
+                  <td class="label" i18n:translate="">Physical Address</td>
                   <td class="field">
-                    <tal:by_client_ref repeat="client_ref python:view.group_items_by('ClientReference', collection)">
-                      <div tal:content="client_ref"/>
-                    </tal:by_client_ref>
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:content="contact/PhysicalAddress/address"/>
+                      <div tal:content="contact/PhysicalAddress/city"/>
+                      <div tal:content="contact/PhysicalAddress/zip"/>
+                      <div tal:content="contact/PhysicalAddress/state"/>
+                      <div tal:content="contact/PhysicalAddress/country"/>
+                    </tal:by_contact>
                   </td>
                 </tr>
-                <!-- Client Order(s) -->
+                <!-- Email Address -->
                 <tr>
-                  <td class="label" i18n:translate="">Client Order</td>
+                  <td class="label" i18n:translate="">Email Address</td>
                   <td class="field">
-                    <tal:by_client_order_num repeat="client_order_num python:view.group_items_by('ClientOrderNumber', collection)">
-                      <div tal:content="client_order_num"/>
-                    </tal:by_client_order_num>
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:content="contact/EmailAddress"/>
+                    </tal:by_contact>
                   </td>
                 </tr>
-                <!-- Client Sample ID(s) -->
                 <tr>
-                  <td class="label" i18n:translate="">Client Sample ID</td>
-                  <td class="field">
-                    <tal:by_client_sid repeat="client_sid python:view.group_items_by('ClientSampleID', collection)">
-                      <div tal:content="client_sid"/>
-                    </tal:by_client_sid>
-                  </td>
+                  <td class="label" i18n:translate="">Date Published</td>
+                  <td tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)"></td>
                 </tr>
-                <!-- Sample Type -->
-                <tr>
-                  <td class="label" i18n:translate="">Sample Type</td>
-                  <td class="field">
-                    <tal:sampletype define="sampletypes python:map(lambda m: m.SampleTypeTitle, collection)"
-                                    repeat="sampletype python:view.uniquify_items(sampletypes)">
-                      <div tal:content="sampletype"/>
-                    </tal:sampletype>
-                  </td>
-                </tr>
-                <!-- Sample Point -->
-                <tr>
-                  <td class="label" i18n:translate="">Sample Point</td>
-                  <td class="field">
-                    <tal:samplepoint define="samplepoints python:map(lambda m: m.SamplePointTitle, collection)"
-                                     repeat="samplepoint python:view.uniquify_items(samplepoints)">
-                      <div tal:content="samplepoint"/>
-                    </tal:samplepoint>
-                  </td>
-                </tr>
-                <!-- Sample Remarks -->
-                <tr>
-                  <td class="label" i18n:translate="">Sample Remarks</td>
-                  <td class="field">
-                    <tal:model repeat="model collection">
-                      <div tal:content="model/SamplingDeviationTitle|nothing"/>
-                    </tal:model>
+                <tr tal:condition="reporter">
+                  <td class="label" i18n:translate="">Published by</td>
+                  <td>
+                    <span tal:content="reporter/fullname|reporter/username"/>
+                    <tal:email tal:condition="reporter/email|nothing"
+                               tal:define="email reporter/email|nothing">
+                      (<a tal:content="email"
+                          tal:attributes="href string:mailto:${email}"></a>)
+                    </tal:email>
                   </td>
                 </tr>
               </table>
@@ -333,9 +319,30 @@
               <tr>
                 <th></th>
                 <tal:ar repeat="model collection">
-                  <th colspan="2" class="font-weight-normal text-center">
-                    <div class="text-primary text-right"
+                  <th colspan="2" class="font-weight-normal">
+                    <div class="text-primary text-left"
                          tal:content="model/Title"/>
+                  </th>
+                  <th></th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <th>
+                    <div class="text-left">Client Sample ID</div>
+                    <div class="text-left">Sample Type</div>
+                    <div class="text-left">Sample Point</div>
+                    <div class="text-left">Client Reference</div>
+                </th>
+                <tal:ar repeat="model collection">
+                  <th colspan="2" class="font-weight-normal text-center">
+                    <div class="text-left"
+                         tal:content="python:model.ClientSampleID or '-'"/>
+                    <div class="text-left"
+                         tal:content="python:model.SampleTypeTitle or '-'"/>
+                    <div class="text-left"
+                         tal:content="python:model.SamplePointTitle or '-'"/>
+                    <div class="text-left"
+                         tal:content="python:model.ClientReference or '-'"/>
                   </th>
                   <th></th>
                 </tal:ar>
@@ -344,12 +351,6 @@
             <tbody>
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                <tr>
-                  <td class="font-weight-bold table-warning"
-                      tal:attributes="colspan python:len(collection) * 3 + 1">
-                    <span tal:content="category/Title"/>
-                  </td>
-                </tr>
                 <tr tal:define="analyses python:view.get_analyses_by(collection, poc=poc, category=category);
                                 analyses_by_title python:map(lambda a: a.Title(), analyses);
                                 analyses_titles python:view.uniquify_items(analyses_by_title)"
@@ -487,7 +488,7 @@
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
       <div class="row section-signatures no-gutters">
         <div class="w-100">
-          <h1 i18n:translate="">Responsibles</h1>
+          <h1 i18n:translate="">Managers Responsible</h1>
           <table class="table table-sm table-condensed">
             <tr>
               <tal:manager repeat="manager managers">
@@ -506,6 +507,13 @@
                   </div>
                   <div>
                     <span tal:content="manager/DefaultDepartment/title|nothing"></span>
+                  </div>
+                  <div>
+                    <tal:email tal:condition="manager/EmailAddress|nothing"
+                               tal:define="email manager/EmailAddress|nothing">
+                      <a tal:content="email"
+                          tal:attributes="href string:mailto:${email}"></a>
+                    </tal:email>
                   </div>
                 </td>
               </tal:manager>
