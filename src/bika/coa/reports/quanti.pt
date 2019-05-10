@@ -431,7 +431,7 @@
                     </td>
                     <td class="text-left">
                       <span tal:condition="analysis/Method">
-                        <span class="font-normal" tal:content="analysis/Method"></span>
+                        <span class="font-normal" tal:content="analysis/Method/Title"></span>
                       </span>
                       <span tal:condition="not: analysis/Method">
                         <span class="font-normal">-</span> 
