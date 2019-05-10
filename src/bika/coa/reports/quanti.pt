@@ -278,17 +278,6 @@
     <div class="row section-summary no-gutters">
       <div class="w-100">
 
-        <!-- Barcode -->
-        <div class="text-center float-right barcode-container">
-          <div class="barcode"
-               data-code="code128"
-               data-showHRI="true"
-               data-barHeight="15"
-               data-addQuietZone="true"
-               tal:attributes="data-id model/getId">
-          </div>
-        </div>
-
         <h1 i18n:translate="">Summary</h1>
         <table class="table table-sm table-condensed">
           <tr>
