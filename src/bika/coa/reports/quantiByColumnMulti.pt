@@ -248,22 +248,6 @@
                     </address>
                   </td>
                 </tr>
-                <tr>
-                  <td class="text-right">
-                    <!-- Barcode -->
-                    <div tal:repeat="model collection" class="barcode-container mt-2">
-                      <div class="clearfix">
-                        <div class="barcode float-right"
-                             data-code="code128"
-                             data-showHRI="true"
-                             data-barHeight="15"
-                             data-addQuietZone="false"
-                             tal:attributes="data-id model/getId">
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
               </table>
             </td>
           </tr>
@@ -319,7 +303,7 @@
               <tr>
                 <th></th>
                 <tal:ar repeat="model collection">
-                  <th colspan="2" class="font-weight-normal">
+                  <th colspan="3" class="font-weight-normal">
                     <div class="text-primary text-left"
                          tal:content="model/Title"/>
                   </th>
@@ -334,7 +318,7 @@
                     <div class="text-left">Client Reference</div>
                 </th>
                 <tal:ar repeat="model collection">
-                  <th colspan="2" class="font-weight-normal text-center">
+                  <th colspan="3" class="font-weight-normal text-center">
                     <div class="text-left"
                          tal:content="python:model.ClientSampleID or '-'"/>
                     <div class="text-left"
