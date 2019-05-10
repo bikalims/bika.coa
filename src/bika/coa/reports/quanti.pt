@@ -380,9 +380,11 @@
             <table class="table table-sm table-condensed">
               <colgroup>
                 <!-- Category -->
-                <col style="width: 40%;">
+                <col style="width: 25%;">
+                <!-- Method -->
+                <col style="width: 25%;">
                 <!-- Result -->
-                <col style="width: 30%">
+                <col style="width: 20%">
                 <!-- Unit -->
                 <col style="width: 15%">
                 <!-- Range -->
@@ -394,6 +396,9 @@
                 <tr class="small">
                   <th class="analysis">
                     <span class="font-weight-normal font-size-140" tal:content="category/Title">Category</span>
+                  </th>
+                  <th class="text-left method">
+                    <span i18n:translate="">Method</span>
                   </th>
                   <th class="text-right result">
                     <span i18n:translate="">Result</span>
@@ -422,6 +427,14 @@
                       </span>
                       <span tal:condition="analysis/ScientificName">
                         <span class="font-italic" tal:content="analysis/title"></span>
+                      </span>
+                    </td>
+                    <td class="text-left">
+                      <span tal:condition="analysis/Method">
+                        <span class="font-normal" tal:content="analysis/Method"></span>
+                      </span>
+                      <span tal:condition="not: analysis/Method">
+                        <span class="font-normal">-</span> 
                       </span>
                     </td>
                     <td class="text-right">

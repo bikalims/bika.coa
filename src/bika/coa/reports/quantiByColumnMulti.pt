@@ -361,6 +361,14 @@
                   <tal:results repeat="model collection">
                     <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=analysis_title);">
                       <tal:analysis tal:repeat="analysis analyses">
+                        <td class="text-left">
+                          <span tal:condition="analysis/Method">
+                            <span class="font-normal" tal:content="analysis/Method"></span>
+                          </span>
+                          <span tal:condition="not: analysis/Method">
+                            <span class="font-normal">-</span> 
+                          </span>
+                        </td>
                         <td class="text-right">
                           <span class="font-weight-normal"
                                 tal:content="structure python:model.get_formatted_result(analysis)"/>
@@ -508,13 +516,6 @@
                   <div>
                     <span tal:content="manager/DefaultDepartment/title|nothing"></span>
                   </div>
-                  <div>
-                    <tal:email tal:condition="manager/EmailAddress|nothing"
-                               tal:define="email manager/EmailAddress|nothing">
-                      <a tal:content="email"
-                          tal:attributes="href string:mailto:${email}"></a>
-                    </tal:email>
-                  </div>
                 </td>
               </tal:manager>
               <tal:reporter define="reporter python:view.current_user" condition="reporter">
@@ -522,11 +523,6 @@
                   <div class="label" i18n:translate="">Published by</div>
                   <div>
                     <span tal:content="reporter/fullname|reporter/username"></span>
-                    <tal:email tal:condition="reporter/email|nothing"
-                               tal:define="email reporter/email|nothing">
-                      (<a tal:content="email"
-                          tal:attributes="href string:mailto:${email}"></a>)
-                    </tal:email>
                   </div>
                 </td>
               </tal:reporter>
