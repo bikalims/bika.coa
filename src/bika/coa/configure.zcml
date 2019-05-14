@@ -23,4 +23,12 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <adapter
+      for="zope.interface.Interface
+           bika.coa.interfaces.IBikaCOALayer"
+      name="AnalysisRequest"
+      factory=".reportview.MultiReportView"
+      provides="senaite.impress.interfaces.IMultiReportView"
+      permission="zope2.View"/>
+
 </configure>

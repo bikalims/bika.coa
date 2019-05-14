@@ -1,5 +1,5 @@
 <tal:report
-  i18n:domain="senaite.impress"
+  i18n:domain="bika.coa"
   define="collection python:view.collection;
           laboratory view/laboratory;
           reporter view/current_user;
