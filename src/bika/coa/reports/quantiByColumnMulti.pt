@@ -344,10 +344,14 @@
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
                 <tr> 
-                   <td class="font-weight-bold table-warning"
-                       tal:attributes="colspan python:len(collection) * 2 + 3    ">  
+                   <td class="font-weight-bold table-warning">
                        <span tal:content="category/Title"/> 
                    </td> 
+                   <td class="font-weight-bold">Method</td> 
+                   <td class="font-weight-bold">Units</td> 
+                   <tal:results repeat="model collection">
+                       <td class="font-weight-bold text-center" colspan="2">Result</td> 
+                   </tal:results>
                 </tr> 
 
                 <tr tal:define="common_row_data python:view.get_common_row_data(collection, poc=poc, category=category)"
