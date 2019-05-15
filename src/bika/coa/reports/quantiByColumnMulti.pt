@@ -177,13 +177,13 @@
                 <tr>
                   <td class="label" i18n:translate="">Physical Address</td>
                   <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/PhysicalAddress/address"/>
-                      <div tal:content="contact/PhysicalAddress/city"/>
-                      <div tal:content="contact/PhysicalAddress/zip"/>
-                      <div tal:content="contact/PhysicalAddress/state"/>
-                      <div tal:content="contact/PhysicalAddress/country"/>
-                    </tal:by_contact>
+                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                      <div tal:content="client/PhysicalAddress/address"/>
+                      <div tal:content="client/PhysicalAddress/city"/>
+                      <div tal:content="client/PhysicalAddress/zip"/>
+                      <div tal:content="client/PhysicalAddress/state"/>
+                      <div tal:content="client/PhysicalAddress/country"/>
+                    </tal:by_client>
                   </td>
                 </tr>
                 <!-- Email Address -->
