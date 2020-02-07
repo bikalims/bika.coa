@@ -1,0 +1,9 @@
+<configure
+        xmlns="http://namespaces.zope.org/zope"
+        i18n_domain="bika.coa">
+
+  <includeDependencies package="." />
+    <include package="archetypes.schemaextender"/>
+
+    <adapter name='bika.coa' factory=".arreport.ARReportSchemaExtender" />
+</configure>

@@ -29,6 +29,7 @@ setup(
     install_requires=[
         "setuptools",
         "senaite.impress",
+        'archetypes.schemaextender',
     ],
     extras_require={
         "test": [
