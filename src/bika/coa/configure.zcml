@@ -31,4 +31,7 @@
       provides="senaite.impress.interfaces.IMultiReportView"
       permission="zope2.View"/>
 
+  <include package=".extenders" />
+
+
 </configure>

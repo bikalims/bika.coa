@@ -1,0 +1,60 @@
+<configure
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:browser="http://namespaces.zope.org/browser"
+        i18n_domain="bika.coa">
+
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="published_results"
+      class="bika.coa.browser.analysisrequest.published_results.AnalysisRequestPublishedResults"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+  <!-- Analysis Requests Folder Publish -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="publish"
+      class="senaite.impress.publishview.PublishView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Client Publish -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="publish"
+      class="senaite.impress.publishview.PublishView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Analysis Request Publish -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="publish"
+      class="senaite.impress.publishview.PublishView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Batch Publish -->
+  <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="publish"
+      class="senaite.impress.publishview.PublishView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Ajax Publish Controller View -->
+  <browser:page
+      for="*"
+      name="ajax_publish"
+      class="bika.coa.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+
+</configure>
