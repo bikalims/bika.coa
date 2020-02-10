@@ -1,20 +1,9 @@
+from bika.lims import api
 from bika.lims.browser.analysisrequest.published_results import \
     AnalysisRequestPublishedResults as ARPR
-from bika.lims import bikaMessageFactory as _, t
-from plone.app.content.browser.interfaces import IFolderContentsView
-from zope.interface import implements
-from zope.component import getAdapters
-from ZODB.POSException import POSKeyError
-
-from plone import api as ploneapi
-
-import StringIO
-import csv
-import os, traceback
-import tempfile
-import time
-
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from ZODB.POSException import POSKeyError
 
 
 class AnalysisRequestPublishedResults(ARPR):
@@ -25,8 +14,14 @@ class AnalysisRequestPublishedResults(ARPR):
         self.request = request
 
         self.catalog = "portal_catalog"
-        self.contentFilter = {'portal_type': 'ARReport',
-                              'sort_order': 'reverse'}
+        self.contentFilter = {
+            'portal_type': 'ARReport',
+            'path': {
+                'query': api.get_path(self.context),
+                'depth': 1,
+            },
+            'sort_order': 'reverse'
+        }
         self.context_actions = {}
         self.show_select_column = True
         self.show_workflow_action_buttons = False
