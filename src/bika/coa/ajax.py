@@ -57,14 +57,20 @@ class AjaxPublishView(AP):
             lambda report: report.get("uids", "").split(","), html_reports)
 
         # generate a CSV for each report_uids
-        ars = []
-        for ar in data['items']:
-            ar = getAdapter(ar, ISuperModel)
-            ars.append(ar)
+        samples = []
+        for sample in data['items']:
+            sample = getAdapter(sample, ISuperModel)
+            samples.append(sample)
+
         csv_reports = []
-        for ar_csv in ars:
-            csv_report = self.create_csv_report(ar_csv)
-            csv_reports.append(csv_report)
+        is_multi_template = self.is_multi_template(template)
+        if is_multi_template:
+            csv_report = self.create_csv_reports(samples)
+            csv_reports = [csv_report for i in range(len(pdf_reports))]
+        else:
+            for sample_csv in samples:
+                csv_report = self.create_csv_report(sample_csv)
+                csv_reports.append(csv_report)
 
         # prepare some metadata
         metadata = {
@@ -103,39 +109,94 @@ class AjaxPublishView(AP):
 
         return exit_urls[0]
 
-    def create_csv_report(self, ar):
+    def create_csv_report(self, sample):
         analyses = []
         output = StringIO.StringIO()
-        # sample = ar.getSample()
-        date_rec = ar.getDateReceived()
-        if date_rec:
-            date_rec = date_rec.strftime('%m-%d-%y')
-        sampling_date = ar.getSamplingDate()
+        date_received = sample.DateReceived
+        date_published = sample.DatePublished
+        if date_received:
+            date_received = date_received.strftime('%m-%d-%y')
+        sampling_date = sample.getSamplingDate()
         if sampling_date:
             sampling_date = sampling_date.strftime('%m-%d-%y')
+        if date_published:
+            date_published = date_published.strftime('%m-%d-%y')
         writer = csv.writer(output)
-        writer.writerow(["Sample Type", ''])
-        writer.writerow(["Client's Ref", ar.getClientReference()])
+        writer.writerow(["Order ID", sample.ClientOrderNumber])
+        writer.writerow(["Client Sample ID", sample.ClientSampleID])
+        writer.writerow(["Sample Type", sample.SampleTypeTitle])
+        writer.writerow(["Sample Point", sample.SamplePointTitle])
+        writer.writerow(["Sampling Date", sampling_date])
+        writer.writerow(["Bika Sample ID", '*'])
+        writer.writerow(["Bika AR ID", sample.id])
+        writer.writerow(["Date Received", date_received])
+        writer.writerow(["Date Published", date_published])
+        # writer.writerow(["Client's Ref", sample.getClientReference()])
         writer.writerow(["Client's Sample ID", ])
         writer.writerow(["Lab Sample ID", ])
-        writer.writerow(["Date Received", date_rec])
-        writer.writerow(["Sampling Date", sampling_date])
         writer.writerow([])
-        writer.writerow(["Helllo", "sss"])
-        # analyses = ar.getAnalyses(full_objects=True)
-        # group_cats = {}
-        # for analysis in analyses:
-        #     analysis_info = {'title': analysis.Title(),
-        #                      'result': analysis.getFormattedResult(html=False),
-        #                      'unit': analysis.getService().getUnit()}
-        #     if analysis.getCategoryTitle() not in group_cats.keys():
-        #         group_cats[analysis.getCategoryTitle()] = []
-        #     group_cats[analysis.getCategoryTitle()].append(analysis_info)
+        analyses = sample.getAnalyses(full_objects=True)
+        group_cats = {}
+        for analysis in analyses:
+            analysis_info = {'title': analysis.Title(),
+                             'result': analysis.getFormattedResult(html=False),
+                             'unit': analysis.getService().getUnit()}
+            if analysis.getCategoryTitle() not in group_cats.keys():
+                group_cats[analysis.getCategoryTitle()] = []
+            group_cats[analysis.getCategoryTitle()].append(analysis_info)
 
-        # for g_cat in sorted(group_cats.keys()):
-        #     writer.writerow([g_cat])
-        #     writer.writerow(["Analysis", "Result", "Unit"])
-        #     for a_info in group_cats[g_cat]:
-        #         writer.writerow([a_info['title'], a_info['result'], a_info['unit']])
+        for g_cat in sorted(group_cats.keys()):
+            writer.writerow([g_cat])
+            writer.writerow(["Analysis", "Result", "Unit"])
+            for a_info in group_cats[g_cat]:
+                writer.writerow([a_info['title'], a_info['result'], a_info['unit']])
+
+        return output.getvalue()
+
+    def create_csv_reports(self, samples):
+        analyses = []
+        output = StringIO.StringIO()
+        headers = ["Order ID", "Client Sample ID",
+                   "Sample Type", "Sample Point", "Sampling Date",
+                   "Bika Sample ID", "Bika AR ID", "Date Received",
+                   "Date Published"]
+        body = []
+        for sample in samples:
+            date_received = sample.DateReceived
+            date_published = sample.DatePublished
+            if date_received:
+                date_received = date_received.strftime('%m-%d-%y')
+            sampling_date = sample.getSamplingDate()
+            if sampling_date:
+                sampling_date = sampling_date.strftime('%m-%d-%y')
+            if date_published:
+                date_published = date_published.strftime('%m-%d-%y')
+            writer = csv.writer(output)
+            line = [sample.ClientOrderNumber, sample.ClientSampleID,
+                    sample.SampleTypeTitle, sample.SamplePointTitle, sampling_date,
+                    sample.id, '', date_received,
+                    date_published]
+
+            analyses = sample.getAnalyses(full_objects=True)
+            for analysis in analyses:
+                title = analysis.Title()
+                result = analysis.getFormattedResult(html=False)
+                unit = analysis.getService().getUnit()
+                title_unit = title
+                if unit:
+                    title_unit = '{} ({})'.format(title, unit)
+
+                if title_unit not in headers:
+                    headers.append(title_unit)
+                    line.append(result)
+                else:
+                    for i in headers[len(line):]:
+                        line.append('')
+                    line[headers.index(title_unit)] = result
+            body.append(line)
+
+        writer.writerow(headers)
+        for rec in body:
+            writer.writerow(rec)
 
         return output.getvalue()
