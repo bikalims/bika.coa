@@ -185,13 +185,14 @@ class AjaxPublishView(AP):
                 title_unit = title
                 if unit:
                     title_unit = '{} ({})'.format(title, unit)
+                if len(line) != len(headers):
+                    for i in headers[len(line):]:
+                        line.append('')
 
                 if title_unit not in headers:
                     headers.append(title_unit)
                     line.append(result)
                 else:
-                    for i in headers[len(line):]:
-                        line.append('')
                     line[headers.index(title_unit)] = result
             body.append(line)
 
