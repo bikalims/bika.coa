@@ -533,28 +533,17 @@
       </div>
     </tal:responsibles>
   </tal:render>
-
-  <!-- CUSTOM FOOTER -->
-  <tal:render condition="python:footer">
-    <div class="row section-footer no-gutters">
-      <!-- Footer Line -->
-      <div id="footer-line"></div>
-      <div tal:replace="structure footer"/>
-    </div>
-  </tal:render>
-
-  <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:not footer"
-              define="laboratory python:view.laboratory;">
-    <div class="row section-footer no-gutters">
-      <!-- Footer Line -->
-      <div id="footer-line"></div>
+  <!-- DISCREETER -->
+  <tal:render condition="python:True">
+    <div class="row section-discreeter no-gutters">
+      <div class="w-100 text-muted font-weight-light small">
       1. Testing relates only to the sample(s) tested and in cases where QuantiLAB Ltd is not responsible for sampling and sample transport, the results relate only to the sample as received. <br />
 2. QuantiLAB Ltd takes no responsibility for any information provided by the customer. <br />
 3. QuantiLAB Ltd’s scope of Accreditation may be accessed at www.mauritas.org for referral. <br />
 🏅<a href="dakks.example.org">Dakks</a>   ISO 17025 Accredited methods. <br />
 🔷 These methods have been sub-contracted to an approved laboratory. <br />
 ❌ Result out of specified range. All results comply with the stated specification except for analyses identified as out of range.
+      </div>
     </div>
   </tal:render>
 
