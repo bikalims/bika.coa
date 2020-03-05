@@ -179,7 +179,7 @@
                 <div class="contact-fullname">
                   <div tal:replace="contact/Fullname|nothing"></div>
                 </div>
-                <div class="client-street">
+                <div class="client-street" styled="width:40%; word-wrap: break-word;">
                   <div tal:replace="client/PostalAddress/address|nothing"></div>
                 </div>
                 <div class="contact-phone">
