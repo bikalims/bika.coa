@@ -6,4 +6,6 @@
     <include package="archetypes.schemaextender"/>
 
     <adapter name='bika.coa' factory=".arreport.ARReportSchemaExtender" />
+    <adapter name='bika.coa' factory=".analysisservice.AnalysisServiceSchemaExtender" />
+    <adapter name='bika.coa' factory=".analysisservice.AnalysisServiceSchemaModifier" />
 </configure>
