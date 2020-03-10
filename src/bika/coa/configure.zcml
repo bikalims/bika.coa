@@ -16,12 +16,14 @@
       />
 
   <genericsetup:registerProfile
-      name="default"
-      title="BIKA COA"
-      directory="profiles/default"
-      description="Installs the bika.coa add-on."
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      />
+          name="default"
+          title="BIKA COA"
+          directory="profiles/default"
+          description='Extension profile to Senaite Core'
+          pre_handler="bika.coa.setuphandlers.pre_install"
+          post_handler="bika.coa.setuphandlers.post_install"
+          provides="Products.GenericSetup.interfaces.EXTENSION"
+       />
 
   <adapter
       for="zope.interface.Interface
