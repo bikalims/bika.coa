@@ -36,16 +36,32 @@ class MultiReportView(ReportView):
         analysis_title = analyses[-1].Title()
         datum = {"methods": [], 'from': sampled_from, 'to': to,
                  "analysis_title": analysis_title}
+        # QUESTIONS  FOR LEMOEME
+        # ----------------------
+        # ALL ANALYSES SHOULD BE THE SAME -  1 ANALYSES PER SAMPLE
+        # ALL SAMPLE TYPES should be the same
+        # Take the first one that has a method
         for analysis in analyses:
             if analysis.Method:
-                method = '{} {}'.format(analysis.Method.Title(), analysis.Method.Description())
+                title = analysis.Method.Title()
+                description = analysis.Method.Description()
+                accredited = analysis.Method.Accredited
+                # TODO:
+                # supplier = analysis.Method.getSupplier()
+                try:
+                    supplier = analysis.getAnalysisService().getMethod()['Supplier']
+                    supplier = True
+                except AttributeError:
+                    supplier = False
+                method = {'title': title, 'description': description,
+                          'accredited': accredited, 'supplier': supplier}
+                if method in datum['methods']:
+                    continue
                 datum['methods'].append(method)
-        datum['methods'] = self.uniquify_items(datum['methods'])
         return datum
 
     def get_verifier(self, collection):
         analyses = self.get_analyses_by(collection)
-        # TODO: Get transitioned user
         actor = getTransitionUsers(analyses[0], 'verify')
         user_name = actor[0] if actor else ''
         user = api.get_user(user_name)
