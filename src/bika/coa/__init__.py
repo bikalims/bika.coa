@@ -6,6 +6,10 @@
 
 import logging
 
+
+PRODUCT_NAME = "bika.coa"
+PROFILE_ID = "profile-{}:default".format(PRODUCT_NAME)
+
 logger = logging.getLogger("bika.coa")
 
 
