@@ -29,13 +29,31 @@ class MultiReportView(ReportView):
         return unique_data
 
     def get_extra_data(self, collection=None, poc=None, category=None):
+        model = collection[0]
+        model = collection[0]
+        query = {'portal_type': 'ARReport',
+                 'path': {
+                     'query': api.get_path(model.getObject()),
+                     'depth': 1}
+                 }
+        brains = api.search(query, 'portal_catalog')
+        coa_num = '{}-COA{}'.format(model.id, len(brains) + 1)
         analyses = self.get_analyses(collection)
         analyses = self.sort_items_by('DateSampled', analyses)
         sampled_from = analyses[0].DateSampled
         to = analyses[-1].DateSampled
         analysis_title = analyses[-1].Title()
-        datum = {"methods": [], 'from': sampled_from, 'to': to,
-                 "analysis_title": analysis_title}
+        accredited_symbol = "{}//++resource++bika.coa.images/star.png".format(
+            self.portal_url)
+        subcontracted_method = "{}//++resource++bika.coa.images/outsourced.png".format(
+            self.portal_url)
+        outofrange_symbol = "{}//++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url)
+        datum = {'methods': [], 'from': sampled_from, 'to': to,
+                 'analysis_title': analysis_title, 'coa_num': coa_num,
+                 'accredited_symbol': accredited_symbol,
+                 'subcontracted_method': subcontracted_method,
+                 'outofrange_symbol': outofrange_symbol}
         # QUESTIONS  FOR LEMOEME
         # ----------------------
         # ALL ANALYSES SHOULD BE THE SAME -  1 ANALYSES PER SAMPLE
@@ -54,7 +72,8 @@ class MultiReportView(ReportView):
                 except AttributeError:
                     supplier = False
                 method = {'title': title, 'description': description,
-                          'accredited': accredited, 'supplier': supplier}
+                          'accredited': accredited, 'supplier': supplier,}
+
                 if method in datum['methods']:
                     continue
                 datum['methods'].append(method)

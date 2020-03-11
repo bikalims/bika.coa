@@ -3,9 +3,9 @@
   define="collection view/collection;
           laboratory view/laboratory;
           extra_data python:view.get_extra_data(collection);
-          accredited_symbol string:🏅 ;
-          outofrange_symbol string:⚠;
-          subcontracted_method string:🔷  ;
+          accredited_symbol extra_data/accredited_symbol;
+          outofrange_symbol extra_data/outofrange_symbol;
+          subcontracted_method extra_data/subcontracted_method;
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           attachments_per_row python:int(report_options.get('attachments_per_row', 2));
@@ -136,7 +136,7 @@
             <!-- Header Middle -->
             <!-- COA Number/ Report ID -->
             <td class="align-middle text-left">
-              <h1 i18n:translate=""></h1>
+              <h3 i18n:translate="" tal:content="extra_data/coa_num"></h3>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -410,14 +410,12 @@
                 <tr tal:define="common_row_data extra_data;"
                     tal:repeat="row_data python:common_row_data['methods']">
                   <td class="text-secondary">
-                      <span class="text-success"
-                            tal:content="accredited_symbol"
-                            tal:condition="row_data/accredited">
-                      </span>
-                      <span class="text-success"
-                            tal:content="subcontracted_method"
-                            tal:condition="row_data/supplier">
-                      </span>
+                      <img class="figure-img img-fluid"
+                           tal:attributes="src string:${accredited_symbol};"
+                            tal:condition="row_data/accredited" />
+                      <img class="figure-img img-fluid"
+                           tal:attributes="src string:${subcontracted_method};"
+                            tal:condition="row_data/supplier" />
                       <span tal:content="row_data/title"/>
                       <span tal:content="row_data/description"/>
                   </td>
@@ -552,9 +550,17 @@
       1. Testing relates only to the sample(s) tested and in cases where QuantiLAB Ltd is not responsible for sampling and sample transport, the results relate only to the sample as received. <br />
 2. QuantiLAB Ltd takes no responsibility for any information provided by the customer. <br />
 3. QuantiLAB Ltd’s scope of Accreditation may be accessed at www.mauritas.org for referral. <br />
-🏅<a href="http://www.mauritas.org/">MAURITAS</a>   ISO 17025 Accredited methods. <br />
-🔷 These methods have been sub-contracted to an approved laboratory. <br />
-❌ Result out of specified range. All results comply with the stated specification except for analyses identified as out of range.
+
+<img class="figure-img img-fluid"
+   tal:attributes="src string:${accredited_symbol};"/>
+<a href="http://www.mauritas.org/">MAURITAS</a>   ISO 17025 Accredited methods. <br />
+
+<img class="figure-img img-fluid"
+   tal:attributes="src string:${subcontracted_method};"/>
+ These methods have been sub-contracted to an approved laboratory. <br />
+<img class="figure-img img-fluid"
+   tal:attributes="src string:${outofrange_symbol};"/>
+ Result out of specified range. All results comply with the stated specification except for analyses identified as out of range.
       </div>
     </div>
   </tal:render>

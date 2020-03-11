@@ -16,6 +16,7 @@ class PdfReportStorageAdapter(PRSA):
 
         :param pdf: generated PDF report (binary)
         :param html: report HTML (string)
+        :param csv: report CSV (string)
         :param uids: UIDs of the objects contained in the PDF
         :param metadata: dict of metadata to store
         """
@@ -68,10 +69,10 @@ class PdfReportStorageAdapter(PRSA):
             ContainedAnalysisRequests=uids,
             Metadata=metadata)
         fld = report.getField('Pdf')
-        fld.get(report).setFilename(report.id+ ".pdf")
+        fld.get(report).setFilename(parent_id + ".pdf")
         fld.get(report).setContentType('application/pdf')
         fld = report.getField('CSV')
-        fld.get(report).setFilename(report.id + ".csv")
+        fld.get(report).setFilename(parent_id + ".csv")
         fld.get(report).setContentType('text/csv')
 
         # Commit the changes

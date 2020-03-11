@@ -15,6 +15,12 @@
       directory="static"
       />
 
+  <browser:resourceDirectory
+      name="bika.coa.images"
+      directory="static/lims/images"
+      layer="bika.coa.interfaces.IBikaCOALayer"
+      />
+
   <genericsetup:registerProfile
           name="default"
           title="BIKA COA"
