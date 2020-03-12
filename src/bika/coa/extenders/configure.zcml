@@ -8,4 +8,5 @@
     <adapter name='bika.coa' factory=".arreport.ARReportSchemaExtender" />
     <adapter name='bika.coa' factory=".method.MethodSchemaExtender" />
     <adapter name='bika.coa' factory=".method.MethodSchemaModifier" />
+    <adapter name='bika.coa' factory=".analysisservice.AnalysisServiceSchemaModifier" />
 </configure>
