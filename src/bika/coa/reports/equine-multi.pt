@@ -404,7 +404,7 @@
           </table>
 
           <h1 i18n:translate="">Methods of Analysis</h1>
-          <table class="table table-sm table-condensed small" style="page-break-after: always;">
+          <table class="table table-sm table-condensed small noborder">
             <tbody>
               <!-- Categories in PoC -->
                 <tr tal:define="common_row_data extra_data;"

@@ -60,23 +60,24 @@ class MultiReportView(ReportView):
         # ALL SAMPLE TYPES should be the same
         # Take the first one that has a method
         for analysis in analyses:
-            if analysis.Method:
-                title = analysis.Method.Title()
-                description = analysis.Method.Description()
-                accredited = analysis.Method.Accredited
+            methods = analysis.getAnalysisService().getAvailableMethods()
+            for method in methods:
+                title = method.Title()
+                description = method.Description()
+                accredited = method.Accredited
                 # TODO:
                 # supplier = analysis.Method.getSupplier()
                 try:
-                    supplier = analysis.getAnalysisService().getMethod()['Supplier']
-                    supplier = True
+                    supplier = True if method['Supplier'] else False
                 except AttributeError:
                     supplier = False
-                method = {'title': title, 'description': description,
-                          'accredited': accredited, 'supplier': supplier,}
+                rec = {'title': title, 'description': description,
+                       'accredited': accredited, 'supplier': supplier,
+                       }
 
-                if method in datum['methods']:
+                if rec in datum['methods']:
                     continue
-                datum['methods'].append(method)
+                datum['methods'].append(rec)
         return datum
 
     def get_verifier(self, collection):
