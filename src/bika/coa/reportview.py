@@ -42,7 +42,11 @@ class MultiReportView(ReportView):
         analyses = self.sort_items_by('DateSampled', analyses)
         sampled_from = analyses[0].DateSampled
         to = analyses[-1].DateSampled
-        analysis_title = analyses[-1].Title()
+        analysis_title = ''
+        for an in analyses:
+            if an.Method:
+                analysis_title = an.Title()
+                break
         accredited_symbol = "{}//++resource++bika.coa.images/star.png".format(
             self.portal_url)
         subcontracted_method = "{}//++resource++bika.coa.images/outsourced.png".format(
@@ -54,14 +58,12 @@ class MultiReportView(ReportView):
                  'accredited_symbol': accredited_symbol,
                  'subcontracted_method': subcontracted_method,
                  'outofrange_symbol': outofrange_symbol}
-        # QUESTIONS  FOR LEMOEME
-        # ----------------------
-        # ALL ANALYSES SHOULD BE THE SAME -  1 ANALYSES PER SAMPLE
-        # ALL SAMPLE TYPES should be the same
-        # Take the first one that has a method
+
         for analysis in analyses:
             methods = analysis.getAnalysisService().getAvailableMethods()
             for method in methods:
+                if analysis.Method.Title() == method.Title():
+                    continue
                 title = method.Title()
                 description = method.Description()
                 accredited = method.Accredited
