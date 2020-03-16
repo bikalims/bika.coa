@@ -379,7 +379,7 @@
               </tr>
             </thead>
             <tbody>
-                <tal:ar repeat="model collection">
+                <tal:ar repeat="model  python:view.sort_items_by('ClientSampleID', collection, reverse=True)">
                   <tr class="font-weight-normal text-center">
                     <td>
                         <div class="text-center"
