@@ -475,7 +475,7 @@
   <!--  REMARKS -->
   <tal:render define="model python:collection[0];
                       batch model/Batch;">
-      <div class="row section-remarks no-gutters" tal:condition="python: batch.get('COARemarks')">
+      <div class="row section-remarks no-gutters" tal:condition="batch">
         <h1 i18n:translate>Remarks</h1>
         <div class="">
           <div class="text-info" tal:content="structure batch/COARemarks"></div>
