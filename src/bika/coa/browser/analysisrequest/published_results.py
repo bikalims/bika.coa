@@ -30,6 +30,7 @@ class AnalysisRequestPublishedResults(ARPR):
             self.portal_url)
         self.title = self.context.translate(_("Published results"))
         self.columns = {
+            'COANumber': {'title': _('COA')},
             'Date': {'title': _('Published Date')},
             'PublishedBy': {'title': _('Published By')},
             'DownloadPDF': {'title': _('Download PDF')},
@@ -41,6 +42,7 @@ class AnalysisRequestPublishedResults(ARPR):
              'title': 'All',
              'contentFilter': {},
              'columns': [
+                 'COANumber',
                  'Date',
                  'PublishedBy',
                  'Recipients',
@@ -72,6 +74,8 @@ class AnalysisRequestPublishedResults(ARPR):
         try:  #
             pdf_data = obj.getPdf()
             assert pdf_data
+            item['COANumber'] = ''
+            item['after']['COANumber'] = pdf_data.filename.split('.')[0]
             z = pdf_data.get_size()
             z = z / 1024 if z > 0 else 0
             dll.append("<a href='{}/at_download/Pdf'>{}</a>".format(

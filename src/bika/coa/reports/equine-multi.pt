@@ -123,20 +123,15 @@
       <!-- Header Table -->
       <div class="w-100 mb-2">
         <table class="w-100 mb-0 noborder">
-          <colgroup>
-            <col style="width:40%"/>
-            <col style="width:20%;"/>
-            <col style="width:40%;"/>
-          </colgroup>
           <tr>
             <!-- Header Left -->
-            <td class="align-middle text-left">
+            <td class="text-left">
               <h1 i18n:translate="">Certificate of Analysis</h1>
             </td>
             <!-- Header Middle -->
             <!-- COA Number/ Report ID -->
-            <td class="align-middle text-left">
-              <h3 i18n:translate="" tal:content="extra_data/coa_num"></h3>
+            <td class="align-middle text-center">
+              <h1 i18n:translate="" tal:content="extra_data/coa_num"></h1>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -201,14 +196,15 @@
                 </div>
                 <div class="lab-address">
                   <div class="lab-street">
-                    <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
+                    <pre style="font-family: 'TitilliumText22L-Regular' !important; font-size: 9pt;border:none; margin:0"
+                    tal:content="structure laboratory/PostalAddress/address|nothing"></pre>
                   </div>
-                  <span class="lab-zip">
+                  <div class="lab-zip">
                     <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
-                  </span>
-                  <span class="lab-city">
+                  </div>
+                  <div class="lab-city">
                     <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
-                  </span>
+                  </div>
                   <div class="lab-country">
                     <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
                   </div>
@@ -478,7 +474,7 @@
       <div class="row section-remarks no-gutters" tal:condition="batch">
         <h1 i18n:translate>Remarks</h1>
         <div class="">
-          <div class="text-info" tal:content="structure batch/COARemarks"></div>
+          <div class="" tal:content="structure batch/COARemarks"></div>
         </div>
       </div>
   </tal:render>
@@ -532,17 +528,25 @@
       <br />   
       <div class="row section-signatures no-gutters">
         <div class="w-100">
-          <h1 i18n:translate="">Verified by</h1>
           <table class="table table-sm table-condensed">
+            <tr>
+                <td style="border:none">
+                  <h1 i18n:translate="">Verified by</h1>
+                </td>
+                <td style="border:none">
+                  <h1 i18n:translate="">Date Verified</h1>
+                </td>
+            </tr>
             <tr>
                 <td style="border:none">
                   <div class="font-weight-bold">
                     <span tal:content="verifier/fullname"></span>
                   </div>
                 </td>
+                <td style="border:none" tal:content="verifier/date_verified"></td>
             </tr>
             <tr>
-                <td style="border:none">
+                <td style="border:none" colspan="2">
                   <div class="font-weight-bold">
                     <span tal:content="verifier/role"></span>
                   </div>
@@ -557,10 +561,11 @@
   <tal:render condition="python:True">
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-light small">
+        <div style="padding:2px">
       1. Testing relates only to the sample(s) tested and in cases where QuantiLAB Ltd is not responsible for sampling and sample transport, the results relate only to the sample as received. <br />
 2. QuantiLAB Ltd takes no responsibility for any information provided by the customer. <br />
 3. QuantiLAB Ltd’s scope of Accreditation may be accessed at www.mauritas.org for referral. <br />
-
+</div>
 <img class="figure-img img-fluid"
    tal:attributes="src string:${accredited_symbol};"/>
 <a href="http://www.mauritas.org/">MAURITAS</a>   ISO 17025 Accredited methods. <br />

@@ -1,6 +1,6 @@
 from bika.coa import logger
-from bika.lims.workflow import getTransitionUsers
 from bika.lims import api
+from bika.lims.workflow import getTransitionUsers
 from plone import api as ploneapi
 from senaite.impress.analysisrequest.reportview import MultiReportView as ReportView
 
@@ -30,14 +30,13 @@ class MultiReportView(ReportView):
 
     def get_extra_data(self, collection=None, poc=None, category=None):
         model = collection[0]
-        model = collection[0]
         query = {'portal_type': 'ARReport',
                  'path': {
                      'query': api.get_path(model.getObject()),
                      'depth': 1}
                  }
         brains = api.search(query, 'portal_catalog')
-        coa_num = '{}-COA{}'.format(model.id, len(brains) + 1)
+        coa_num = '{}-COA-{}'.format(model.id, len(brains) + 1)
         analyses = self.get_analyses(collection)
         analyses = self.sort_items_by('DateSampled', analyses)
         sampled_from = analyses[0].DateSampled
@@ -83,15 +82,18 @@ class MultiReportView(ReportView):
         return datum
 
     def get_verifier(self, collection):
-        analyses = self.get_analyses_by(collection)
+        model = collection[0]
+        analyses = self.get_analyses_by([model])
         actor = getTransitionUsers(analyses[0], 'verify')
         user_name = actor[0] if actor else ''
         user = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
-        return {"fullname": user.fullname, 'role': roles[0]}
+        date_verified = self.to_localized_time(model.getDateVerified())
+        return {"fullname": user.fullname, 'role': roles[0], 'date_verified': date_verified}
 
     def get_analyst(self, collection):
-        analyses = self.get_analyses_by(collection)
+        model = collection[0]
+        analyses = self.get_analyses_by([model])
         actor = getTransitionUsers(analyses[0], 'submit')
         user = actor[0] if actor else ''
         user = api.get_user(user)
