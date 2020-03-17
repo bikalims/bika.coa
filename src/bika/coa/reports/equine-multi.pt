@@ -533,9 +533,6 @@
                 <td style="border:none">
                   <h1 i18n:translate="">Verified by</h1>
                 </td>
-                <td style="border:none">
-                  <h1 i18n:translate="">Date Verified</h1>
-                </td>
             </tr>
             <tr>
                 <td style="border:none">
@@ -543,10 +540,9 @@
                     <span tal:content="verifier/fullname"></span>
                   </div>
                 </td>
-                <td style="border:none" tal:content="verifier/date_verified"></td>
             </tr>
             <tr>
-                <td style="border:none" colspan="2">
+                <td style="border:none">
                   <div class="font-weight-bold">
                     <span tal:content="verifier/role"></span>
                   </div>
@@ -561,19 +557,19 @@
   <tal:render condition="python:True">
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-light small">
-        <div style="padding:2px">
+        <div>
       1. Testing relates only to the sample(s) tested and in cases where QuantiLAB Ltd is not responsible for sampling and sample transport, the results relate only to the sample as received. <br />
 2. QuantiLAB Ltd takes no responsibility for any information provided by the customer. <br />
 3. QuantiLAB Ltd’s scope of Accreditation may be accessed at www.mauritas.org for referral. <br />
 </div>
-<img class="figure-img img-fluid"
+<img class=""
    tal:attributes="src string:${accredited_symbol};"/>
 <a href="http://www.mauritas.org/">MAURITAS</a>   ISO 17025 Accredited methods. <br />
 
-<img class="figure-img img-fluid"
+<img class=""
    tal:attributes="src string:${subcontracted_method};"/>
  These methods have been sub-contracted to an approved laboratory. <br />
-<img class="figure-img img-fluid"
+<img class=""
    tal:attributes="src string:${outofrange_symbol};"/>
  Result out of specified range. All results comply with the stated specification except for analyses identified as out of range.
       </div>
