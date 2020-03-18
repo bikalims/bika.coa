@@ -30,7 +30,8 @@ class PdfReportStorageAdapter(PRSA):
         # handle primary object storage
         if not self.store_multireports_individually():
             # reduce the list to the primary object only
-            objs = [self.get_primary_report(objs)]
+            items = sorted(objs, key=lambda item: item.ClientSampleID, reverse=True)
+            objs = [items[0]]
 
         # generate the reports
         reports = []
@@ -57,6 +58,13 @@ class PdfReportStorageAdapter(PRSA):
 
         # Manually update the view on the database to avoid conflict errors
         parent._p_jar.sync()
+        query = {'portal_type': 'ARReport',
+                 'path': {
+                     'query': api.get_path(parent),
+                     'depth': 1}
+                 }
+        brains = api.search(query, 'portal_catalog')
+        coa_num = '{}-COA-{}'.format(parent_id, len(brains) + 1)
 
         # Create the report object
         report = api.create(
@@ -69,10 +77,10 @@ class PdfReportStorageAdapter(PRSA):
             ContainedAnalysisRequests=uids,
             Metadata=metadata)
         fld = report.getField('Pdf')
-        fld.get(report).setFilename(parent_id + ".pdf")
+        fld.get(report).setFilename(coa_num + ".pdf")
         fld.get(report).setContentType('application/pdf')
         fld = report.getField('CSV')
-        fld.get(report).setFilename(parent_id + ".csv")
+        fld.get(report).setFilename(coa_num + ".csv")
         fld.get(report).setContentType('text/csv')
 
         # Commit the changes
