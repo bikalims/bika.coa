@@ -166,7 +166,7 @@ class ReportsListingView(RLV):
 
         filesize = self.get_filesize(pdf)
         if filesize > 0:
-            url = "{}/download_pdf".format(obj.absolute_url())
+            url = "{}/at_download/Pdf".format(obj.absolute_url())
             item["replace"]["PDF"] = get_link(
                 url, value="PDF", target="_blank")
 
