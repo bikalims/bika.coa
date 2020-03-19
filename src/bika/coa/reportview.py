@@ -29,18 +29,20 @@ class MultiReportView(ReportView):
         return unique_data
 
     def get_extra_data(self, collection=None, poc=None, category=None):
-        model = collection[0]
+        analyses = self.get_analyses_by(collection)
+        analyses = self.sort_items_by('DateSampled', analyses)
+        sampled_from = analyses[0].DateSampled
+        to = analyses[-1].DateSampled
+
+        model = analyses[0].getParentNode()
         query = {'portal_type': 'ARReport',
                  'path': {
-                     'query': api.get_path(model.getObject()),
+                     'query': api.get_path(model),
                      'depth': 1}
                  }
         brains = api.search(query, 'portal_catalog')
         coa_num = '{}-COA-{}'.format(model.id, len(brains) + 1)
-        analyses = self.get_analyses(collection)
-        analyses = self.sort_items_by('DateSampled', analyses)
-        sampled_from = analyses[0].DateSampled
-        to = analyses[-1].DateSampled
+
         analysis_title = ''
         for an in analyses:
             if an.Method:
