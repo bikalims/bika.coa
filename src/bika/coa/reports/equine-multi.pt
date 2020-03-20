@@ -307,7 +307,7 @@
             <td class="label grey" i18n:translate="">Sample Type</td>
             <td tal:content="model/SampleType/title|nothing"></td>
             <!--1st Results capture datetime -->
-            <td class="label grey" i18n:translate="" style="text-align:right">From</td>
+            <td class="label grey" i18n:translate="" style="text-align:center">From</td>
             <td tal:define="rw extra_data;"
                 tal:content="python:view.to_localized_time(rw['from']) or '-'"></td>
           </tr>
@@ -315,7 +315,7 @@
             <td class="label grey" i18n:translate="">Environmental Conditions</td>
             <td tal:content="model/EnvironmentalConditions/title|nothing"></td>
             <!-- Last Results capture datetime -->
-            <td class="label grey" i18n:translate="" style="text-align:right">To</td>
+            <td class="label grey" i18n:translate="" style="text-align:center">To</td>
             <td tal:define="rw extra_data;"
                 tal:content="python:view.to_localized_time(rw['to']) or '-'"></td>
           </tr>
