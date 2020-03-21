@@ -10,5 +10,4 @@
     <adapter name='bika.coa' factory=".method.MethodSchemaModifier" />
     <adapter name='bika.coa' factory=".analysisservice.AnalysisServiceSchemaModifier" />
     <adapter name='bika.coa' factory=".batch.BatchSchemaExtender" />
-    <adapter name='bika.coa' factory=".analysisrequest.AnalysisRequestSchemaModifier" />
 </configure>
