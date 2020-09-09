@@ -422,7 +422,7 @@
   </tal:render>
 
   <!-- QC RESULTS -->
-  <tal:render condition="python:True">
+  <!--<tal:render condition="python:True">
     <tal:model repeat="model collection">
       <tal:qc define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
         <div class="row section-results no-gutters" tal:condition="qcanalyses">
@@ -435,7 +435,7 @@
         </div>
       </tal:qc>
     </tal:model>
-  </tal:render>
+  </tal:render> -->
 
   <!-- REMARKS -->
   <tal:render condition="python:True">
