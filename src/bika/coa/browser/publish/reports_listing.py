@@ -147,6 +147,11 @@ class ReportsListingView(RLV):
         """Augment folder listing item
         """
 
+        # Quick fix, object here seems to have change from being an ar to being
+        # a report, will investigate further, but chainging the object using
+        # getObject seems to fix the current error
+        # check on senaite.core./browser/publish/emailview.py for clues
+        obj = obj.getObject()
         ar = obj.getAnalysisRequest()
         uid = api.get_uid(obj)
         review_state = api.get_workflow_status_of(ar)
