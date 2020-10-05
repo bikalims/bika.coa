@@ -165,8 +165,12 @@ class ReportsListingView(RLV):
             css_class="service_info")
 
         pdf = self.get_pdf(obj)
+        pdf_filename = pdf.filename
+        pdf_filename_value = 'Unknown'
+        if pdf_filename:
+            pdf_filename_value = pdf_filename.split('.')[0]
         item["replace"]["COA"] = get_link(
-            ar.absolute_url(), value=pdf.filename.split('.')[0]
+            ar.absolute_url(), value=pdf_filename_value
         )
 
         filesize = self.get_filesize(pdf)
