@@ -54,6 +54,11 @@ class AnalysisRequestPublishedResults(ARPR):
 
     def folderitem(self, obj, item, index):
 
+        # TODO: find out why obj is a brain and not an object.
+        # see senaite.listing, obj is a brain and not an object
+        if api.is_brain:
+            obj = obj.getObject()
+
         item['PublishedBy'] = self.user_fullname(obj.Creator())
 
         # Formatted creation date of report
