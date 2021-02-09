@@ -56,10 +56,19 @@
       layer="senaite.impress.interfaces.ILayer"
       />
 
-  <!-- Ajax Publish Controller View -->
+  <!-- Ajax Publish View : ajax_publish -->
   <browser:page
       for="*"
       name="ajax_publish"
+      class="bika.coa.ajax.AjaxPublishView"
+      permission="zope.Public"
+      layer="senaite.impress.interfaces.ILayer"
+      />
+
+  <!-- Ajax Publish View : ajax_templates -->
+  <browser:page
+      for="*"
+      name="ajax_templates"
       class="bika.coa.ajax.AjaxPublishView"
       permission="zope.Public"
       layer="senaite.impress.interfaces.ILayer"
