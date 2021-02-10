@@ -132,8 +132,9 @@
           <tr>
             <!-- Header Left -->
             <td class="align-middle text-left">
+              <h1>Certificate of Analysis</h1>
               <h1>
-                <div tal:replace="python: 'Certificate of Analysis: ' + coa_num"/>
+                <div tal:replace="python: coa_num"/>
               </h1>
             </td>
             <!-- Header Right -->
