@@ -610,6 +610,9 @@
     </div>
   </tal:render>
 
+  <h1 i18n:translate="">End of Report</h1>
+  <br />
+
   <!-- DISCREETER -->
   <tal:render condition="python:True"
               define="laboratory python:view.laboratory;
