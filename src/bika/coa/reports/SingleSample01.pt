@@ -373,13 +373,15 @@
             <table class="table table-sm table-condensed">
               <colgroup>
                 <!-- Category -->
-                <col style="width: 25%;">
+                <col style="width: 20%;">
                 <!-- Method -->
                 <col style="width: 25%;">
                 <!-- Result -->
-                <col style="width: 20%">
+                <col style="width: 15%">
                 <!-- Unit -->
                 <col style="width: 15%">
+                <!-- Uncertainty -->
+                <col style="width: 10%">
                 <!-- Range -->
                 <col style="width: 10%">
                 <!-- Out of Range -->
@@ -398,6 +400,9 @@
                   </th>
                   <th class="text-left unit">
                     <span i18n:translate="">Unit</span>
+                  </th>
+                  <th class="specs">
+                    <span i18n:translate="">Uncertainty</span>
                   </th>
                   <th class="specs">
                     <span i18n:translate="">Range</span>
@@ -438,7 +443,9 @@
                     </td>
                     <td class="specs">
                       <span tal:condition="analysis/Uncertainty"
-                            tal:content="structure python:model.get_formatted_uncertainty(analysis)"></span>
+                            tal:content="structure python:view.get_formatted_uncertainty(analysis)"></span>
+                    </td>
+                    <td class="specs">
                       <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
                       <span tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
                     </td>

@@ -2,6 +2,7 @@ from bika.coa import logger
 from bika.lims import api
 from bika.lims.workflow import getTransitionUsers
 from plone import api as ploneapi
+from bika.lims.utils.analysis import format_uncertainty
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
@@ -21,6 +22,17 @@ class SingleReportView(SRV):
         obj_id = api.get_id(obj)
         coa_num = '{}-COA-{}'.format(obj_id, len(brains) + 1)
         return coa_num
+
+    def get_formatted_uncertainty(self, analysis):
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        decimalmark = setup.getDecimalMark()
+        uncertainty = format_uncertainty(
+            analysis.instance,
+            analysis.getResult(),
+            decimalmark=decimalmark,
+            sciformat=sciformat)
+        return "&plusmn; {}".format(uncertainty)
 
 
 class MultiReportView(MRV):

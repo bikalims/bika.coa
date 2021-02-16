@@ -100,6 +100,9 @@ class AjaxPublishView(AP):
             # append the generated reports to the list
             report_groups.append(objs)
 
+        # Fixed LIMS-3288 - send one email with multiple attache
+        # report_groups = [[a[0] for a in report_groups]]
+
         # NOTE: The reports might be stored in multiple places (clients),
         #       which makes it difficult to redirect to a single exit URL
         #       based on the action the users clicked (save/email)
