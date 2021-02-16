@@ -320,6 +320,14 @@
             <td tal:content="model/SampleType/title|nothing"></td>
           </tr>
           <tr>
+            <td class="label" i18n:translate="">Sampler</td>
+            <td tal:content="model/Sampler/title|nothing"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Sampling Deviation</td>
+            <td tal:content="model/SamplingDeviation/title|nothing"></td>
+          </tr>
+          <tr>
             <td class="label" i18n:translate="">Sample Condition</td>
             <td tal:content="model/SampleCondition/title|nothing"></td>
           </tr>
