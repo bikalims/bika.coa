@@ -635,22 +635,29 @@
           <span class="" i18n:translate="">
             Methods included in the
             <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory. Analysis remarks are not
-            accredited
+            schedule of Accreditation for this Laboratory.
           </span>
+        </div>
+        <div class="discreeter-disclaimer"
+             i18n:translate="">
+            Analysis remarks are not accredited.
         </div>
         <div class="discreeter-disclaimer"
              i18n:translate="">
           Analysis results relate only to the samples tested.
         </div>
-        <div class="discreeter-copyright"
+        <div class="discreeter-disclaimer"
              i18n:translate="">
-          This document shall not be reproduced except in full, without the written approval of
-          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
+          All information provided by <tal:block replace="laboratory/title"/> except for the Client Sample ID provided by <tal:block replace="client/Name"/>.
         </div>
         <div tal:define="confidence_level laboratory/Confidence"
              tal:condition="confidence_level" i18n:translate="">
           Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
+        </div>
+        <div class="discreeter-copyright"
+             i18n:translate="">
+          This document shall not be reproduced except in full, without the written approval of
+          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
         </div>
       </div>
     </div>
