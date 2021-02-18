@@ -453,7 +453,7 @@
                       </span>
                     </td>
                     <td class="text-left">
-                      <span class="capture-date" tal:content="python:view.get_formatted_date(model)"></span>
+                      <span class="capture-date" tal:content="python:view.get_formatted_date(analysis)"></span>
                     </td>
                     <td class="text-right">
                       <span class="result" tal:content="structure python:model.get_formatted_result(analysis)">23</span>
