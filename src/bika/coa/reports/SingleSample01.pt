@@ -387,11 +387,13 @@
                 <!-- Category -->
                 <col style="width: 20%;">
                 <!-- Method -->
-                <col style="width: 25%;">
+                <col style="width: 20%;">
+                <!-- Date -->
+                <col style="width: 10%;">
                 <!-- Result -->
                 <col style="width: 15%">
                 <!-- Unit -->
-                <col style="width: 15%">
+                <col style="width: 10%">
                 <!-- Uncertainty -->
                 <col style="width: 10%">
                 <!-- Range -->
@@ -406,6 +408,9 @@
                   </th>
                   <th class="text-left method">
                     <span i18n:translate="">Method</span>
+                  </th>
+                  <th class="text-left capture-date">
+                    <span i18n:translate="">Date</span>
                   </th>
                   <th class="text-right result">
                     <span i18n:translate="">Result</span>
@@ -446,6 +451,9 @@
                       <span tal:condition="not: analysis/Method">
                         <span class="font-normal">-</span> 
                       </span>
+                    </td>
+                    <td class="text-left">
+                      <span class="capture-date" tal:content="python:view.get_formatted_date(model)"></span>
                     </td>
                     <td class="text-right">
                       <span class="result" tal:content="structure python:model.get_formatted_result(analysis)">23</span>
