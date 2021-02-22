@@ -391,13 +391,13 @@
                 <!-- Date -->
                 <col style="width: 10%;">
                 <!-- Result -->
-                <col style="width: 15%">
+                <col style="width: 10%">
                 <!-- Unit -->
                 <col style="width: 10%">
                 <!-- Uncertainty -->
                 <col style="width: 10%">
                 <!-- Range -->
-                <col style="width: 10%">
+                <col style="width: 15%">
                 <!-- Out of Range -->
                 <col style="width: 5%">
               </colgroup>
