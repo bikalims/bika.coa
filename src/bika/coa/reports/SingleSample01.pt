@@ -321,7 +321,7 @@
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sampler</td>
-            <td tal:content="model/Sampler/title|nothing"></td>
+            <td tal:content="python:view.get_sampler_fullname(model)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sampling Deviation</td>

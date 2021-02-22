@@ -23,6 +23,10 @@ class SingleReportView(SRV):
         coa_num = '{}-COA-{}'.format(obj_id, len(brains) + 1)
         return coa_num
 
+    def get_sampler_fullname(self, model):
+        obj = model.instance
+        return obj.getSamplerFullName()
+
     def get_formatted_date(self, analysis):
         result = analysis.ResultCaptureDate
         return result.strftime('%Y-%m-%d')
