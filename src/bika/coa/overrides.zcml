@@ -4,13 +4,22 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-    <include package=".browser" file="overrides.zcml" />
+  <include package=".browser" file="overrides.zcml" />
+
   <!-- PDF Report Storage Adapter -->
   <adapter
       for="zope.interface.Interface
            zope.publisher.interfaces.browser.IBrowserRequest"
       factory=".storage.PdfReportStorageAdapter"
       provides="senaite.impress.interfaces.IPdfReportStorage"
+      permission="zope2.View"/>
+
+  <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      name="AnalysisRequest"
+      factory=".reportview.SingleReportView"
+      provides="senaite.impress.interfaces.IReportView"
       permission="zope2.View"/>
 
 

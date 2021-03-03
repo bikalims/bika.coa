@@ -6,6 +6,7 @@
           contact model/Contact;
           accredited_symbol string:★;
           outofrange_symbol string:⚠;
+          coa_num python:view.get_coa_number(model);
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           attachments_per_row python:int(report_options.get('attachments_per_row', 2));
@@ -131,7 +132,10 @@
           <tr>
             <!-- Header Left -->
             <td class="align-middle text-left">
-              <h1 i18n:translate="">Certificate of Analysis</h1>
+              <h1>Certificate of Analysis</h1>
+              <h1>
+                <div tal:replace="python: coa_num"/>
+              </h1>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -316,6 +320,18 @@
             <td tal:content="model/SampleType/title|nothing"></td>
           </tr>
           <tr>
+            <td class="label" i18n:translate="">Sampler</td>
+            <td tal:content="python:view.get_sampler_fullname(model)"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Sampling Deviation</td>
+            <td tal:content="model/SamplingDeviation/title|nothing"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Sample Condition</td>
+            <td tal:content="model/SampleCondition/title|nothing"></td>
+          </tr>
+          <tr>
             <td class="label" i18n:translate="">Specification</td>
             <td tal:content="spec/contextual_title|nothing"></td>
           </tr>
@@ -369,15 +385,19 @@
             <table class="table table-sm table-condensed">
               <colgroup>
                 <!-- Category -->
-                <col style="width: 25%;">
+                <col style="width: 20%;">
                 <!-- Method -->
-                <col style="width: 25%;">
+                <col style="width: 20%;">
+                <!-- Date -->
+                <col style="width: 10%;">
                 <!-- Result -->
-                <col style="width: 20%">
-                <!-- Unit -->
-                <col style="width: 15%">
-                <!-- Range -->
                 <col style="width: 10%">
+                <!-- Unit -->
+                <col style="width: 10%">
+                <!-- Uncertainty -->
+                <col style="width: 10%">
+                <!-- Range -->
+                <col style="width: 15%">
                 <!-- Out of Range -->
                 <col style="width: 5%">
               </colgroup>
@@ -389,11 +409,17 @@
                   <th class="text-left method">
                     <span i18n:translate="">Method</span>
                   </th>
+                  <th class="text-left capture-date">
+                    <span i18n:translate="">Date</span>
+                  </th>
                   <th class="text-right result">
                     <span i18n:translate="">Result</span>
                   </th>
                   <th class="text-left unit">
                     <span i18n:translate="">Unit</span>
+                  </th>
+                  <th class="specs">
+                    <span i18n:translate="">Uncertainty</span>
                   </th>
                   <th class="specs">
                     <span i18n:translate="">Range</span>
@@ -426,6 +452,9 @@
                         <span class="font-normal">-</span> 
                       </span>
                     </td>
+                    <td class="text-left">
+                      <span class="capture-date" tal:content="python:view.get_formatted_date(analysis)"></span>
+                    </td>
                     <td class="text-right">
                       <span class="result" tal:content="structure python:model.get_formatted_result(analysis)">23</span>
                     </td>
@@ -434,7 +463,9 @@
                     </td>
                     <td class="specs">
                       <span tal:condition="analysis/Uncertainty"
-                            tal:content="structure python:model.get_formatted_uncertainty(analysis)"></span>
+                            tal:content="structure python:view.get_formatted_uncertainty(analysis)"></span>
+                    </td>
+                    <td class="specs">
                       <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
                       <span tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
                     </td>
@@ -482,8 +513,8 @@
     </div>
   </tal:render>
 
-  <!-- QC RESULTS -->
-  <tal:render condition="python:True"
+  <!-- QC RESULTS  condition set to False for now -->
+  <tal:render condition="python: False"
               define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
     <div class="row section-results no-gutters" tal:condition="qcanalyses">
       <div class="small">
@@ -595,6 +626,9 @@
     </div>
   </tal:render>
 
+  <h1 i18n:translate="">End of Report</h1>
+  <br />
+
   <!-- DISCREETER -->
   <tal:render condition="python:True"
               define="laboratory python:view.laboratory;
@@ -620,22 +654,29 @@
           <span class="" i18n:translate="">
             Methods included in the
             <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory. Analysis remarks are not
-            accredited
+            schedule of Accreditation for this Laboratory.
           </span>
+        </div>
+        <div class="discreeter-disclaimer"
+             i18n:translate="">
+            Analysis remarks are not accredited.
         </div>
         <div class="discreeter-disclaimer"
              i18n:translate="">
           Analysis results relate only to the samples tested.
         </div>
-        <div class="discreeter-copyright"
+        <div class="discreeter-disclaimer"
              i18n:translate="">
-          This document shall not be reproduced except in full, without the written approval of
-          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
+          All information provided by <tal:block replace="laboratory/title"/> except for the Client Sample ID provided by <tal:block replace="client/Name"/>.
         </div>
         <div tal:define="confidence_level laboratory/Confidence"
              tal:condition="confidence_level" i18n:translate="">
           Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
+        </div>
+        <div class="discreeter-copyright"
+             i18n:translate="">
+          This document shall not be reproduced except in full, without the written approval of
+          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
         </div>
       </div>
     </div>

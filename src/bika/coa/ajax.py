@@ -5,9 +5,11 @@ from bika.lims import api
 from DateTime import DateTime
 from senaite.core.supermodel.interfaces import ISuperModel
 from senaite.impress.interfaces import IPdfReportStorage
+from senaite.impress.interfaces import ITemplateFinder
 from senaite.impress.ajax import AjaxPublishView as AP
 from zope.component import getMultiAdapter
 from zope.component import getAdapter
+from zope.component import getUtility
 
 
 class AjaxPublishView(AP):
@@ -97,6 +99,9 @@ class AjaxPublishView(AP):
             objs = storage.store(pdf, html, uids, metadata=metadata, csv_text=csv_text)
             # append the generated reports to the list
             report_groups.append(objs)
+
+        # Fixed LIMS-3288 - send one email with multiple attache
+        report_groups = [[a[0] for a in report_groups]]
 
         # NOTE: The reports might be stored in multiple places (clients),
         #       which makes it difficult to redirect to a single exit URL
@@ -201,3 +206,10 @@ class AjaxPublishView(AP):
             writer.writerow(rec)
 
         return output.getvalue()
+
+    def ajax_templates(self):
+        """Returns the available templates
+        """
+        finder = getUtility(ITemplateFinder)
+        templates = finder.get_templates(extensions=[".pt", ".html"])
+        return sorted([item[0] for item in templates if 'bika' in item[0]])
