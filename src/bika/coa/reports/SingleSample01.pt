@@ -639,7 +639,7 @@
           <span class="outofrange text-danger"
                 tal:content="outofrange_symbol">
           </span>
-          <span i18n:translate="">Result out of client specified range.</span>
+          <span i18n:translate="">Result out of specified range.</span>
         </div>
         <div class="discreeter-not-invoiced"
              tal:condition="model/InvoiceExclude"
