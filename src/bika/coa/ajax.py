@@ -3,7 +3,7 @@ import csv
 from bika.coa import logger
 from bika.lims import api
 from DateTime import DateTime
-from senaite.core.supermodel.interfaces import ISuperModel
+from senaite.app.supermodel.interfaces import ISuperModel
 from senaite.impress.interfaces import IPdfReportStorage
 from senaite.impress.interfaces import ITemplateFinder
 from senaite.impress.ajax import AjaxPublishView as AP
