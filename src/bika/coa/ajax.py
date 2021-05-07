@@ -117,28 +117,23 @@ class AjaxPublishView(AP):
     def create_csv_report(self, sample):
         analyses = []
         output = StringIO.StringIO()
+        date_sampled = sample.DateSampled
+        if date_sampled:
+            date_sampled = date_sampled.strftime('%m-%d-%y')
         date_received = sample.DateReceived
-        date_published = sample.DatePublished
         if date_received:
             date_received = date_received.strftime('%m-%d-%y')
-        sampling_date = sample.getSamplingDate()
-        if sampling_date:
-            sampling_date = sampling_date.strftime('%m-%d-%y')
-        if date_published:
-            date_published = date_published.strftime('%m-%d-%y')
+        date_verified = sample.getDateVerified()
+        if date_verified:
+            date_verified = date_verified.strftime('%m-%d-%y')
         writer = csv.writer(output)
-        writer.writerow(["Order ID", sample.ClientOrderNumber])
+        writer.writerow(["Sample ID", sample.id])
         writer.writerow(["Client Sample ID", sample.ClientSampleID])
         writer.writerow(["Sample Type", sample.SampleTypeTitle])
         writer.writerow(["Sample Point", sample.SamplePointTitle])
-        writer.writerow(["Sampling Date", sampling_date])
-        writer.writerow(["Bika Sample ID", '*'])
-        writer.writerow(["Bika AR ID", sample.id])
+        writer.writerow(["Date Sampled", date_sampled])
         writer.writerow(["Date Received", date_received])
-        writer.writerow(["Date Published", date_published])
-        # writer.writerow(["Client's Ref", sample.getClientReference()])
-        writer.writerow(["Client's Sample ID", ])
-        writer.writerow(["Lab Sample ID", ])
+        writer.writerow(["Date Verified", date_verified])
         writer.writerow([])
         analyses = sample.getAnalyses(full_objects=True)
         group_cats = {}
@@ -161,26 +156,30 @@ class AjaxPublishView(AP):
     def create_csv_reports(self, samples):
         analyses = []
         output = StringIO.StringIO()
-        headers = ["Order ID", "Client Sample ID",
-                   "Sample Type", "Sample Point", "Sampling Date",
-                   "Bika Sample ID", "Bika AR ID", "Date Received",
-                   "Date Published"]
+        headers = ["Sample ID", "Client Sample ID",
+                   "Sample Type", "Sample Point",
+                   "Date Sampled", "Date Received", "Date Verified"]
         body = []
         for sample in samples:
             date_received = sample.DateReceived
-            date_published = sample.DatePublished
+            date_sampled = sample.DateSampled
+            if date_sampled:
+                date_sampled = date_sampled.strftime('%m-%d-%y')
             if date_received:
                 date_received = date_received.strftime('%m-%d-%y')
-            sampling_date = sample.getSamplingDate()
-            if sampling_date:
-                sampling_date = sampling_date.strftime('%m-%d-%y')
-            if date_published:
-                date_published = date_published.strftime('%m-%d-%y')
+            date_verified = sample.getDateVerified()
+            if date_verified:
+                date_verified = date_verified.strftime('%m-%d-%y')
             writer = csv.writer(output)
-            line = [sample.ClientOrderNumber, sample.ClientSampleID,
-                    sample.SampleTypeTitle, sample.SamplePointTitle, sampling_date,
-                    sample.id, '', date_received,
-                    date_published]
+            line = [
+                sample.id,
+                sample.ClientSampleID,
+                sample.SampleTypeTitle,
+                sample.SamplePointTitle,
+                date_sampled,
+                date_received,
+                date_verified
+            ]
 
             analyses = sample.getAnalyses(full_objects=True)
             for analysis in analyses:
