@@ -14,6 +14,7 @@
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
           pages python:view.get_pages(options);
+          report_images python:view.get_report_images();
       ">
 
   <!-- Custom Report Controls -->
@@ -385,9 +386,8 @@
                         <td class="text-left">
                           <span tal:condition="python:model.is_out_of_range(analysis)"
                                 class="font-weight-normal">
-                            <span class="outofrange text-danger"
-                                  style="font-family:Lucida Console, Courier, monospace;"
-                                  tal:content="outofrange_symbol">
+                            <span class="outofrange text-danger">
+                                  <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                             </span>
                           </span>
                         </td>
@@ -544,9 +544,8 @@
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-normal small">
         <div class="discreeter-outofrange">
-          <span class="outofrange text-danger"
-                style="font-family:Lucida Console, Courier, monospace;"
-                tal:content="outofrange_symbol">
+          <span class="outofrange text-danger">
+              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
           </span>
           <span i18n:translate="">Result out of client specified range.</span>
         </div>
