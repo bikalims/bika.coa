@@ -54,6 +54,31 @@ class MultiReportView(MRV):
         self.collection = collection
         self.request = request
 
+    def get_pages(self, options):
+        if options.get('orientation', '') == 'portrait':
+            num_per_page = 5
+        elif options.get('orientation', '') == 'landscape':
+            num_per_page = 8
+        else:
+            logger.error('get_pages: orientation unknown')
+            num_per_page = 5
+        logger.info('get_pages: col len = {}; num_per_page = {}'.format(len(self.collection), num_per_page))
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info('New page len = {}'.format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info('Last page len = {}'.format(len(new_page)))
+        return pages
+
     def get_common_row_data(self, collection, poc, category):
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
