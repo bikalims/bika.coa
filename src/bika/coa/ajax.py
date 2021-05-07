@@ -182,22 +182,33 @@ class AjaxPublishView(AP):
             ]
 
             analyses = sample.getAnalyses(full_objects=True)
+            group_cats = {}
             for analysis in analyses:
-                title = analysis.Title()
-                result = analysis.getFormattedResult(html=False)
-                unit = analysis.getService().getUnit()
-                title_unit = title
-                if unit:
-                    title_unit = '{} ({})'.format(title, unit)
-                if len(line) != len(headers):
-                    for i in headers[len(line):]:
-                        line.append('')
+                analysis_info = {'title': analysis.Title(),
+                                 'result': analysis.getFormattedResult(html=False),
+                                 'unit': analysis.getService().getUnit()}
+                if analysis.getCategoryTitle() not in group_cats.keys():
+                    group_cats[analysis.getCategoryTitle()] = []
+                group_cats[analysis.getCategoryTitle()].append(analysis_info)
 
-                if title_unit not in headers:
-                    headers.append(title_unit)
-                    line.append(result)
-                else:
-                    line[headers.index(title_unit)] = result
+            for g_cat in sorted(group_cats.keys()):
+                for a_info in group_cats[g_cat]:
+                    title = a_info['title']
+                    result = a_info['result']
+                    unit = a_info['unit']
+                    title_unit = title
+                    if unit:
+                        title_unit = '{} ({})'.format(title, unit)
+                    if len(line) != len(headers):
+                        for i in headers[len(line):]:
+                            line.append('')
+
+                    if title_unit not in headers:
+                        headers.append(title_unit)
+                        line.append(result)
+                    else:
+                        line[headers.index(title_unit)] = result
+
             body.append(line)
 
         writer.writerow(headers)
