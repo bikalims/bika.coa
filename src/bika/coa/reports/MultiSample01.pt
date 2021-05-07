@@ -304,7 +304,7 @@
           <table class="table table-sm table-condensed small">
             <thead>
               <tr>
-                <th></th>
+                <th>Sample ID</th>
                 <th></th>
                 <th></th>
                 <tal:ar repeat="model page">
@@ -319,9 +319,9 @@
                     <div class="text-left">Client Sample ID</div>
                     <div class="text-left">Sample Type</div>
                     <div class="text-left">Sample Point</div>
-                    <div class="text-left">Client Reference</div>
                     <div class="text-left">Date Sampled</div> 
                     <div class="text-left">Date Received</div>
+                    <div class="text-left">Date Verified</div>
                 </th>
                 <th></th>
                 <th></th>
@@ -334,11 +334,11 @@
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                     <div class="text-center"
-                         tal:content="python:model.ClientReference or '-'"/>
-                    <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_time(model.DateSampled) or '-'"></div>
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_time(model.DateReceived) or '-'"></div>
+                    <div class="text-center"
+                         tal:content="python:model.getDateVerified() and view.to_localized_time(model.getDateVerified()) or '-'"></div>
                   </th>
                 </tal:ar>
               </tr>
