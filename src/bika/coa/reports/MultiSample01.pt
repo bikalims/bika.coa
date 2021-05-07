@@ -200,7 +200,7 @@
                 </tr>
                 <tr>
                   <td class="label" i18n:translate="">Date Published</td>
-                  <td tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)"></td>
+                  <td tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"></td>
                 </tr>
                 <tr tal:condition="reporter">
                   <td class="label" i18n:translate="">Published by</td>
@@ -335,11 +335,11 @@
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                     <div class="text-center"
-                         tal:content="python:model.DateSampled and view.to_localized_time(model.DateSampled) or '-'"></div>
+                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                     <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_time(model.DateReceived) or '-'"></div>
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                     <div class="text-center"
-                         tal:content="python:model.getDateVerified() and view.to_localized_time(model.getDateVerified()) or '-'"></div>
+                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                   </th>
                 </tal:ar>
               </tr>
@@ -352,7 +352,7 @@
                        <span tal:content="category/Title"/> 
                    </td> 
                    <td class="font-weight-bold">Method</td> 
-                   <td class="font-weight-bold">Units</td> 
+                   <td class="font-weight-bold">Unit</td> 
                    <tal:results repeat="model page">
                        <td class="font-weight-bold text-center" colspan="2">Result</td> 
                    </tal:results>

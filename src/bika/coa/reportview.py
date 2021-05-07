@@ -175,3 +175,6 @@ class MultiReportView(MRV):
             self.portal_url)
         datum = {'outofrange_symbol_url': outofrange_symbol_url}
         return datum
+
+    def to_localized_date(self, date):
+        return self.to_localized_time(date)[:10]
