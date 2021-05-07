@@ -522,12 +522,15 @@
 
   <!--  REMARKS -->
   <tal:render condition="python:True">
-    <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
-      <div class="small">
-        <h1 i18n:translate="">Remarks</h1>
-        <div class="text-info" tal:content="structure model/Remarks"></div>
+      <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
+        <div class="">
+          <h2 i18n:translate>Remarks</h2>
+          <div class="text-info" tal:repeat="remark model/Remarks">
+              <div class="text-info" tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])"></div>
+          </div>
+        </div>
+        <br />
       </div>
-    </div>
   </tal:render>
 
   <!-- ATTACHMENTS -->
