@@ -300,10 +300,6 @@
               </a>
             </td>
           </tr>
-          <tr tal:condition="batch">
-            <td class="label" i18n:translate="">Client Batch ID</td>
-            <td tal:content="batch/ClientBatchID"></td>
-          </tr>
           <tr>
             <td class="label" i18n:translate="">Client</td>
             <td>
