@@ -4,8 +4,8 @@
           laboratory view/laboratory;
           client model/Client;
           contact model/Contact;
+          report_images python:view.get_report_images();
           accredited_symbol string:★;
-          outofrange_symbol string:⚠;
           coa_num python:view.get_coa_number(model);
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
@@ -14,7 +14,8 @@
           page_width options/page_width|nothing;
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
-          content_height options/content_height|nothing;">
+          content_height options/content_height|nothing;
+          ">
 
   <!-- Custom Report Controls -->
   <div id="controls" class="noprint">
@@ -468,8 +469,8 @@
                     <td class="text-center align-middle">
                       <span tal:condition="python:model.is_out_of_range(analysis)"
                             class="font-weight-light">
-                        <span class="outofrange text-danger"
-                              tal:content="outofrange_symbol">
+                        <span class="outofrange text-danger">
+                          <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                         </span>
                       </span>
                     </td>
@@ -632,8 +633,8 @@
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-light small">
         <div class="discreeter-outofrange">
-          <span class="outofrange text-danger"
-                tal:content="outofrange_symbol">
+          <span class="outofrange text-danger">
+              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
           </span>
           <span i18n:translate="">Result out of specified range.</span>
         </div>

@@ -42,6 +42,12 @@ class SingleReportView(SRV):
             sciformat=sciformat)
         return "&plusmn; {}".format(uncertainty)
 
+    def get_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url)
+        datum = {'outofrange_symbol_url': outofrange_symbol_url}
+        return datum
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
@@ -163,3 +169,9 @@ class MultiReportView(MRV):
         user = actor[0] if actor else ''
         user = api.get_user(user)
         return user.fullname
+
+    def get_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url)
+        datum = {'outofrange_symbol_url': outofrange_symbol_url}
+        return datum
