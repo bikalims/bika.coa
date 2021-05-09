@@ -74,5 +74,23 @@
       layer="senaite.impress.interfaces.ILayer"
       />
 
+  <!-- Email View -->
+  <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="email"
+      class="bika.coa.browser.publish.emailview.EmailView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
+  <!-- Email View -->
+  <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="email"
+      class="bika.coa.browser.publish.emailview.EmailView"
+      permission="senaite.core.permissions.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+      />
+
 
 </configure>
