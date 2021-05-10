@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.lims import api
 from bika.lims.browser.publish.emailview import EmailView as EV
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -25,4 +26,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 class EmailView(EV):
     """Overrride Email Attachments View
     """
+
     template = ViewPageTemplateFile("templates/email.pt")
+
+    def email_csv_report_enabled(self):
+        """ Check registry to see if csv email enabled
+        """
+        # check first if a registry record exists
+        enabled = api.get_registry_record("bika.coa.email_csv_report_enabled")
+        return enabled

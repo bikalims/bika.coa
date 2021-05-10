@@ -142,17 +142,19 @@
                  class="attachments well row">
               <tal:reports repeat="report view/reports_data">
                 <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
-                <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2"
-                     tal:define="filename report/filename;
-                                 csv_title python: '{}.csv'.format(filename.split('.')[0]);">
-                  <a href="#"
-                     target="_blank"
-                     tal:attributes="href string:${report/obj/absolute_url}/CSV">
-                    <img tal:attributes="alt csv_title;
-                                         title string:${csv_title}(${report/filesize})"
-                         src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />
-                    <span tal:content="csv_title"/>
-                  </a>
+                <div tal:condition="view/email_csv_report_enabled">
+                    <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2"
+                         tal:define="filename report/filename;
+                                     csv_title python: '{}.csv'.format(filename.split('.')[0]);">
+                      <a href="#"
+                         target="_blank"
+                         tal:attributes="href string:${report/obj/absolute_url}/CSV">
+                        <img tal:attributes="alt csv_title;
+                                             title string:${csv_title}(${report/filesize})"
+                             src="++resource++senaite.core.browser.publish/img/pdf.png" width="32" />
+                        <span tal:content="csv_title"/>
+                      </a>
+                    </div>
                 </div>
                 <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
                   <a href="#"

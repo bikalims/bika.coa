@@ -1,8 +1,11 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:five="http://namespaces.zope.org/five"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone">
+
+  <five:registerPackage package="." initialize=".initialize"/>
 
   <!-- Report resource directory -->
   <plone:static
