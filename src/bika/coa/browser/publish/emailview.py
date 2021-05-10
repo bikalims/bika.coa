@@ -18,6 +18,7 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
+from bika.coa import logger
 from bika.lims import api
 from bika.lims.browser.publish.emailview import EmailView as EV
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -34,4 +35,5 @@ class EmailView(EV):
         """
         # check first if a registry record exists
         enabled = api.get_registry_record("bika.coa.email_csv_report_enabled")
+        logger.info('email_csv_report_enabled: is {}'.format(enabled))
         return enabled
