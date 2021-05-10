@@ -20,6 +20,7 @@
 
 from bika.coa import logger
 from bika.lims import api
+from bika.lims.api import mail as mailapi
 from bika.lims.browser.publish.emailview import EmailView as EV
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -37,3 +38,33 @@ class EmailView(EV):
         enabled = api.get_registry_record("bika.coa.email_csv_report_enabled")
         logger.info('email_csv_report_enabled: is {}'.format(enabled))
         return enabled
+
+    @property
+    def email_attachments(self):
+        attachments = []
+
+        # Convert report PDFs -> email attachments
+        import pdb; pdb.set_trace()
+        for report in self.reports:
+            pdf = self.get_pdf(report)
+            if pdf is not None:
+                sample = report.getAnalysisRequest()
+                filename = "{}.pdf".format(api.get_id(sample))
+                filedata = pdf.data
+                attachments.append(
+                    mailapi.to_email_attachment(filedata, filename))
+                if self.email_csv_report_enabled and report.CSV:
+                    filename = "{}.csv".format(api.get_id(sample))
+                    filedata = report.CSV
+                    attachments.append(
+                        mailapi.to_email_attachment(filedata, filename))
+
+        # Convert additional attachments
+        for attachment in self.attachments:
+            af = attachment.getAttachmentFile()
+            filedata = af.data
+            filename = af.filename
+            attachments.append(
+                mailapi.to_email_attachment(filedata, filename))
+
+        return attachments
