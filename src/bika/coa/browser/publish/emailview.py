@@ -44,7 +44,6 @@ class EmailView(EV):
         attachments = []
 
         # Convert report PDFs -> email attachments
-        import pdb; pdb.set_trace()
         for report in self.reports:
             pdf = self.get_pdf(report)
             if pdf is not None:
