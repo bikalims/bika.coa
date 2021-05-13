@@ -2,6 +2,7 @@
 
 import transaction
 from bika.lims import api
+from DateTime import DateTime
 from senaite.impress import logger
 from senaite.impress.decorators import synchronized
 from senaite.impress.storage import PdfReportStorageAdapter as PRSA
@@ -58,13 +59,20 @@ class PdfReportStorageAdapter(PRSA):
 
         # Manually update the view on the database to avoid conflict errors
         parent._p_jar.sync()
-        query = {'portal_type': 'ARReport',
-                 'path': {
-                     'query': api.get_path(parent),
-                     'depth': 1}
-                 }
+        client = parent.aq_parent
+        today = DateTime()
+        query = {
+            'portal_type': 'ARReport',
+            'path': {
+                'query': api.get_path(client)
+            },
+            'modified': {
+                'query': today.Date(),
+                'range': 'min'
+            }
+        }
         brains = api.search(query, 'portal_catalog')
-        coa_num = '{}-COA-{}'.format(parent_id, len(brains) + 1)
+        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
 
         # Create the report object
         report = api.create(

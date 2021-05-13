@@ -54,13 +54,12 @@ class EmailView(EV):
         for report in self.reports:
             pdf = self.get_pdf(report)
             if pdf is not None:
-                sample = report.getAnalysisRequest()
-                filename = "{}.pdf".format(api.get_id(sample))
+                filename = pdf.filename
                 filedata = pdf.data
                 attachments.append(
                     mailapi.to_email_attachment(filedata, filename))
                 if self.email_csv_report_enabled and report.CSV:
-                    filename = "{}.csv".format(api.get_id(sample))
+                    filename = report.CSV.filename
                     f = report.CSV.getBlob().open()
                     filedata = f.read()
                     f.close()
@@ -76,3 +75,11 @@ class EmailView(EV):
 
         logger.info('email_attachments bika.coa exit with {}'.format(len(attachments)))
         return attachments
+
+    def get_report_data(self, report):
+        """Report data to be used in the template
+        """
+        data = super(EmailView, self).get_report_data(report)
+        data['filename'] = data['pdf'].filename
+
+        return data
