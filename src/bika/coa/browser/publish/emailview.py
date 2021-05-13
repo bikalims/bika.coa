@@ -23,13 +23,19 @@ from bika.lims import api
 from bika.lims.api import mail as mailapi
 from bika.lims.browser.publish.emailview import EmailView as EV
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
 
 
 class EmailView(EV):
     """Overrride Email Attachments View
     """
 
+    implements(IPublishTraverse)
     template = ViewPageTemplateFile("templates/email.pt")
+
+    def __init__(self, context, request):
+        super(EmailView, self).__init__(context, request)
 
     def email_csv_report_enabled(self):
         """ Check registry to see if csv email enabled
@@ -41,6 +47,7 @@ class EmailView(EV):
 
     @property
     def email_attachments(self):
+        logger.info('email_attachments bika.coa: entered')
         attachments = []
 
         # Convert report PDFs -> email attachments
@@ -54,9 +61,10 @@ class EmailView(EV):
                     mailapi.to_email_attachment(filedata, filename))
                 if self.email_csv_report_enabled and report.CSV:
                     filename = "{}.csv".format(api.get_id(sample))
-                    filedata = report.CSV
-                    attachments.append(
-                        mailapi.to_email_attachment(filedata, filename))
+                    f = report.CSV.getBlob().open()
+                    filedata = f.read()
+                    f.close()
+                    attachments.append(mailapi.to_email_attachment(filedata, filename, mime_type='text/csv'))
 
         # Convert additional attachments
         for attachment in self.attachments:
@@ -66,4 +74,5 @@ class EmailView(EV):
             attachments.append(
                 mailapi.to_email_attachment(filedata, filename))
 
+        logger.info('email_attachments bika.coa exit with {}'.format(len(attachments)))
         return attachments
