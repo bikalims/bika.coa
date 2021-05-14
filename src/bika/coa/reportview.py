@@ -1,9 +1,11 @@
 from bika.coa import logger
 from bika.lims import api
 from bika.lims.workflow import getTransitionUsers
-from plone import api as ploneapi
 from bika.lims.utils.analysis import format_uncertainty
+from plone import api as ploneapi
+from Products.CMFPlone.utils import safe_unicode
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
+from senaite.impress.analysisrequest.reportview import MULTI_TEMPLATE
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
 
@@ -59,6 +61,33 @@ class MultiReportView(MRV):
         super(MultiReportView, self).__init__(collection, request)
         self.collection = collection
         self.request = request
+
+    def get_max_pdf_samples(self):
+        """ get max num of allowed samples in a PDF
+        """
+        num = api.get_registry_record("bika.coa.max_pdf_samples")
+        logger.info('get_max_pdf_samples: is {}'.format(num))
+        return num
+
+    def is_pdfs_disabled(self):
+        """ Check registry to see if PDF are disabled
+        """
+        disabled = api.get_registry_record("bika.coa.disable_pdfs")
+        logger.info('pdfs disabled: is {}'.format(disabled))
+        return disabled
+
+    def render(self, template, **kw):
+        """Wrap the template and render
+        """
+        if self.is_pdfs_disabled():
+            template = safe_unicode("<div><p>Note: PDFs are disabled.</p></div>")
+            return MULTI_TEMPLATE.safe_substitute(self.context, template=template)
+
+        max_pdf_samples = self.get_max_pdf_samples()
+        if max_pdf_samples > 0 and len(self.collection) > max_pdf_samples:
+            template = safe_unicode("<div><p>ERROR: Only {} samples allowed in a PDF, {} submitted.</p></div>".format(max_pdf_samples, len(self.collection)))
+            return MULTI_TEMPLATE.safe_substitute(self.context, template=template)
+        return super(MultiReportView, self).render(template, **kw)
 
     def get_pages(self, options):
         if options.get('orientation', '') == 'portrait':

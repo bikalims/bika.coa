@@ -13,16 +13,18 @@ from zope.component import getUtility
 
 
 class AjaxPublishView(AP):
+    def is_pdfs_disabled(self):
+        """ Check registry to see if PDF are disabled
+        """
+        disabled = api.get_registry_record("bika.coa.disable_pdfs")
+        logger.info('pdfs disabled: is {}'.format(disabled))
+        return disabled
+
     def ajax_save_reports(self):
         """Render all reports as PDFs and store them as AR Reports
         """
         # Data sent via async ajax call as JSON data from the frontend
         data = self.get_json()
-
-        # This is the html after it was rendered by the client browser and
-        # eventually extended by JavaScript, e.g. Barcodes or Graphs added etc.
-        # NOTE: It might also contain multiple reports!
-        html = data.get("html")
 
         # get the triggered action (Save|Email)
         action = data.get("action", "save")
@@ -30,33 +32,53 @@ class AjaxPublishView(AP):
         # get the selected template
         template = data.get("template")
 
-        # get the selected paperformat
-        paperformat = data.get("format")
+        if not self.is_pdfs_disabled:
+            # This is the html after it was rendered by the client browser and
+            # eventually extended by JavaScript, e.g. Barcodes or Graphs added etc.
+            # NOTE: It might also contain multiple reports!
+            html = data.get("html")
 
-        # get the selected orientation
-        orientation = data.get("orientation", "portrait")
+            # get the selected paperformat
+            paperformat = data.get("format")
 
-        # Generate the print CSS with the set format/orientation
-        css = self.get_print_css(
-            paperformat=paperformat, orientation=orientation)
-        logger.info(u"Print CSS: {}".format(css))
+            # get the selected orientation
+            orientation = data.get("orientation", "portrait")
 
-        # get the publisher instance
-        publisher = self.publisher
-        # add the generated CSS to the publisher
-        publisher.add_inline_css(css)
+            # Generate the print CSS with the set format/orientation
+            css = self.get_print_css(
+                paperformat=paperformat, orientation=orientation)
+            logger.info(u"Print CSS: {}".format(css))
 
-        # split the html per report
-        # NOTE: each report is an instance of <bs4.Tag>
-        html_reports = publisher.parse_reports(html)
+            # get the publisher instance
+            publisher = self.publisher
+            # add the generated CSS to the publisher
+            publisher.add_inline_css(css)
 
-        # generate a PDF for each HTML report
-        pdf_reports = map(publisher.write_pdf, html_reports)
+            # split the html per report
+            # NOTE: each report is an instance of <bs4.Tag>
+            html_reports = publisher.parse_reports(html)
 
-        # extract the UIDs of each HTML report
-        # NOTE: UIDs are injected in `.analysisrequest.reportview.render`
-        report_uids = map(
-            lambda report: report.get("uids", "").split(","), html_reports)
+            # generate a PDF for each HTML report
+            pdf_reports = map(publisher.write_pdf, html_reports)
+
+            # extract the UIDs of each HTML report
+            # NOTE: UIDs are injected in `.analysisrequest.reportview.render`
+            report_uids = map(
+                lambda report: report.get("uids", "").split(","), html_reports)
+
+            # prepare some metadata
+            metadata = {
+                "template": template,
+                "paperformat": paperformat,
+                "orientation": orientation,
+                "timestamp": DateTime().ISO8601(),
+            }
+
+        else:
+            metadata = {}
+            html_reports = [[None, ], ]
+            pdf_reports = [[None, ], ]
+            report_uids = [[None, ], ]
 
         # generate a CSV for each report_uids
         samples = []
@@ -68,19 +90,11 @@ class AjaxPublishView(AP):
         is_multi_template = self.is_multi_template(template)
         if is_multi_template:
             csv_report = self.create_csv_reports(samples)
-            csv_reports = [csv_report for i in range(len(pdf_reports))]
+            csv_reports = [csv_report for i in range(len(data['items']))]
         else:
             for sample_csv in samples:
                 csv_report = self.create_csv_report(sample_csv)
                 csv_reports.append(csv_report)
-
-        # prepare some metadata
-        metadata = {
-            "template": template,
-            "paperformat": paperformat,
-            "orientation": orientation,
-            "timestamp": DateTime().ISO8601(),
-        }
 
         # Create PDFs and HTML
         # get the storage multi-adapter to save the generated PDFs
@@ -91,8 +105,10 @@ class AjaxPublishView(AP):
         for pdf, html, csv_text, uids in zip(pdf_reports, html_reports, csv_reports, report_uids):
             # ensure we have valid UIDs here
             uids = filter(api.is_uid, uids)
-            # convert the bs4.Tag back to pure HTML
-            html = publisher.to_html(html)
+            if not self.is_pdfs_disabled:
+                # convert the bs4.Tag back to pure HTML
+                html = publisher.to_html(html)
+
             # BBB: inject contained UIDs into metadata
             metadata["contained_requests"] = uids
             # store the report(s)
@@ -140,7 +156,7 @@ class AjaxPublishView(AP):
         for analysis in analyses:
             analysis_info = {'title': analysis.Title(),
                              'result': analysis.getFormattedResult(html=False),
-                             'unit': analysis.getService().getUnit()}
+                             'unit': analysis.getAnalysisService().getUnit()}
             if analysis.getCategoryTitle() not in group_cats.keys():
                 group_cats[analysis.getCategoryTitle()] = []
             group_cats[analysis.getCategoryTitle()].append(analysis_info)
@@ -186,7 +202,7 @@ class AjaxPublishView(AP):
             for analysis in analyses:
                 analysis_info = {'title': analysis.Title(),
                                  'result': analysis.getFormattedResult(html=False),
-                                 'unit': analysis.getService().getUnit()}
+                                 'unit': analysis.getAnalysisService().getUnit()}
                 if analysis.getCategoryTitle() not in group_cats.keys():
                     group_cats[analysis.getCategoryTitle()] = []
                 group_cats[analysis.getCategoryTitle()].append(analysis_info)
