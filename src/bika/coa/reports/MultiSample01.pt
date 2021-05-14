@@ -374,7 +374,7 @@
                       <tal:analysis tal:repeat="analysis analyses">
                         <td class="text-right"
                             tal:define="result python:model.get_formatted_result(analysis);
-                                        verified python:analysis.review_state == 'verified'">
+                                        verified python:analysis.review_state in ['published', 'verified']">
                           <span class="font-weight-normal"
                                 tal:condition="python:result and verified"
                                 tal:content="structure result" />

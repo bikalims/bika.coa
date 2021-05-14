@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Operation Definitions -->
+<registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="senaite.core">
+
+    <record name="bika.coa.email_csv_report_enabled">
+      <field type="plone.registry.field.Bool">
+        <default>False</default>
+        <title>Email CSV Report Enabled</title>
+      </field>
+    </record>
+</registry>
