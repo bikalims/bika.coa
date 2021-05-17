@@ -1,6 +1,7 @@
 from bika.coa import logger
 from bika.lims import api
 from bika.lims.workflow import getTransitionUsers
+from DateTime import DateTime
 from plone import api as ploneapi
 from bika.lims.utils.analysis import format_uncertainty
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
@@ -103,15 +104,6 @@ class MultiReportView(MRV):
         sampled_from = analyses[0].DateSampled
         to = analyses[-1].DateSampled
 
-        model = analyses[0].getParentNode()
-        query = {'portal_type': 'ARReport',
-                 'path': {
-                     'query': api.get_path(model),
-                     'depth': 1}
-                 }
-        brains = api.search(query, 'portal_catalog')
-        coa_num = '{}-COA-{}'.format(model.id, len(brains) + 1)
-
         analysis_title = ''
         for an in analyses:
             if an.Method:
@@ -124,7 +116,7 @@ class MultiReportView(MRV):
         outofrange_symbol = "{}//++resource++bika.coa.images/outofrange.png".format(
             self.portal_url)
         datum = {'methods': [], 'from': sampled_from, 'to': to,
-                 'analysis_title': analysis_title, 'coa_num': coa_num,
+                 'analysis_title': analysis_title,
                  'accredited_symbol': accredited_symbol,
                  'subcontracted_method': subcontracted_method,
                  'outofrange_symbol': outofrange_symbol}
@@ -178,3 +170,21 @@ class MultiReportView(MRV):
 
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
+
+    def get_coa_number(self):
+        instance = self.collection[0].instance
+        client = instance.aq_parent
+        today = DateTime()
+        query = {
+            'portal_type': 'ARReport',
+            'path': {
+                'query': api.get_path(client)
+            },
+            'modified': {
+                'query': today.Date(),
+                'range': 'min'
+            }
+        }
+        brains = api.search(query, 'portal_catalog')
+        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
+        return coa_num
