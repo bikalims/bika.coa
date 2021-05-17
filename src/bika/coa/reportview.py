@@ -13,15 +13,29 @@ class SingleReportView(SRV):
     """
 
     def get_coa_number(self, model):
-        obj = model.instance
-        query = {'portal_type': 'ARReport',
-                 'path': {
-                     'query': api.get_path(obj),
-                     'depth': 1}
-                 }
+        instance = model.instance
+        client = instance.aq_parent
+        today = DateTime()
+        query = {
+            'portal_type': 'ARReport',
+            'path': {
+                'query': api.get_path(client)
+            },
+            'created': {
+                'query': today.Date(),
+                'range': 'min'
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
         brains = api.search(query, 'portal_catalog')
-        obj_id = api.get_id(obj)
-        coa_num = '{}-COA-{}'.format(obj_id, len(brains) + 1)
+        num = 1
+        if len(brains):
+            coa = brains[0]
+            num = coa.Title.split('-')[-1]
+            num = int(num)
+            num += 1
+        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), num)
         return coa_num
 
     def get_sampler_fullname(self, model):
@@ -180,11 +194,19 @@ class MultiReportView(MRV):
             'path': {
                 'query': api.get_path(client)
             },
-            'modified': {
+            'created': {
                 'query': today.Date(),
                 'range': 'min'
-            }
+            },
+            "sort_on": "created",
+            "sort_order": "descending",
         }
         brains = api.search(query, 'portal_catalog')
-        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
+        num = 1
+        if len(brains):
+            coa = brains[0]
+            num = coa.Title.split('-')[-1]
+            num = int(num)
+            num += 1
+        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), num)
         return coa_num

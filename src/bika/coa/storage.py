@@ -81,6 +81,7 @@ class PdfReportStorageAdapter(PRSA):
             parent,
             "ARReport",
             AnalysisRequest=api.get_uid(parent),
+            title=coa_num,
             Pdf=pdf,
             Html=html,
             CSV=csv_text,
