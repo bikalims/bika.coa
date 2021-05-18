@@ -134,9 +134,7 @@
             <!-- Header Left -->
             <td class="align-middle text-left">
               <h1>Certificate of Analysis</h1>
-              <h1>
-                <div tal:replace="python: coa_num"/>
-              </h1>
+              <h1 name='coa_num' tal:content="python: coa_num"/>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
@@ -338,7 +336,7 @@
           </tr>
           <tr>
             <td class="label" i18n:translate="">Date Verified</td>
-            <td tal:content="python:view.to_localized_time(model.get_transition_date('bika_ar_workflow', 'verified'))"></td>
+            <td tal:content="python:view.to_localized_time(model.get_transition_date('senaite_sample_workflow', 'verified'))"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Date Published</td>

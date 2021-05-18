@@ -12,7 +12,7 @@ class PdfReportStorageAdapter(PRSA):
     """Storage adapter for PDF reports
     """
 
-    def store(self, pdf, html, uids, metadata=None, csv_text=None):
+    def store(self, pdf, html, uids, metadata=None, csv_text=None, coa_num=None):
         """Store the PDF
 
         :param pdf: generated PDF report (binary)
@@ -38,13 +38,13 @@ class PdfReportStorageAdapter(PRSA):
         reports = []
         for obj in objs:
             report = self.create_report(
-                obj, pdf, html, uids, metadata, csv_text=csv_text)
+                obj, pdf, html, uids, metadata, csv_text=csv_text, coa_num=coa_num)
             reports.append(report)
 
         return reports
 
     @synchronized(max_connections=1)
-    def create_report(self, parent, pdf, html, uids, metadata, csv_text=None):
+    def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
         """Create a new report object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
@@ -59,26 +59,29 @@ class PdfReportStorageAdapter(PRSA):
 
         # Manually update the view on the database to avoid conflict errors
         parent._p_jar.sync()
-        client = parent.aq_parent
-        today = DateTime()
-        query = {
-            'portal_type': 'ARReport',
-            'path': {
-                'query': api.get_path(client)
-            },
-            'modified': {
-                'query': today.Date(),
-                'range': 'min'
+
+        if coa_num is None:
+            client = parent.aq_parent
+            today = DateTime()
+            query = {
+                'portal_type': 'ARReport',
+                'path': {
+                    'query': api.get_path(client)
+                },
+                'modified': {
+                    'query': today.Date(),
+                    'range': 'min'
+                }
             }
-        }
-        brains = api.search(query, 'portal_catalog')
-        coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
+            brains = api.search(query, 'portal_catalog')
+            coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
 
         # Create the report object
         report = api.create(
             parent,
             "ARReport",
             AnalysisRequest=api.get_uid(parent),
+            title=coa_num,
             Pdf=pdf,
             Html=html,
             CSV=csv_text,

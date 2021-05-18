@@ -3,7 +3,7 @@ import csv
 from bika.coa import logger
 from bika.lims import api
 from DateTime import DateTime
-from senaite.core.supermodel.interfaces import ISuperModel
+from senaite.app.supermodel.interfaces import ISuperModel
 from senaite.impress.interfaces import IPdfReportStorage
 from senaite.impress.interfaces import ITemplateFinder
 from senaite.impress.ajax import AjaxPublishView as AP
@@ -45,6 +45,12 @@ class AjaxPublishView(AP):
         publisher = self.publisher
         # add the generated CSS to the publisher
         publisher.add_inline_css(css)
+
+        # get COA number
+        parser = publisher.get_parser(html)
+        coa_num = parser.find_all(attrs={'name': 'coa_num'})
+        coa_num = coa_num.pop()
+        coa_num = coa_num.text.strip()
 
         # split the html per report
         # NOTE: each report is an instance of <bs4.Tag>
@@ -96,7 +102,7 @@ class AjaxPublishView(AP):
             # BBB: inject contained UIDs into metadata
             metadata["contained_requests"] = uids
             # store the report(s)
-            objs = storage.store(pdf, html, uids, metadata=metadata, csv_text=csv_text)
+            objs = storage.store(pdf, html, uids, metadata=metadata, csv_text=csv_text, coa_num=coa_num)
             # append the generated reports to the list
             report_groups.append(objs)
 

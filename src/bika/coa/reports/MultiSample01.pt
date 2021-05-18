@@ -1,7 +1,8 @@
 <tal:report
   i18n:domain="bika.coa"
-  define="collection python:view.collection;
+  define="collection view/collection;
           laboratory view/laboratory;
+          coa_num view/get_coa_number;
           reporter view/current_user;
           accredited_symbol string:★;
           outofrange_symbol string:⚠;
@@ -128,7 +129,8 @@
           <tr>
             <!-- Header Left -->
             <td class="align-middle text-left">
-              <h1 i18n:translate="">Certificate of Analysis</h1>
+              <h1>Certificate of Analysis</h1>
+              <h1 name='coa_num' tal:content="python: coa_num"/>
             </td>
             <!-- Header Right -->
             <td class="align-middle text-right">
