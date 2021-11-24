@@ -30,8 +30,8 @@ def post_install(portal_setup):
     context = portal_setup._getImportContext(PROFILE_ID)
     portal = context.getSite()  # noqa
 
-    # update bika_setup_catalog
-    pc = getToolByName(portal, 'bika_setup_catalog')
+    # update senaite_setup_catalog
+    pc = getToolByName(portal, 'senaite_setup_catalog')
     if 'getSupplier' not in pc.indexes():
         logger.info("{} post-install handler: add getSupplier to portal catalog".format(PRODUCT_NAME.upper()))
         pc.addIndex('getSupplier', 'FieldIndex')

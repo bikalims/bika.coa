@@ -43,6 +43,7 @@
       permission="zope2.View"/>
 
   <include package=".extenders" />
+  <include package=".upgrade" />
 
 
 </configure>
