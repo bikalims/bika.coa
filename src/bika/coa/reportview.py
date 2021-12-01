@@ -3,9 +3,13 @@ from bika.lims import api
 from bika.lims.workflow import getTransitionUsers
 from DateTime import DateTime
 from plone import api as ploneapi
+from plone.registry.interfaces import IRegistry
 from bika.lims.utils.analysis import format_uncertainty
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
+from zope.component import getUtility
+
+LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 
 
 class SingleReportView(SRV):
@@ -62,6 +66,17 @@ class SingleReportView(SRV):
             self.portal_url)
         datum = {'outofrange_symbol_url': outofrange_symbol_url}
         return datum
+
+    def get_toolbar_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["senaite.toolbar_logo"]
+        except (AttributeError, KeyError):
+            logo = LOGO
+        if not logo:
+            logo = LOGO
+        return portal_url + logo
 
 
 class MultiReportView(MRV):
@@ -181,6 +196,17 @@ class MultiReportView(MRV):
             self.portal_url)
         datum = {'outofrange_symbol_url': outofrange_symbol_url}
         return datum
+
+    def get_toolbar_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["senaite.toolbar_logo"]
+        except (AttributeError, KeyError):
+            logo = LOGO
+        if not logo:
+            logo = LOGO
+        return portal_url + logo
 
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
