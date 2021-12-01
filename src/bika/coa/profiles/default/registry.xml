@@ -18,6 +18,6 @@
       <required>False</required>
       <title xmlns:ns0="http://xml.zope.org/namespaces/i18n" ns0:domain="plone" ns0:translate="">Relative URL for the SENAITE toolbar logo</title>
     </field>
-    <value>/++resource++bika.lims.images/bikalimslogo.png</value>
+    <value>/++resource++bika.coa.images/bikalimslogo.png</value>
   </record>
 </registry>
