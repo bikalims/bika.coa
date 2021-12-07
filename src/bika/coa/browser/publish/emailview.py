@@ -50,6 +50,7 @@ class EmailView(EV):
         logger.info('email_attachments bika.coa: entered')
         attachments = []
 
+        csv_found = False
         # Convert report PDFs -> email attachments
         for report in self.reports:
             pdf = self.get_pdf(report)
@@ -58,12 +59,20 @@ class EmailView(EV):
                 filedata = pdf.data
                 attachments.append(
                     mailapi.to_email_attachment(filedata, filename))
+                # We don't send CSVs when it is single reports
+                if "SingleSample01" in report['Metadata']['template']:
+                    continue
+                # also send 1 csv only
+                if csv_found is True:
+                    continue
+
                 if self.email_csv_report_enabled and report.CSV:
                     filename = report.CSV.filename
                     f = report.CSV.getBlob().open()
                     filedata = f.read()
                     f.close()
                     attachments.append(mailapi.to_email_attachment(filedata, filename, mime_type='text/csv'))
+                    csv_found = True
 
         # Convert additional attachments
         for attachment in self.attachments:
