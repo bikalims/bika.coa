@@ -60,7 +60,7 @@ class EmailView(EV):
                 attachments.append(
                     mailapi.to_email_attachment(filedata, filename))
                 # We don't send CSVs when it is single reports
-                if "SingleSample01" in report['Metadata']['template']:
+                if "Single" in report['Metadata']['template']:
                     continue
                 # also send 1 csv only
                 if csv_found is True:
