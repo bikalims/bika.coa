@@ -73,7 +73,7 @@
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo {
-       height: 100px;
+       height: 62px;
        margin: 20px 0;
        width:300px }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
