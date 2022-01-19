@@ -141,7 +141,7 @@
             <div id="report-attachments-container"
                  class="attachments well row">
               <tal:reports repeat="report view/reports_data">
-                <tal:multireport  tal:condition="python:'MultiSample01' in report['obj']['Metadata']['template']">
+                <tal:multireport  tal:condition="python:'Multi' in report['obj']['Metadata']['template']">
                     <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
                     <div tal:condition="python: view.email_csv_report_enabled and repeat.report.number() == 1">
                         <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2"
