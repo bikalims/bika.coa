@@ -88,7 +88,19 @@ class EmailView(EV):
     def get_report_data(self, report):
         """Report data to be used in the template
         """
-        data = super(EmailView, self).get_report_data(report)
-        data['filename'] = data['pdf'].filename
+        sample = report.getAnalysisRequest()
+        # sample attachments only
+        attachments = sample.getAttachment()
+        attachments_data = self.get_attachment_data(attachments)
+        pdf = self.get_pdf(report)
+        filesize = "{} Kb".format(self.get_filesize(pdf))
 
-        return data
+        return {
+            "sample": sample,
+            "attachments": attachments_data,
+            "pdf": pdf,
+            "obj": report,
+            "uid": api.get_uid(report),
+            "filesize": filesize,
+            "filename": pdf.filename,
+        }
