@@ -42,12 +42,12 @@ class EmailView(EV):
         """
         # check first if a registry record exists
         enabled = api.get_registry_record("bika.coa.email_csv_report_enabled")
-        logger.info('email_csv_report_enabled: is {}'.format(enabled))
+        logger.info("email_csv_report_enabled: is {}".format(enabled))
         return enabled
 
     @property
     def email_attachments(self):
-        logger.info('email_attachments bika.coa: entered')
+        logger.info("email_attachments bika.coa: entered")
         attachments = []
 
         csv_found = False
@@ -57,10 +57,9 @@ class EmailView(EV):
             if pdf is not None:
                 filename = pdf.filename
                 filedata = pdf.data
-                attachments.append(
-                    mailapi.to_email_attachment(filedata, filename))
+                attachments.append(mailapi.to_email_attachment(filedata, filename))
                 # We don't send CSVs when it is single reports
-                if "Single" in report['Metadata']['template']:
+                if "Single" in report["Metadata"]["template"]:
                     continue
                 # also send 1 csv only
                 if csv_found is True:
@@ -71,7 +70,11 @@ class EmailView(EV):
                     f = report.CSV.getBlob().open()
                     filedata = f.read()
                     f.close()
-                    attachments.append(mailapi.to_email_attachment(filedata, filename, mime_type='text/csv'))
+                    attachments.append(
+                        mailapi.to_email_attachment(
+                            filedata, filename, mime_type="text/csv"
+                        )
+                    )
                     csv_found = True
 
         # Convert additional attachments
@@ -79,10 +82,9 @@ class EmailView(EV):
             af = attachment.getAttachmentFile()
             filedata = af.data
             filename = af.filename
-            attachments.append(
-                mailapi.to_email_attachment(filedata, filename))
+            attachments.append(mailapi.to_email_attachment(filedata, filename))
 
-        logger.info('email_attachments bika.coa exit with {}'.format(len(attachments)))
+        logger.info("email_attachments bika.coa exit with {}".format(len(attachments)))
         return attachments
 
     def get_report_data(self, report):
