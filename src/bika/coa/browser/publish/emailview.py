@@ -91,7 +91,7 @@ class EmailView(EV):
         sample = report.getAnalysisRequest()
         # sample attachments only
         attachments = sample.getAttachment()
-        attachments_data = self.get_attachment_data(attachments)
+        attachments_data = map(self.get_attachment_data, attachments)
         pdf = self.get_pdf(report)
         filesize = "{} Kb".format(self.get_filesize(pdf))
 
