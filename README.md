@@ -2,7 +2,7 @@
 
 Improvements to the default Senaite COA templates following ISO 17025 (2017) guidelines
 
-Some of the improvements here should rightfully be submitted to Senaite as it improves the generic tempplates. The add-on is sponsored by [Test It laboratory](https://www.testit-labs.co.za/) member of the [Bika Open Source Collective](https://www.bikalims.org/), coded by [Bika Lab Systems](https://www.bikalabs.com/), and not enough capacity exists to complete the procedure, hopefully sooner than later
+Some of the improvements here should rightfully be submitted to Senaite as it improves the generic tempplates. The add-on is sponsored by [Test It laboratory](https://www.testit-labs.co.za/) member of the [Bika Open Source Collective](https://www.bikalims.org/), coded by [Bika Lab Systems](https://www.bikalabs.com/), and not enough capacity currently exists to complete the procedure, hopefully sooner than later
 
 Improvements include:
 
@@ -18,4 +18,16 @@ As more than one Sample’s results are represented, the Sample ID cannot be use
 
 The multi-sample COA gets a simple ID server driven sequential ID that can be configured in the ID server to e.g. a prefix COA followed by the year and sequence number. E.g. COA21-0001, COA21-0002, etc. If the Client IDs in the data are meaningful, they too can be included. The COA ID format remains configurable, exactly like the others, and all of the others IDs, in the ID server accessible through the LIMS setup pages
 
-The COA ID is also used in the actual PDF and CSV's titles, e.g. COA21-0001.pdf, COA21-0001.csv,  and also displayed in the Reports listings, per Sample and Client
+![image](https://user-images.githubusercontent.com/1196034/155297860-2957ec7a-1bd4-4ebb-9ecf-5967139e376a.png)
+
+The COA ID is also used in the actual PDF and CSV's titles, e.g. COA21-0001.pdf, COA21-0001.csv, and also displayed in the Reports listings, per Sample and Client
+
+### Subcontracting
+
+Labs sometimes subcontract Analyses and ISO requires these be indicated on the COA, without any details. Methods are subcontracted and not Analysis Services. Methods get an additional attribute, tagged Subcontracted to and to be populated from the Suppliers set up in the system
+
+For the COA, a result’s Method is inspected, and if the contracted to field is populated, the results is indicated with the Supplier icon. No other information about the subcontracting has to be displayed
+
+### Results CSVs
+
+Multi Sample results publication includes a CSV of results that is also attached to the outgoing emails.
