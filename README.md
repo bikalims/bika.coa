@@ -47,3 +47,16 @@ Report signatories and end of report statement with icon legend and terms and co
 ![Results in Bika Open Source LIMS COA](https://user-images.githubusercontent.com/1196034/155299517-d84c2687-1789-4e34-8eb7-a088cd327ed3.png)
 
 ![Footer and End of Report in Bika Open Source LIMS](https://user-images.githubusercontent.com/1196034/155299680-065369b2-26f1-4014-8110-9440ae324101.png)
+
+### Contribute
+Issue Tracker: [https://jira.bikalabs.com/](https://jira.bikalabs.com)
+
+Documentation: https://www.bikalims.org/manual/workflow/results-publication-coa
+
+### Support
+Please post questions to the Bika Slack channels, request access at info@bikalims.org
+
+User group https://users.bikalims.org/
+
+The project is licensed under the GPLv2
+
