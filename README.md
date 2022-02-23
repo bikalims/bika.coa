@@ -34,7 +34,15 @@ Multi Sample results publication includes a CSV of results that is also attached
 
 ***
 
-The rest of the COA templates, for single and multiple sampoles, follow ISO principles with regards to applying Specification, results uncertainties and report signatories and end of report statement with icon legend and terms and conditions. Positioning and size of accreditation logo is taken into account in the COA header
+The rest of the COA templates, for single and multiple samples, follow ISO principles with regards to applying Specification, e.g.
+
+If a result’s Method is subcontracted, it  is indicated with the Supplier icon 
+
+If the Analysis has lower and upper detention limits (LDL, UDL) configured, and the result value is smaller that the LDL, the results itself is not displayed, but ‘< LDL’, e.g. < 0.05. Ditto for values bigger than the UDL, ‘> UDL’, e.g. > 125.00
+
+If it has a Measure of Uncertainty configured, the uncertainty value is calculated and displayed  with a ‘±’ sign in the column just to the right of the value
+
+results uncertainties and report signatories and end of report statement with icon legend and terms and conditions. Positioning and size of accreditation logo is taken into account in the COA header
 
 ![Results in Bika Open Source LIMS COA](https://user-images.githubusercontent.com/1196034/155299517-d84c2687-1789-4e34-8eb7-a088cd327ed3.png)
 
