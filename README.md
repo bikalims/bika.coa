@@ -42,7 +42,7 @@ If the Analysis has lower and upper detention limits (LDL, UDL) configured, and 
 
 If it has a Measure of Uncertainty configured, the uncertainty value is calculated and displayed  with a ‘±’ sign in the column just to the right of the value
 
-results uncertainties and report signatories and end of report statement with icon legend and terms and conditions. Positioning and size of accreditation logo is taken into account in the COA header
+Report signatories and end of report statement with icon legend and terms and conditions are added at the bottom. Positioning and size of accreditation logo is taken into account in the COA header
 
 ![Results in Bika Open Source LIMS COA](https://user-images.githubusercontent.com/1196034/155299517-d84c2687-1789-4e34-8eb7-a088cd327ed3.png)
 
