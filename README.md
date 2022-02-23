@@ -18,7 +18,7 @@ As more than one Sample’s results are represented, the Sample ID cannot be use
 
 The multi-sample COA gets a simple ID server driven sequential ID that can be configured in the ID server to e.g. a prefix COA followed by the year and sequence number. E.g. COA21-0001, COA21-0002, etc. If the Client IDs in the data are meaningful, they too can be included. The COA ID format remains configurable, exactly like the others, and all of the others IDs, in the ID server accessible through the LIMS setup pages
 
-![image](https://user-images.githubusercontent.com/1196034/155297860-2957ec7a-1bd4-4ebb-9ecf-5967139e376a.png)
+![Unique COA ID in Bika Open Source LIMS](https://user-images.githubusercontent.com/1196034/155298889-fe09fc37-336d-498e-b089-debd1b962877.png)
 
 The COA ID is also used in the actual PDF and CSV's titles, e.g. COA21-0001.pdf, COA21-0001.csv, and also displayed in the Reports listings, per Sample and Client
 
@@ -30,4 +30,12 @@ For the COA, a result’s Method is inspected, and if the contracted to field is
 
 ### Results CSVs
 
-Multi Sample results publication includes a CSV of results that is also attached to the outgoing emails.
+Multi Sample results publication includes a CSV of results that is also attached to the outgoing emails
+
+***
+
+The rest of the COA templates, for single and multiple sampoles, follow ISO principles with regards to applying Specification, results uncertainties and report signatories and end of report statement with icon legend and terms and conditions. Positioning and size of accreditation logo is taken into account in the COA header
+
+![Results in Bika Open Source LIMS COA](https://user-images.githubusercontent.com/1196034/155299517-d84c2687-1789-4e34-8eb7-a088cd327ed3.png)
+
+![Footer and End of Report in Bika Open Source LIMS](https://user-images.githubusercontent.com/1196034/155299680-065369b2-26f1-4014-8110-9440ae324101.png)
