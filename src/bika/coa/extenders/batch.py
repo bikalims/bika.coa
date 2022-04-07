@@ -2,7 +2,7 @@ from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
 from Products.Archetypes.atapi import TextField, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IBatch
-from bika.lims.fields import ExtTextField
+from .fields import ExtTextField
 from zope.component import adapts
 from zope.interface import implements
 

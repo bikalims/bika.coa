@@ -1,7 +1,7 @@
 from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
 from archetypes.schemaextender.interfaces import ISchemaModifier
 from bika.lims import bikaMessageFactory as _
-from bika.lims.fields import ExtReferenceField
+from .fields import ExtReferenceField
 from bika.lims.interfaces import IMethod
 from zope.component import adapts
 from zope.interface import implements

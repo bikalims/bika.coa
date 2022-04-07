@@ -1,5 +1,5 @@
 from archetypes.schemaextender.interfaces import IOrderableSchemaExtender
-from bika.lims.fields import ExtensionField
+from .fields import ExtensionField
 from bika.lims.content.arreport import ARReport
 from plone.app.blob.field import BlobField
 from zope.component import adapts
