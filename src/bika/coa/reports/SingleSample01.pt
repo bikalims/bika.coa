@@ -55,7 +55,7 @@
       font-family: 'TitilliumText22L-Regular';
       font-style: normal;
       font-weight: normal;
-      src: local('TitilliumText22L-Regular'), url('++resource++bika.coa.static/webfonts/TitilliumText22L003.woff') format('woff');
+      src: local('TitilliumText22L'), url('static/webfonts/TitilliumText22L003.woff') format('woff');
      }
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
