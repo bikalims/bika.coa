@@ -50,12 +50,6 @@
 
   <tal:css>
     <style type="text/css">
-     @font-face {
-      font-family: 'TitilliumText22L-Regular';
-      font-style: normal;
-      font-weight: normal;
-      src: local('TitilliumText22L'), url('static/webfonts/TitilliumText22L003.woff') format('woff');
-     }
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
@@ -71,7 +65,7 @@
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
-     .report .section-header img.logo { height: 62px; width:300px }
+     .report .section-header img.logo { max-height: 68px; margin-bottom: 10px }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
@@ -120,25 +114,15 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-      <div class="w-100 mb-2">
-        <table class="w-100 mb-0 noborder">
-          <colgroup>
-            <col style="width:50%"/>
-            <col style="width:50%;"/>
-          </colgroup>
-          <tr>
-            <!-- Header Left -->
-            <td class="align-middle text-left">
-              <h1>Certificate of Analysis</h1>
-              <h1 name='coa_num' tal:content="python: coa_num"/>
-            </td>
+        <div class="col-6 text-left">
+          <!-- Header Left -->
+          <h1>Certificate of Analysis</h1>
+          <h1 name='coa_num' tal:content="python: coa_num"/>
+        </div>
+        <div class="col-6 text-right">
             <!-- Header Right -->
-            <td class="align-middle text-right">
-              <img class="logo"
-                   tal:attributes="src python:view.get_toolbar_logo()"/>
-            </td>
-          </tr>
-        </table>
+            <img class="logo image-fluid" style="object-fit:contain"
+                 tal:attributes="src python:view.get_toolbar_logo()"/>
       </div>
     </div>
   </tal:render>

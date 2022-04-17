@@ -120,13 +120,16 @@
   <!-- HEADER -->
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
+      <!-- Header Table -->
         <div class="col-6 text-left">
+          <!-- Header Left -->
           <h1>Certificate of Analysis</h1>
           <h1 name='coa_num' tal:content="python: coa_num"/>
         </div>
         <div class="col-6 text-right">
-              <img class="logo image-fluid" style="object-fit:contain"
-                   tal:attributes="src python:view.get_toolbar_logo()"/>
+            <!-- Header Right -->
+            <img class="logo image-fluid" style="object-fit:contain"
+                 tal:attributes="src python:view.get_toolbar_logo()"/>
         </div>
     </div>
   </tal:render>
