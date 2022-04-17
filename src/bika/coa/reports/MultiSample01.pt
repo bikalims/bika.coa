@@ -137,8 +137,10 @@
         <!-- Client Info -->
         <table class="table table-sm table-condensed">
           <colgroup>
-            <col style="width:50%"/>
-            <col style="width:50%"/>
+            <col style="width:40%"/>
+            <col style="width:40%"/>
+          <!-- Accreditation Logo -->
+          <col style="width: 20%">
           </colgroup>
           <tr>
             <td style="border:none;" class="align-top pr-2">
@@ -239,6 +241,27 @@
                 </tr>
               </table>
             </td>
+            <td style="border:none;" class="align-top pl-2">
+              <table class="table table-sm table-condensed ml-1">
+                <tr>
+                  <td>
+            <div class="accreditation-logo text-left"
+                 tal:define="accredited laboratory/LaboratoryAccredited;
+                             accreditation_logo laboratory/AccreditationBodyLogo"
+                 tal:condition="accredited">
+              <img class="img-fluid"
+                   style="max-width:200px;"
+                   tal:condition="accreditation_logo"
+                   tal:attributes="src accreditation_logo/absolute_url"/>
+              <img class="img-fluid"
+                   style="max-width:200px;"
+                   tal:condition="not:accreditation_logo"
+                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
+            </div>
+                  </td>
+                </tr>
+              </table>
+          </td>
           </tr>
         </table>
       </div>
