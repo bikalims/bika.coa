@@ -1,10 +1,11 @@
 <tal:report
-  i18n:domain="senaite.impress"
+  i18n:domain="bika.coa"
   define="model python:view.model;
           laboratory view/laboratory;
           client model/Client;
           contact model/Contact;
           report_images python:view.get_report_images();
+          styles python:view.get_coa_styles();
           accredited_symbol string:★;
           coa_num python:view.get_coa_number(model);
           footer python:view.get_footer_text();
@@ -129,7 +130,7 @@
         <div class="col-6 text-right">
             <!-- Header Right -->
             <img class="logo image-fluid" style="object-fit:contain"
-                 tal:attributes="src python:view.get_toolbar_logo()"/>
+                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
         </div>
     </div>
   </tal:render>
@@ -215,16 +216,14 @@
           <td>
             <div class="accreditation-logo text-left"
                  tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo"
+                             accreditation_logo laboratory/AccreditationBodyLogo;"
                  tal:condition="accredited">
               <img class="img-fluid"
-                   style="max-width:200px;"
                    tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url"/>
+                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
               <img class="img-fluid"
-                   style="max-width:200px;"
                    tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
+                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
             </div>
           </td>
         </tr>

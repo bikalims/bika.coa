@@ -78,6 +78,25 @@ class SingleReportView(SRV):
             logo = LOGO
         return portal_url + logo
 
+    def get_coa_styles(self):
+        registry = getUtility(IRegistry)
+        styles = {}
+        try:
+            ac_style = registry["senaite.coa_logo_accredition_styles"]
+        except (AttributeError, KeyError):
+            styles["ac_styles"] = "max-height:68px;"
+        css = map(lambda ac_style: "{}:{};".format(*ac_style), ac_style.items())
+        css.append("max-width:200px;")
+        styles["ac_styles"] = " ".join(css)
+
+        try:
+            logo_style = registry["senaite.coa_logo_styles"]
+        except (AttributeError, KeyError):
+            styles["logo_styles"] = "height:15px;"
+        css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
+        styles["logo_styles"] = " ".join(css)
+        return styles
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports

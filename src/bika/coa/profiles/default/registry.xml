@@ -20,4 +20,31 @@
     </field>
     <value>/++resource++bika.coa.images/bikalimslogo.png</value>
   </record>
+
+  <!-- COA Logo CSS Styles -->
+  <record name="senaite.coa_logo_styles" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="coa_logo_styles">
+    <field type="plone.registry.field.Dict">
+      <title>Logo CSS</title>
+      <description>CSS styles for the coa logo</description>
+      <key_type type="plone.registry.field.ASCIILine" />
+      <value_type type="plone.registry.field.ASCIILine" />
+    </field>
+    <value>
+      <element key="height">68px</element>
+    </value>
+  </record>
+
+  <!-- COA Accreditation Logo CSS Styles -->
+  <record name="senaite.coa_logo_accredition_styles" interface="Products.CMFPlone.interfaces.controlpanel.ISiteSchema" field="coa_logo_accredition_styles">
+    <field type="plone.registry.field.Dict">
+      <title>Logo CSS</title>
+      <description>CSS styles for the coa accreditation logo</description>
+      <key_type type="plone.registry.field.ASCIILine" />
+      <value_type type="plone.registry.field.ASCIILine" />
+    </field>
+    <value>
+      <element key="height">48px</element>
+    </value>
+  </record>
+
 </registry>
