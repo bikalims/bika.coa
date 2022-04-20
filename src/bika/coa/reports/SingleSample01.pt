@@ -382,7 +382,7 @@
                 <!-- Out of Range -->
                 <col style="width: 5%">
               </colgroup>
-              <thead>
+              <thead tal:condition="python:view.get_analyses_by(model, poc=poc, category=category)">
                 <tr class="small">
                   <th class="analysis">
                     <span class="font-weight-normal font-size-140" tal:content="category/Title">Category</span>
