@@ -114,12 +114,14 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-6 text-left">
+        <div class="col-4 text-left">
           <!-- Header Left -->
-          <h1>Certificate of Analysis</h1>
-          <h1 name='coa_num' tal:content="python: coa_num"/>
+          <h3>Certificate of Analysis</h3>
         </div>
-        <div class="col-6 text-right">
+        <div class="col-4 text-centre">
+          <h3 name='coa_num' tal:content="python: coa_num"/>
+        </div>
+        <div class="col-4 text-right">
             <!-- Header Right -->
             <img class="logo image-fluid" style="object-fit:contain"
                  tal:attributes="src python:view.get_toolbar_logo()"/>
@@ -133,138 +135,69 @@
               define="primarymodel python:collection[0];">
 
     <div class="row section-info no-gutters">
-      <div class="w-100">
-        <!-- Client Info -->
-        <table class="table table-sm table-condensed">
-          <colgroup>
-            <col style="width:40%"/>
-            <col style="width:40%"/>
-            <!-- Accreditation Logo -->
-            <col style="width: 20%">
-          </colgroup>
-          <tr>
-            <td style="border:none;" class="align-top pr-2">
-              <!-- Left Table -->
-              <table class="table table-sm table-condensed">
-                <!-- Client Name(s) -->
-                <tr>
-                  <td class="label" i18n:translate="">Client</td>
-                  <td class="field">
-                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                      <div tal:content="client/Name"/>
-                    </tal:by_client>
-                  </td>
-                </tr>
-                <!-- Contact Name(s) -->
-                <tr>
-                  <td class="label" i18n:translate="">Contact</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/Fullname"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
-                <!-- Physical Address -->
-                <tr>
-                  <td class="label" i18n:translate="">Physical Address</td>
-                  <td class="field">
-                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+      <div class="col-8">
+        <div class="row">
+          <div class="col-6" i18n:translate="">Client</div>
+          <div class="col-6">
+            <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                        <div tal:content="client/Name"/>
+                      </tal:by_client>
+          </div>
+          <div class="col-6" i18n:translate="">Client code</div>
+          <div class="col-6">
+            <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                <div tal:content="client/Name"/>
+            </tal:by_client>
+          </div>
+          <div class="col-6" i18n:translate="">Client contact</div>
+          <div class="col-6">
+            <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+              <div tal:content="contact/Fullname"/>
+            </tal:by_contact>
+          </div>
+          <div class="col-6" i18n:translate="">Address</div>
+          <div class="col-6">
+             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                       <div tal:content="client/PhysicalAddress/address"/>
                       <div tal:content="client/PhysicalAddress/city"/>
                       <div tal:content="client/PhysicalAddress/zip"/>
                       <div tal:content="client/PhysicalAddress/state"/>
-                      <div tal:content="client/PhysicalAddress/country"/>
                     </tal:by_client>
-                  </td>
-                </tr>
-                <!-- Email Address -->
-                <tr>
-                  <td class="label" i18n:translate="">Email Address</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/EmailAddress"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="label" i18n:translate="">Date Published</td>
-                  <td tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"></td>
-                </tr>
-                <tr tal:condition="reporter">
-                  <td class="label" i18n:translate="">Published by</td>
-                  <td>
-                    <span tal:content="reporter/fullname|reporter/username"/>
-                    <tal:email tal:condition="reporter/email|nothing"
-                               tal:define="email reporter/email|nothing">
-                      (<a tal:content="email"
-                          tal:attributes="href string:mailto:${email}"></a>)
-                    </tal:email>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td style="border:none;" class="align-top pl-2">
-              <!-- Right Table -->
-              <table class="table table-sm table-condensed ml-1"
-                     tal:define="laboratory python:view.laboratory;">
-                <tr>
-                  <td>
-                    <!-- Laboratory Info -->
-                    <address class="laboratory-address text-right">
-                      <div class="lab-title font-weight-bold">
-                        <div tal:replace="laboratory/title|nothing"/>
-                      </div>
-                      <div class="lab-supervisor" tal:condition="laboratory/Supervisor">
-                        <span i18n:translate="">Supervisor</span>:
-                        <div tal:replace="laboratory/Supervisor/Fullname|nothing"/>
-                      </div>
-                      <div class="lab-address">
-                        <div class="lab-street">
-                          <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
-                        </div>
-                        <span class="lab-zip">
-                          <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
-                        </span>
-                        <span class="lab-city">
-                          <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
-                        </span>
-                        <div class="lab-country">
-                          <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
-                        </div>
-                      </div>
-                      <div class="lab-url">
-                        <a tal:attributes="href laboratory/LabURL"
-                           tal:content="laboratory/LabURL"></a>
-                      </div>
-                    </address>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td style="border:none;" class="align-top pl-2">
-              <table class="table table-sm table-condensed ml-1">
-                <tr>
-                  <td>
-            <div class="accreditation-logo text-left"
-                 tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo"
-                 tal:condition="accredited">
-              <img class="img-fluid"
-                   style="max-width:200px;"
-                   tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url"/>
-              <img class="img-fluid"
-                   style="max-width:200px;"
-                   tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
-            </div>
-                  </td>
-                </tr>
-              </table>
-          </td>
-          </tr>
-        </table>
+          </div>
+          <div class="col-6" i18n:translate="">Country</div>
+          <div class="col-6">
+             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                <div tal:content="client/PhysicalAddress/country"/>
+              </tal:by_client>
+          </div>
+          <div class="col-6" i18n:translate="">Tel #</div>
+          <div class="col-6">
+             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                <div tal:content="client/PhysicalAddress/country"/>
+              </tal:by_client>
+          </div>
+          <div class="col-6" i18n:translate="">Email address</div>
+          <div class="col-6">
+             <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                <div tal:content="contact/EmailAddress"/>
+              </tal:by_contact>
+          </div>
+        </div>
       </div>
+      <div class="col-4 accreditation-logo text-right"
+          tal:define="accredited laboratory/LaboratoryAccredited;
+                      accreditation_logo laboratory/AccreditationBodyLogo"
+          tal:condition="accredited">
+          <img class="img-fluid"
+              style="max-width:200px;"
+              tal:condition="accreditation_logo"
+              tal:attributes="src accreditation_logo/absolute_url"/>
+          <img class="img-fluid"
+              style="max-width:200px;"
+              tal:condition="not:accreditation_logo"
+              tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
+    </div>
+
       <!-- Clear Floats
            https://github.com/Kozea/WeasyPrint/issues/36
       -->
