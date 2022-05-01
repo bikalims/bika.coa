@@ -140,8 +140,8 @@
           <div class="col-6" i18n:translate="">Client</div>
           <div class="col-6">
             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                        <div tal:content="client/Name"/>
-                      </tal:by_client>
+                <div tal:content="client/Name"/>
+            </tal:by_client>
           </div>
           <div class="col-6" i18n:translate="">Client code</div>
           <div class="col-6">
@@ -196,6 +196,15 @@
               style="max-width:200px;"
               tal:condition="not:accreditation_logo"
               tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row section-info no-gutters" tal:condition="python:view.group_items_by('Batch', collection)">
+      <div class="col-2">Batch ID</div>
+      <div class="col-10">
+            <tal:by_batch repeat="batch python:view.group_items_by('Batch', collection)">
+                <div tal:condition="batch" tal:content="batch/getId"/>
+            </tal:by_batch>
+      </div>
     </div>
 
       <!-- Clear Floats
