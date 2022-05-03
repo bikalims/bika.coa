@@ -146,6 +146,49 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
+    def get_analyses_parameters(self, collection=None, poc=None, category=None):
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        analyses_parameters = []
+        for c, analysis in enumerate(analyses):
+            methods = analysis.getAnalysisService().getAvailableMethods()
+            for m, method in enumerate(methods):
+                if analysis.Method.Title() == method.Title():
+                    continue
+                title = method.Title()
+                description = method.Description()
+                accredited = method.Accredited
+                # TODO:
+                # supplier = analysis.Method.getSupplier()
+                try:
+                    supplier = True if method['Supplier'] else False
+                except AttributeError:
+                    supplier = False
+                rec = {'title': title, 'description': description,
+                       'accredited': accredited, 'supplier': supplier,
+                       }
+
+                if rec in analyses_parameters:
+                    continue
+                analyses_parameters.append(rec)
+        return analyses_parameters
+
+    def get_analyses_instruments(self, collection=None, poc=None, category=None):
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        analyses_parameters = []
+        for c, analysis in enumerate(analyses):
+            methods = analysis.getAnalysisService().getInstruments()
+            for method in methods:
+                if analysis.Method.Title() == method.Title():
+                    continue
+                title = method.Title()
+                description = method.Description()
+                rec = {'title': title, 'description': description}
+
+                if rec in analyses_parameters:
+                    continue
+                analyses_parameters.append(rec)
+        return analyses_parameters
+
     def get_extra_data(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection)
         analyses = self.sort_items_by('DateSampled', analyses)
