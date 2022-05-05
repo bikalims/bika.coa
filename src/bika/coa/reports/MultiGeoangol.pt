@@ -206,32 +206,12 @@
             </tal:by_batch>
       </div>
     </div>
-    <div class="clearfix"></div>
-    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
-      <div class="col-4">Analysis Parameters</div>
-      <div class="col-8">
-            <tal:by_batch repeat="rec python:view.get_analyses_parameters(collection)">
-                <div tal:condition="rec" tal:content="rec/description"/>
-            </tal:by_batch>
-      </div>
-    </div>
-    <div class="clearfix"></div>
-    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_instruments(collection)">
-      <div class="col-4">Equipment Used</div>
-      <div class="col-8">
-            <tal:by_batch repeat="rec python:view.get_analyses_instruments(collection)">
-                <div tal:condition="rec" tal:content="rec/description"/>
-            </tal:by_batch>
-      </div>
-    </div>
-
       <!-- Clear Floats
            https://github.com/Kozea/WeasyPrint/issues/36
       -->
       <div class="clearfix"></div>
     </div>
   </tal:render>
-
   <!-- ALERTS -->
   <tal:render condition="python:True">
     <div class="row section-alerts no-gutters">
@@ -255,6 +235,28 @@
         </tal:model>
       </div>
     </div>
+  </tal:render>
+
+  <tal:render condition="python:len(collection)>0">
+    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
+      <div class="col-4">Analysis Parameters</div>
+        <div class="col-8">
+          <tal:by_batch repeat="rec python:view.get_analyses_parameters(collection)">
+              <div tal:condition="rec" tal:content="rec/description"/>
+          </tal:by_batch>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_instruments(collection)">
+      <div class="col-4">Equipment Used</div>
+      <div class="col-8">
+            <tal:by_batch repeat="rec python:view.get_analyses_instruments(collection)">
+                <div tal:condition="rec" tal:content="rec/description"/>
+            </tal:by_batch>
+      </div>
+    </div>
+    <div class="clearfix"></div>
   </tal:render>
 
   <!-- RESULTS -->
@@ -289,8 +291,11 @@
                     <div class="text-left">Client Sample ID</div>
                     <div class="text-left">Sample Type</div>
                     <div class="text-left">Sample Point</div>
+                    <div class="text-left">Sample Deviation</div>
+                    <div class="text-left">Sample Condition</div>
                     <div class="text-left">Date Sampled</div> 
                     <div class="text-left">Date Received</div>
+                    <div class="text-left">Date Analysed</div>
                     <div class="text-left">Date Verified</div>
                 </th>
                 <th></th>
@@ -304,7 +309,13 @@
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                     <div class="text-center"
+                         tal:content="python:model.getSamplingDeviationTitle() or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.getSampleConditionTitle() or '-'"/>
+                    <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                     <div class="text-center"
