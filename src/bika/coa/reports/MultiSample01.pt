@@ -247,16 +247,14 @@
                   <td>
             <div class="accreditation-logo text-left"
                  tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo"
+                             accreditation_logo laboratory/AccreditationBodyLogo;"
                  tal:condition="accredited">
               <img class="img-fluid"
-                   style="max-width:200px;"
                    tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url"/>
+                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
               <img class="img-fluid"
-                   style="max-width:200px;"
                    tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
+                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
             </div>
                   </td>
                 </tr>
