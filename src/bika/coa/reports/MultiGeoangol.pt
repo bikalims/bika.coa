@@ -257,6 +257,15 @@
       </div>
     </div>
     <div class="clearfix"></div>
+    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_preparations(collection)">
+      <div class="col-4">Preparation</div>
+      <div class="col-8">
+            <tal:by_preparation repeat="rec python:view.get_analyses_preparations(collection)">
+                <div tal:condition="rec" tal:content="rec/an_parameter"/>
+            </tal:by_preparation>
+      </div>
+    </div>
+    <div class="clearfix"></div>
   </tal:render>
 
   <!-- RESULTS -->
