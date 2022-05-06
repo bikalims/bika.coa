@@ -222,6 +222,11 @@ class MultiReportView(MRV):
         )
         return items
 
+    def get_batch(self, collection=None):
+        if all([getattr(i.Batch , "id", '') for i in collection]):
+            return collection[0].Batch.id
+        return None
+
     def get_extra_data(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection)
         analyses = self.sort_items_by("DateSampled", analyses)
@@ -343,3 +348,22 @@ class MultiReportView(MRV):
             client.getClientID(), today.strftime("%y%m%d"), num
         )
         return coa_num
+
+    def get_coa_styles(self):
+        registry = getUtility(IRegistry)
+        styles = {}
+        try:
+            ac_style = registry["senaite.coa_logo_accredition_styles"]
+        except (AttributeError, KeyError):
+            styles["ac_styles"] = "max-height:68px;"
+        css = map(lambda ac_style: "{}:{};".format(*ac_style), ac_style.items())
+        css.append("max-width:200px;")
+        styles["ac_styles"] = " ".join(css)
+
+        try:
+            logo_style = registry["senaite.coa_logo_styles"]
+        except (AttributeError, KeyError):
+            styles["logo_styles"] = "height:15px;"
+        css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
+        styles["logo_styles"] = " ".join(css)
+        return styles

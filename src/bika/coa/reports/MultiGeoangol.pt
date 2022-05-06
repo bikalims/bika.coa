@@ -16,6 +16,7 @@
           content_height options/content_height|nothing;
           pages python:view.get_pages(options);
           report_images python:view.get_report_images();
+          styles python:view.get_coa_styles();
       ">
 
   <!-- Custom Report Controls -->
@@ -114,7 +115,8 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-4 text-left">
+        <div class="col-4 d-flex aligns-items-center"
+                 tal:attributes="style styles/logo_styles">
           <!-- Header Left -->
           <h3>Certificate of Analysis</h3>
         </div>
@@ -137,26 +139,26 @@
     <div class="row section-info no-gutters">
       <div class="col-8">
         <div class="row">
-          <div class="col-6" i18n:translate="">Client</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Client</div>
+          <div class="col-4">
             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                 <div tal:content="client/Name"/>
             </tal:by_client>
           </div>
-          <div class="col-6" i18n:translate="">Client code</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Client code</div>
+          <div class="col-4">
             <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                 <div tal:content="client/Name"/>
             </tal:by_client>
           </div>
-          <div class="col-6" i18n:translate="">Client contact</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Client contact</div>
+          <div class="col-4">
             <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
               <div tal:content="contact/Fullname"/>
             </tal:by_contact>
           </div>
-          <div class="col-6" i18n:translate="">Address</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Address</div>
+          <div class="col-4">
              <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                       <div tal:content="client/PhysicalAddress/address"/>
                       <div tal:content="client/PhysicalAddress/city"/>
@@ -164,20 +166,20 @@
                       <div tal:content="client/PhysicalAddress/state"/>
                     </tal:by_client>
           </div>
-          <div class="col-6" i18n:translate="">Country</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Country</div>
+          <div class="col-4">
              <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                 <div tal:content="client/PhysicalAddress/country"/>
               </tal:by_client>
           </div>
-          <div class="col-6" i18n:translate="">Tel #</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Tel #</div>
+          <div class="col-4">
              <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                <div tal:content="client/PhysicalAddress/country"/>
+                <div tal:content="client/Phone"/>
               </tal:by_client>
           </div>
-          <div class="col-6" i18n:translate="">Email address</div>
-          <div class="col-6">
+          <div class="col-8" i18n:translate="">Email address</div>
+          <div class="col-4">
              <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
                 <div tal:content="contact/EmailAddress"/>
               </tal:by_contact>
@@ -197,13 +199,27 @@
               tal:condition="not:accreditation_logo"
               tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
     </div>
+    <p></p>
     <div class="clearfix"></div>
-    <div class="row section-info no-gutters" tal:condition="python:view.group_items_by('Batch', collection)">
-      <div class="col-2">Batch ID</div>
-      <div class="col-10">
-            <tal:by_batch repeat="batch python:view.group_items_by('Batch', collection)">
-                <div tal:condition="batch" tal:content="batch/getId"/>
-            </tal:by_batch>
+    <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
+        tal:condition="python:view.get_batch(collection)">
+      <div class="col-4">Batch</div>
+      <div class="col-8">
+        <div tal:condition="batch" tal:content="batch/title"/>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
+        tal:condition="python:view.get_batch(collection)">
+      <div class="col-4">Batch ID</div>
+      <div class="col-8">
+        <div tal:condition="batch" tal:content="batch/getId"/>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row section-info no-gutters" tal:condition="primarymodel/ClientOrderNumber">
+      <div class="col-5">Order number</div>
+      <div class="col-4" tal:content="primarymodel/ClientOrderNumber">
       </div>
     </div>
       <!-- Clear Floats
@@ -240,11 +256,11 @@
   <tal:render condition="python:len(collection)>0">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
       <div class="col-4">Analysis Parameters</div>
-        <div class="col-8">
-          <tal:by_batch repeat="rec python:view.get_analyses_parameters(collection)">
-              <div tal:condition="rec" tal:content="rec/description"/>
-          </tal:by_batch>
-        </div>
+      <div class="col-8">
+        <tal:by_batch repeat="rec python:view.get_analyses_parameters(collection)">
+            <div tal:condition="rec" tal:content="rec/description"/>
+        </tal:by_batch>
+      </div>
     </div>
     <div class="clearfix"></div>
 
