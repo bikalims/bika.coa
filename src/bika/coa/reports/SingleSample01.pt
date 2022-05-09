@@ -68,7 +68,7 @@
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo {
-       max-height: 68px;
+       max-height: 200px;
        margin-bottom: 10px;
        }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
