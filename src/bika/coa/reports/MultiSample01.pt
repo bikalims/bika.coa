@@ -16,6 +16,7 @@
           content_height options/content_height|nothing;
           pages python:view.get_pages(options);
           report_images python:view.get_report_images();
+          styles python:view.get_coa_styles();
       ">
 
   <!-- Custom Report Controls -->
@@ -122,7 +123,7 @@
         <div class="col-6 text-right">
             <!-- Header Right -->
             <img class="logo image-fluid" style="object-fit:contain"
-                 tal:attributes="src python:view.get_toolbar_logo()"/>
+                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
       </div>
     </div>
   </tal:render>
