@@ -11,4 +11,12 @@
      handler="bika.coa.upgrade.v01_00_001.upgrade"
      profile="bika.coa:default"/>
 
+ <genericsetup:upgradeStep
+     title="Upgrade to BIKA.COA 1.0.2"
+     description="Remove bikalims coa logo on the registry"
+     source="1.0.1"
+     destination="1.0.2"
+     handler="bika.coa.upgrade.v01_00_002.upgrade"
+     profile="bika.coa:default"/>
+
 </configure>
