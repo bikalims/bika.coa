@@ -235,6 +235,19 @@ class MultiReportView(MRV):
             return collection[0].Batch.id
         return None
 
+    def is_analysis_method_subcontracted(self, analysis):
+        if analysis.Method:
+            if analysis.Method.Supplier:
+                return True
+        return False
+
+    def is_analysis_method_accreditted(self, analysis):
+        if analysis.Method:
+            if analysis.Method.Accredited:
+                return True
+        return False
+
+
     def get_extra_data(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection)
         analyses = self.sort_items_by("DateSampled", analyses)
@@ -317,7 +330,11 @@ class MultiReportView(MRV):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url}
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url}
         return datum
 
     def get_toolbar_logo(self):

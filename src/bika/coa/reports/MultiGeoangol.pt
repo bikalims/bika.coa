@@ -460,6 +460,17 @@
                                   <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                             </span>
                           </span>
+                          <span tal:condition="python:view.is_analysis_method_subcontracted(analysis)"
+                                class="font-weight-normal">
+                            <span class="subcontracted text-danger">
+                                  <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+                            </span>
+                          </span>
+                          <span class="accredited-symbol text-success"
+                              tal:condition="python:view.is_analysis_method_accreditted(analysis)"
+                              style="font-family:Lucida Console, Courier, monospace;"
+                              tal:content="accredited_symbol">
+                          </span>
                         </td>
                       </tal:analysis>
                       <tal:analysis condition="not:analyses">
@@ -621,6 +632,12 @@
               <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
           </span>
           <span i18n:translate="">Result out of client specified range.</span>
+        </div>
+        <div class="discreeter-subcontracted">
+          <span class="subcontracted text-danger">
+              <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+          </span>
+          <span i18n:translate="">Result that have subcontracted methods.</span>
         </div>
         <div class="discreeter-not-invoiced"
              tal:condition="python:all(map(lambda m: m.InvoiceExclude, collection))"
