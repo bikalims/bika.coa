@@ -462,7 +462,7 @@
                           </span>
                           <span tal:condition="python:view.is_analysis_method_subcontracted(analysis)"
                                 class="font-weight-normal">
-                            <span class="subcontracted text-danger">
+                            <span class="outofrange text-danger">
                                   <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
                             </span>
                           </span>
@@ -635,7 +635,7 @@
         </div>
         <div class="discreeter-subcontracted">
           <span class="subcontracted text-danger">
-              <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+              <img tal:attributes="src python:report_images['subcontracted_symbol_url']" style="width:12px;height:12px"/>
           </span>
           <span i18n:translate="">Result that have subcontracted methods.</span>
         </div>
