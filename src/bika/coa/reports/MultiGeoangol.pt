@@ -17,6 +17,7 @@
           pages python:view.get_pages(options);
           report_images python:view.get_report_images();
           styles python:view.get_coa_styles();
+          equipment_used python:view.get_analyses_instruments(collection);
       ">
 
   <!-- Custom Report Controls -->
@@ -66,7 +67,7 @@
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
-     .report .section-header img.logo { max-height: 68px; margin-bottom: 10px }
+     .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
@@ -115,7 +116,7 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-4 d-flex aligns-items-center"
+        <div class="col-4 d-flex"
                  tal:attributes="style styles/logo_styles">
           <!-- Header Left -->
           <h3>Certificate of Analysis</h3>
@@ -199,7 +200,6 @@
               tal:condition="not:accreditation_logo"
               tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
     </div>
-    <p></p>
     <div class="clearfix"></div>
     <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
         tal:condition="python:view.get_batch(collection)">
@@ -264,10 +264,10 @@
     </div>
     <div class="clearfix"></div>
 
-    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_instruments(collection)">
+    <div class="row section-info no-gutters" tal:condition="equipment_used">
       <div class="col-4">Equipment Used</div>
       <div class="col-8">
-            <tal:by_batch repeat="rec python:view.get_analyses_instruments(collection)">
+            <tal:by_batch repeat="rec equipment_used">
                 <div tal:condition="rec" tal:content="rec/description"/>
             </tal:by_batch>
       </div>
@@ -282,6 +282,65 @@
       </div>
     </div>
     <div class="clearfix"></div>
+  </tal:render>
+  <!-- SAMPLES -->
+  <tal:render condition="python:True"
+              define="analyses_by_poc python:view.get_analyses_by_poc(collection);
+                      categories_by_poc python:view.get_categories_by_poc(collection)">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Samples</h1>
+
+        <tal:page tal:repeat="page pages">
+        <!-- Point of Captures -->
+        <tal:poc tal:repeat="poc analyses_by_poc">
+          <!-- Results table per PoC -->
+          <table class="table table-sm table-condensed small">
+              <tbody>
+              <tr>
+                <th>
+                    <div class="text-left">Sample ID</div>
+                    <div class="text-left">Client Sample ID</div>
+                    <div class="text-left">Sample Type</div>
+                    <div class="text-left">Sample Point</div>
+                    <div class="text-left">Sample Deviation</div>
+                    <div class="text-left">Sample Condition</div>
+                    <div class="text-left">Date Sampled</div> 
+                    <div class="text-left">Date Received</div>
+                    <div class="text-left">Date Analysed</div>
+                    <div class="text-left">Date Verified</div>
+                </th>
+                <tal:ar repeat="model page">
+                  <th class="font-weight-normal text-center">
+                    <div class="text-center text-primary"
+                         tal:content="python:model.title or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.ClientSampleID or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.SampleTypeTitle or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.SamplePointTitle or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.getSamplingDeviationTitle() or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.getSampleConditionTitle() or '-'"/>
+                    <div class="text-center"
+                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
+                    <div class="text-center"
+                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tbody>
+          </table>
+        </tal:poc>
+        </tal:page>
+      </div>
+    </div>
   </tal:render>
 
   <!-- RESULTS -->
@@ -304,6 +363,7 @@
                 <th>Sample ID</th>
                 <th></th>
                 <th></th>
+                <th></th>
                 <tal:ar repeat="model page">
                   <th colspan="2" class="font-weight-normal">
                     <div class="text-primary text-center"
@@ -318,11 +378,12 @@
                     <div class="text-left">Sample Point</div>
                     <div class="text-left">Sample Deviation</div>
                     <div class="text-left">Sample Condition</div>
-                    <div class="text-left">Date Sampled</div> 
+                    <div class="text-left">Date Sampled</div>
                     <div class="text-left">Date Received</div>
                     <div class="text-left">Date Analysed</div>
                     <div class="text-left">Date Verified</div>
                 </th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <tal:ar repeat="model page">
@@ -357,6 +418,7 @@
                        <span tal:content="category/Title"/> 
                    </td> 
                    <td class="font-weight-bold">Method</td> 
+                   <td class="font-weight-bold">Instrument</td>
                    <td class="font-weight-bold">Unit</td> 
                    <tal:results repeat="model page">
                        <td class="font-weight-bold text-center" colspan="2">Result</td> 
@@ -370,6 +432,9 @@
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[1]"/>
+                  </td>
+                  <td class="text-secondary">
+                    <span tal:content="python: row_data[3]"/>
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
