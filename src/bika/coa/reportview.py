@@ -201,7 +201,9 @@ class MultiReportView(MRV):
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        return analyses_parameters
+        items = sorted(
+            analyses_parameters, key=lambda item: item["description"])
+        return items
 
     def get_analyses_preparations(self, collection=None, poc=None, category=None):
         query = {"portal_type": "AnalysisCategory", "title": "Preparation"}
