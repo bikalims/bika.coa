@@ -197,7 +197,7 @@ class MultiReportView(MRV):
             for i, instrument in enumerate(instruments):
                 title = instrument.Title()
                 description = instrument.Description()
-                rec = {"title": title, "description": description}
+                rec = {"description": '{}. {}'.format(title, description)}
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
