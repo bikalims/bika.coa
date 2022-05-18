@@ -201,22 +201,26 @@
               tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
     </div>
     <div class="clearfix"></div>
-    <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
-        tal:condition="python:view.get_batch(collection)">
-      <div class="col-4">Batch</div>
-      <div class="col-8">
-        <div tal:condition="batch" tal:content="batch/title"/>
+    <!-- BATCH INFO -->
+    <div style="margin-top:5mm;">
+      <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
+          tal:condition="python:view.get_batch(collection)">
+        <div class="col-4">Batch</div>
+        <div class="col-8">
+          <div tal:condition="batch" tal:content="batch/title"/>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
+          tal:condition="python:view.get_batch(collection)">
+        <div class="col-4">Batch ID</div>
+        <div class="col-8">
+          <div tal:condition="batch" tal:content="batch/getId"/>
+        </div>
       </div>
     </div>
     <div class="clearfix"></div>
-    <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
-        tal:condition="python:view.get_batch(collection)">
-      <div class="col-4">Batch ID</div>
-      <div class="col-8">
-        <div tal:condition="batch" tal:content="batch/getId"/>
-      </div>
-    </div>
-    <div class="clearfix"></div>
+    <!-- /BATCH INFO -->
     <div class="row section-info no-gutters" tal:condition="primarymodel/ClientOrderNumber">
       <div class="col-5">Order number</div>
       <div class="col-4" tal:content="primarymodel/ClientOrderNumber">
@@ -254,6 +258,8 @@
   </tal:render>
 
   <tal:render condition="python:len(collection)>0">
+  <!-- Analysis Parameters -->
+  <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
       <div class="col-4">Analysis Parameters</div>
       <div class="col-8">
@@ -262,8 +268,12 @@
         </tal:by_batch>
       </div>
     </div>
-    <div class="clearfix"></div>
+  </div>
+  <div class="clearfix"></div>
+  <!-- /Analysis Parameters -->
 
+  <!-- Equipment Used-->
+  <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="equipment_used">
       <div class="col-4">Equipment Used</div>
       <div class="col-8">
@@ -272,7 +282,12 @@
             </tal:by_batch>
       </div>
     </div>
-    <div class="clearfix"></div>
+  </div>
+  <div class="clearfix"></div>
+  <!-- /Equipment Used-->
+
+  <!-- Preparation -->
+  <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_preparations(collection)">
       <div class="col-4">Preparation</div>
       <div class="col-8">
@@ -281,7 +296,9 @@
             </tal:by_preparation>
       </div>
     </div>
-    <div class="clearfix"></div>
+  </div>
+  <div class="clearfix"></div>
+  <!-- /Preparation -->
   </tal:render>
   <!-- SAMPLES -->
   <tal:render condition="python:True"
