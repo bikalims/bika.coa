@@ -117,15 +117,13 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-4 d-flex"
+        <div class="col-6 d-flex"
                  tal:attributes="style styles/logo_styles">
           <!-- Header Left -->
           <h1>Certificate of Analysis</h1>
+          <h1 name='coa_num' tal:content="python: coa_num"/>
         </div>
-        <div class="col-4 d-flex">
-          <h1 style="font-size:170%" name='coa_num' tal:content="python: coa_num"/>
-        </div>
-        <div class="col-4 text-right d-flex ">
+        <div class="col-6 text-right d-flex ">
             <!-- Header Right -->
             <img class="logo text-right"
                  tal:attributes="src python:view.get_toolbar_logo()"/>

@@ -36,9 +36,7 @@ class SingleReportView(SRV):
             num = coa.Title.split("-")[-1]
             num = int(num)
             num += 1
-        coa_num = "{}-COA{}-{:02d}".format(
-            client.getClientID(), today.strftime("%y%m%d"), num
-        )
+        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
         return coa_num
 
     def get_sampler_fullname(self, model):
@@ -364,9 +362,7 @@ class MultiReportView(MRV):
             num = coa.Title.split("-")[-1]
             num = int(num)
             num += 1
-        coa_num = "{}-COA{}-{:02d}".format(
-            client.getClientID(), today.strftime("%y%m%d"), num
-        )
+        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
         return coa_num
 
     def get_coa_styles(self):

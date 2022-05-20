@@ -74,7 +74,7 @@ class PdfReportStorageAdapter(PRSA):
                 }
             }
             brains = api.search(query, 'portal_catalog')
-            coa_num = '{}-COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
+            coa_num = 'COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
 
         # Create the report object
         report = api.create(
