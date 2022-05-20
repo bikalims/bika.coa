@@ -67,7 +67,7 @@
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .label { padding-right: 0.3rem; font-size: 110% }
-     .report .section-header h1 { font-size: 175%; }
+     .report .section-header h1 { font-size: 150%; }
      .report .section-header img.logo {margin-bottom: 10px; overflow: hidden;}
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
@@ -123,7 +123,7 @@
           <h1>Certificate of Analysis</h1>
         </div>
         <div class="col-4 d-flex">
-          <h1 name='coa_num' tal:content="python: coa_num"/>
+          <h1 style="font-size:170%" name='coa_num' tal:content="python: coa_num"/>
         </div>
         <div class="col-4 text-right d-flex ">
             <!-- Header Right -->
