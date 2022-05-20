@@ -398,14 +398,6 @@
               <tr>
                 <th>
                     <div class="text-left">Client Sample ID</div>
-                    <div class="text-left">Sample Type</div>
-                    <div class="text-left">Sample Point</div>
-                    <div class="text-left">Sample Deviation</div>
-                    <div class="text-left">Sample Condition</div>
-                    <div class="text-left">Date Sampled</div>
-                    <div class="text-left">Date Received</div>
-                    <div class="text-left">Date Analysed</div>
-                    <div class="text-left">Date Verified</div>
                 </th>
                 <th></th>
                 <th></th>
@@ -414,22 +406,6 @@
                   <th colspan="2" class="font-weight-normal text-center">
                     <div class="text-center"
                          tal:content="python:model.ClientSampleID or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SampleTypeTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SamplePointTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.getSamplingDeviationTitle() or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.getSampleConditionTitle() or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                   </th>
                 </tal:ar>
               </tr>
