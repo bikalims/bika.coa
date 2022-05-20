@@ -66,6 +66,7 @@
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
+     .report .label { padding-right: 0.3rem; font-size: 110% }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo {margin-bottom: 10px; overflow: hidden;}
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
@@ -219,7 +220,7 @@
     <div style="margin-top:5mm;">
       <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
           tal:condition="python:view.get_batch(collection)">
-        <div class="col-4">Batch</div>
+        <div class="col-4 label">Batch</div>
         <div class="col-8">
           <div tal:condition="batch" tal:content="batch/title"/>
         </div>
@@ -227,7 +228,7 @@
       <div class="clearfix"></div>
       <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
           tal:condition="python:view.get_batch(collection)">
-        <div class="col-4">Batch ID</div>
+        <div class="col-4 label">Batch ID</div>
         <div class="col-8">
           <div tal:condition="batch" tal:content="batch/getId"/>
         </div>
@@ -236,7 +237,7 @@
     <div class="clearfix"></div>
     <!-- /BATCH INFO -->
     <div class="row section-info no-gutters" tal:condition="primarymodel/ClientOrderNumber">
-      <div class="col-5">Order number</div>
+      <div class="col-5 label">Order number</div>
       <div class="col-4" tal:content="primarymodel/ClientOrderNumber">
       </div>
     </div>
@@ -275,7 +276,7 @@
   <!-- Analysis Parameters -->
   <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
-      <div class="col-4">Analysis Parameters</div>
+      <div class="col-4 label">Analysis Parameters</div>
       <div class="col-8">
         <tal:by_batch repeat="rec python:view.get_analyses_parameters(collection)">
             <div tal:condition="rec" tal:content="rec/description"/>
@@ -289,7 +290,7 @@
   <!-- Equipment Used-->
   <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="equipment_used">
-      <div class="col-4">Equipment Used</div>
+      <div class="col-4 label">Equipment Used</div>
       <div class="col-8">
             <tal:by_batch repeat="rec equipment_used">
                 <div tal:condition="rec" tal:content="rec/description"/>
@@ -303,7 +304,7 @@
   <!-- Preparation -->
   <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_preparations(collection)">
-      <div class="col-4">Preparation</div>
+      <div class="col-4 label">Preparation</div>
       <div class="col-8">
             <tal:by_preparation repeat="rec python:view.get_analyses_preparations(collection)">
                 <div tal:condition="rec" tal:content="rec/an_parameter"/>
@@ -334,8 +335,6 @@
                     <div class="text-left">Client Sample ID</div>
                     <div class="text-left">Sample Type</div>
                     <div class="text-left">Sample Point</div>
-                    <div class="text-left">Sample Deviation</div>
-                    <div class="text-left">Sample Condition</div>
                     <div class="text-left">Date Sampled</div> 
                     <div class="text-left">Date Received</div>
                     <div class="text-left">Date Analysed</div>
@@ -345,16 +344,12 @@
                   <th class="font-weight-normal text-center">
                     <div class="text-center text-primary"
                          tal:content="python:model.title or '-'"/>
-                    <div class="text-center"
+                    <div class="text-center label font-weight-bold"
                          tal:content="python:model.ClientSampleID or '-'"/>
                     <div class="text-center"
                          tal:content="python:model.SampleTypeTitle or '-'"/>
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.getSamplingDeviationTitle() or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.getSampleConditionTitle() or '-'"/>
                     <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                     <div class="text-center"
@@ -733,8 +728,6 @@
             <div>
               <span i18n:translate="">Phone</span>:
               <span tal:content="laboratory/Phone">Lab Phone Number</span>
-              • <span i18n:translate="">Fax</span>:
-                <span tal:content="laboratory/Fax">Lab Fax Number</span>
               • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
                 <span tal:content="laboratory/EmailAddress">Lab Email</span>
               </a>

@@ -166,28 +166,21 @@ class MultiReportView(MRV):
         for c, analysis in enumerate(analyses):
             methods = analysis.getAnalysisService().getAvailableMethods()
             for m, method in enumerate(methods):
-                if analysis.Method.Title() == method.Title():
-                    continue
                 title = method.Title()
                 description = method.Description()
-                accredited = method.Accredited
-                # TODO:
-                # supplier = analysis.Method.getSupplier()
-                try:
-                    supplier = True if method["Supplier"] else False
-                except AttributeError:
-                    supplier = False
+                method_id = method.getId()
                 rec = {
                     "title": title,
                     "description": description,
-                    "accredited": accredited,
-                    "supplier": supplier,
+                    "method_id": method_id,
                 }
 
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        return analyses_parameters
+        items = sorted(
+            analyses_parameters, key=lambda item: item["method_id"])
+        return items
 
     def get_analyses_instruments(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
