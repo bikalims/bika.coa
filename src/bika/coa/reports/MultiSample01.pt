@@ -623,8 +623,6 @@
             <div>
               <span i18n:translate="">Phone</span>:
               <span tal:content="laboratory/Phone">Lab Phone Number</span>
-              • <span i18n:translate="">Fax</span>:
-                <span tal:content="laboratory/Fax">Lab Fax Number</span>
               • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
                 <span tal:content="laboratory/EmailAddress">Lab Email</span>
               </a>
