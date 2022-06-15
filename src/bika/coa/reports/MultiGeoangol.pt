@@ -418,7 +418,7 @@
             <tbody>
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
+                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and (category.title != 'Preparation')">
                    <td class="font-weight-bold table-warning">
                        <span tal:content="category/Title"/> 
                    </td> 
@@ -430,61 +430,63 @@
                    </tal:results>
                 </tr> 
 
-                <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
-                    tal:repeat="row_data python:common_row_data">
-                  <td class="text-secondary">
-                    <span tal:content="python: row_data[0]"/>
-                  </td>
-                  <td class="text-secondary">
-                    <span tal:content="python: row_data[1]"/>
-                  </td>
-                  <td class="text-secondary">
-                    <span tal:content="python: row_data[3]"/>
-                  </td>
-                  <td class="text-secondary">
-                    <span tal:content="python: row_data[2]"/>
-                  </td>
-                  <tal:results repeat="model page">
-                    <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
-                      <tal:analysis tal:repeat="analysis analyses">
-                        <td class="text-right"
-                            tal:define="result python:model.get_formatted_result(analysis);
-                                        verified python:analysis.review_state in ['published', 'verified']">
-                          <span class="font-weight-normal"
-                                tal:condition="python:result and verified"
-                                tal:content="structure result" />
-                          <span class="font-weight-normal"
-                                tal:condition="python:result and not verified">-</span>
-                          <span class="font-weight-normal"
-                                tal:condition="not:result"></span>
-                        </td>
-                        <td class="text-left">
-                          <span tal:condition="python:model.is_out_of_range(analysis)"
-                                class="font-weight-normal">
-                            <span class="outofrange text-danger">
-                                  <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                            </span>
-                          </span>
-                          <span tal:condition="python:view.is_analysis_method_subcontracted(analysis)"
-                                class="font-weight-normal">
-                            <span class="outofrange text-danger">
-                                  <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
-                            </span>
-                          </span>
-                          <span class="accredited-symbol text-success"
-                              tal:condition="python:view.is_analysis_method_accreditted(analysis)"
-                              style="font-family:Lucida Console, Courier, monospace;"
-                              tal:content="accredited_symbol">
-                          </span>
-                        </td>
-                      </tal:analysis>
-                      <tal:analysis condition="not:analyses">
-                        <td></td>
-                        <td></td>
-                      </tal:analysis>
-                    </tal:analyses>
-                  </tal:results>
-                </tr>
+                <tal:exclude_preparation tal:condition="python:category.title !='Preparation'">
+                    <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
+                        tal:repeat="row_data python:common_row_data">
+                      <td class="text-secondary">
+                        <span tal:content="python: row_data[0]"/>
+                      </td>
+                      <td class="text-secondary">
+                        <span tal:content="python: row_data[1]"/>
+                      </td>
+                      <td class="text-secondary">
+                        <span tal:content="python: row_data[3]"/>
+                      </td>
+                      <td class="text-secondary">
+                        <span tal:content="python: row_data[2]"/>
+                      </td>
+                      <tal:results repeat="model page">
+                        <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
+                          <tal:analysis tal:repeat="analysis analyses">
+                            <td class="text-right"
+                                tal:define="result python:model.get_formatted_result(analysis);
+                                            verified python:analysis.review_state in ['published', 'verified']">
+                              <span class="font-weight-normal"
+                                    tal:condition="python:result and verified"
+                                    tal:content="structure result" />
+                              <span class="font-weight-normal"
+                                    tal:condition="python:result and not verified">-</span>
+                              <span class="font-weight-normal"
+                                    tal:condition="not:result"></span>
+                            </td>
+                            <td class="text-left">
+                              <span tal:condition="python:model.is_out_of_range(analysis)"
+                                    class="font-weight-normal">
+                                <span class="outofrange text-danger">
+                                      <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+                                </span>
+                              </span>
+                              <span tal:condition="python:view.is_analysis_method_subcontracted(analysis)"
+                                    class="font-weight-normal">
+                                <span class="outofrange text-danger">
+                                      <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+                                </span>
+                              </span>
+                              <span class="accredited-symbol text-success"
+                                  tal:condition="python:view.is_analysis_method_accreditted(analysis)"
+                                  style="font-family:Lucida Console, Courier, monospace;"
+                                  tal:content="accredited_symbol">
+                              </span>
+                            </td>
+                          </tal:analysis>
+                          <tal:analysis condition="not:analyses">
+                            <td></td>
+                            <td></td>
+                          </tal:analysis>
+                        </tal:analyses>
+                      </tal:results>
+                    </tr>
+                  </tal:exclude_preparation>
               </tal:categories_in_poc>
             </tbody>
           </table>
