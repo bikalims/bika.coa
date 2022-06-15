@@ -68,7 +68,7 @@
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .label { padding-right: 0.3rem; font-size: 130% }
      .report .section-header h1 { font-size: 150%; }
-     .report .section-header img.logo {margin-bottom: 10px; overflow: hidden;}
+     .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
@@ -117,7 +117,7 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-6 d-flex"
+        <div class="col-6"
                  tal:attributes="style styles/logo_styles">
           <!-- Header Left -->
           <h1>Certificate of Analysis</h1>
@@ -126,7 +126,7 @@
         <div class="col-6 text-right d-flex ">
             <!-- Header Right -->
             <img class="logo text-right"
-                 tal:attributes="src python:view.get_toolbar_logo()"/>
+                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
       </div>
     </div>
   </tal:render>
@@ -136,7 +136,7 @@
   <tal:render condition="python:len(collection)>0"
               define="primarymodel python:collection[0];">
 
-    <div class="row section-info no-gutters">
+    <div class="row section-info" style="margin-top:6mm">
       <div class="col-8">
         <div class="row">
           <div class="col-6">
@@ -196,6 +196,9 @@
                       <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
                     </div>
                   </div>
+                  <div class="lab-title col-12">
+                    <div tal:replace="laboratory/Phone|nothing"/>
+                  </div>
             </div>
           </div>
         </div>
@@ -214,31 +217,6 @@
               tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images')"/>
       </div>
     <div class="clearfix"></div>
-    <!-- BATCH INFO -->
-    <div style="margin-top:5mm;">
-      <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
-          tal:condition="python:view.get_batch(collection)">
-        <div class="col-4 label">Batch</div>
-        <div class="col-8">
-          <div tal:condition="batch" tal:content="batch/title"/>
-        </div>
-      </div>
-      <div class="clearfix"></div>
-      <div class="row section-info no-gutters" tal:define="batch primarymodel/Batch"
-          tal:condition="python:view.get_batch(collection)">
-        <div class="col-4 label">Batch ID</div>
-        <div class="col-8">
-          <div tal:condition="batch" tal:content="batch/getId"/>
-        </div>
-      </div>
-    </div>
-    <div class="clearfix"></div>
-    <!-- /BATCH INFO -->
-    <div class="row section-info no-gutters" tal:condition="primarymodel/ClientOrderNumber">
-      <div class="col-4 label">Order number</div>
-      <div class="col-8" tal:content="primarymodel/ClientOrderNumber">
-      </div>
-    </div>
       <!-- Clear Floats
            https://github.com/Kozea/WeasyPrint/issues/36
       -->
@@ -270,7 +248,34 @@
     </div>
   </tal:render>
 
-  <tal:render condition="python:len(collection)>0">
+  <tal:render condition="python:len(collection)>0"
+              define="model python:collection[0];
+                      batch model/Batch;">
+    <div style="margin-top:5mm;">
+      <div class="row section-info no-gutters" tal:condition="python:view.get_batch(collection)">
+        <div class="col-4 label">Batch</div>
+        <div class="col-8">
+          <div tal:condition="batch" tal:content="batch/title"/>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row section-info no-gutters"
+          tal:condition="python:view.get_batch(collection)">
+        <div class="col-4 label">Batch ID</div>
+        <div class="col-8">
+          <div tal:condition="batch" tal:content="batch/getId"/>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <!-- /BATCH INFO -->
+    <div class="row section-info no-gutters" tal:condition="model/ClientOrderNumber">
+      <div class="col-4 label">Order number</div>
+          <div class="col-8" tal:content="model/ClientOrderNumber">
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
   <!-- Analysis Parameters -->
   <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_parameters(collection)">
