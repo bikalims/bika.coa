@@ -269,7 +269,7 @@
     </div>
     <div class="clearfix"></div>
     <!-- /BATCH INFO -->
-    <div class="row section-info no-gutters" tal:condition="model/ClientOrderNumber">
+    <div class="row section-info no-gutters" tal:condition="python:view.get_order_number(collection)">
       <div class="col-4 label">Order number</div>
           <div class="col-8" tal:content="model/ClientOrderNumber">
       </div>
