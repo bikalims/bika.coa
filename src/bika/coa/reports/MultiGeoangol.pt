@@ -56,6 +56,7 @@
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
+     .report p { margin:0 }
      .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
@@ -496,53 +497,72 @@
     </div>
   </tal:render>
 
-  <!--  RESULTS INTERPRETATIONS -->
-  <tal:render condition="python:True">
-    <tal:model repeat="model collection">
-      <div class="row section-resultsinterpretation no-gutters"
-           tal:define="ris python:model.get_resultsinterpretation();
-                       has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-        <div class="" tal:condition="has_ri">
-          <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
-          <tal:ri repeat="ri ris">
-            <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-            <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-          </tal:ri>
-        </div>
-      </div>
-    </tal:model>
-  </tal:render>
 
-  <!-- QC RESULTS -->
-  <!--<tal:render condition="python:True">
-    <tal:model repeat="model collection">
-      <tal:qc define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
-        <div class="row section-results no-gutters" tal:condition="qcanalyses">
-          <div class="">
-            <h2 i18n:translate>QC Results for <span tal:replace="model/getId"/></h2>
-            <div>
-              <h1 i18n:translate="">QC Results</h1>
-            </div>
-          </div>
-        </div>
-      </tal:qc>
-    </tal:model>
-  </tal:render> -->
-
-  <!-- REMARKS -->
+  <!-- Additional Sample Information-->
   <tal:render condition="python:True">
-    <tal:model repeat="model collection">
-      <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
-        <div class="">
-          <h2 i18n:translate>Remarks for <span tal:replace="model/getId"/></h2>
-          <div class="text-info" tal:repeat="remark model/Remarks">
-              <div class="text-info" tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])"></div>
-          </div>
-        </div>
-        <br />
+      <div style="margin-top:2mm; no-gutters">
+          <table class="table table-sm table-condensed small noborder">
+            <thead>
+              <tr>
+                <th>
+                    <div class="col-12 label no-gutters">Additional Sample Information</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+                <tal:model repeat="model collection">
+                    <tr class="font-weight-bold">
+                        <td>
+                          <div class="col-6">Sample ID </div>
+                        </td>
+                        <td>
+                          <div class="col-6" tal:content="model/getId">Sample ID </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                          <div class="col-6">Sample Remarks </div>
+                        </td>
+                        <td>
+                          <div class="col-6">
+                            <div  tal:repeat="remark model/Remarks">
+                              <span tal:replace="structure remark/content"></span>
+                            </div>
+                          </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                          <div class="col-12">Interpretation</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                          <!--  RESULTS INTERPRETATIONS -->
+                          <div class="col-12">
+                              <div tal:define="ris python:model.get_resultsinterpretation();
+                                               has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+                                <div class="" tal:condition="has_ri">
+                                  <tal:ri repeat="ri ris">
+                                    <div class="col-3"></div>
+                                    <div class="col-3"
+                                        tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department
+                                    </div>
+                                    <div class="col-6" tal:content="structure ri/richtext|nothing"></div>
+                                    <div class="clearfix"></div>
+                                  </tal:ri>
+                                </div>
+                              </div>
+                          </div>
+                        </td>
+                    </tr>
+                </tal:model>
+            </tbody>
+          </table>
       </div>
-    </tal:model>
+      <div class="clearfix"></div>
   </tal:render>
+  <!-- /Additional Sample Information-->
 
   <!-- ATTACHMENTS -->
   <tal:render condition="python:True">
