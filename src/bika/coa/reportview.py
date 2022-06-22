@@ -306,6 +306,12 @@ class MultiReportView(MRV):
         model = collection[0]
         analyses = self.get_analyses_by([model])
         actor = getTransitionUsers(analyses[0], "verify")
+        if not actor:
+            return {
+                "fullname": '',
+                "verifier": 'admin',
+            }
+            
         user_name = actor[0] if actor else ""
         user = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
@@ -314,6 +320,23 @@ class MultiReportView(MRV):
             "fullname": user.fullname,
             "role": roles[0],
             "date_verified": date_verified,
+        }
+
+    def get_publisher(self):
+        today = DateTime()
+        current_user = api.get_current_user()
+        user = api.get_user_contact(current_user)
+        if user:
+            if user.salutation:
+                publisher = '{}. {}'.format(user.salutation, user.fullname)
+            else:
+                publisher = '{}'.format(user.fullname)
+        else:
+            publisher = '{}'.format(current_user.id)
+
+        return {
+            "publisher": publisher,
+            "today":"{}".format(today.strftime("%Y-%m-%d")),
         }
 
     def get_analyst(self, collection):

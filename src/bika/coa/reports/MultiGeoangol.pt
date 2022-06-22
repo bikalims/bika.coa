@@ -497,6 +497,58 @@
     </div>
   </tal:render>
 
+  <!-- DISCREETER -->
+  <tal:render condition="python:True"
+              define="laboratory python:view.laboratory;">
+    <div class="row section-discreeter no-gutters">
+      <div class="w-100 text-muted font-weight-normal small">
+        <div class="discreeter-outofrange">
+          <span class="outofrange text-danger">
+              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+          </span>
+          <span i18n:translate="">Result out of client specified range.</span>
+        </div>
+        <div class="discreeter-subcontracted">
+          <span class="subcontracted text-danger">
+              <img tal:attributes="src python:report_images['subcontracted_symbol_url']" style="width:12px;height:12px"/>
+          </span>
+          <span i18n:translate="">Result that have subcontracted methods.</span>
+        </div>
+        <div class="discreeter-not-invoiced"
+             tal:condition="python:all(map(lambda m: m.InvoiceExclude, collection))"
+             i18n:translate="">
+          Not invoiced
+        </div>
+        <div class="discreeter-methods"
+             tal:condition="laboratory/LaboratoryAccredited">
+          <span class="accredited-symbol text-success"
+                style="font-family:Lucida Console, Courier, monospace;"
+                tal:content="accredited_symbol">
+          </span>
+          <span class="" i18n:translate="">
+            Methods included in the
+            <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+            schedule of Accreditation for this Laboratory. Analysis remarks are not
+            accredited
+          </span>
+        </div>
+        <div class="discreeter-disclaimer"
+             i18n:translate="">
+          Analysis results relate only to the samples tested.
+        </div>
+        <div class="discreeter-copyright"
+             i18n:translate="">
+          This document shall not be reproduced except in full, without the written approval of
+          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
+        </div>
+        <div tal:define="confidence_level laboratory/Confidence"
+             tal:condition="confidence_level" i18n:translate="">
+          Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
+        </div>
+      </div>
+    </div>
+  </tal:render>
+
 
   <!-- Additional Sample Information-->
   <tal:render condition="python:True">
@@ -564,6 +616,114 @@
   </tal:render>
   <!-- /Additional Sample Information-->
 
+  <!-- Declaration-->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
+        <p>As per specification given by the client</p>
+        <h1></h1>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </tal:render>
+  <!-- /Declaration-->
+
+  <!-- QUALITY CONTROL-->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
+        <p>The quality control protocol is summarized in the following:<br />							
+            Samples arriving at the lab are checked and confirmed according to the list sent by the customer and recorded in the sample
+            listing form received in use in the laboratory, (SPF/FT/LA/01) that is attached to the chain of custody form, (QMF 009). <br/>
+
+            Any discrepancies between the physical samples and the list received are discussed with the customer, 
+            by phone or via e-mail, prior to their registration in the laboratory.<br />
+
+            The samples are dried at moderate temperatures, crushed in jaw crushers and ground in sprayers.<br />
+            Crushers are cleaned with compressed air, then between one sample and another a white (silica) is used to 
+            ensure that there is no cross-contamination between the samples.<br />
+            The white material is analyzed in the chemical laboratory in a sequence of 10 out of 10 samples (QMP 0022) 
+            for process control issues and result reported as part of the flow of analyzed samples.<br />
+            Grinding is done in ring and disc sprayers (LM2), in this process similar to crushing, 
+            contamination is avoided by cleaning the spray pan with compressed air after each sample processed 
+            and with silica material before the following sample, when the material adheres to the walls of the pan.<br />
+            The choice of reference material depends on the matrix of the samples, as well as the mean concentration ranges.<br />
+            <span tal:replace="laboratory/title|nothing"/> currently participates in international 
+            proficiency testing schemes (PT), AMIS PT, GeoPT and China NIL PT; 
+            and also uses samples from these PT schemes, and OREAS reference materials; for quality control purposes.							
+        </p>
+        <h1></h1>
+      </div>
+    </div>
+      <div class="clearfix"></div>
+  </tal:render>
+  <!-- /QUALITY CONTROL-->
+  <!-- IMPORTANT NOTE-->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Important Note</h1>
+        <p>This report specifically refers to the sample(s) submitted to <Lab name> provided by the customer for analysis and may not be used for any other sample of a similar nature. <Lab name> declines all liability for losses or damages resulting from the transaction of the results of this report. This certificate of analysis shall not be reproduced in part or in full without the written approval of the General Directorate of <span tal:replace="laboratory/title|nothing"/> </p>
+        <h1></h1>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </tal:render>
+  <!-- /IMPORTANT NOTE-->
+
+  <!-- ABBREVIATIONS-->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Abbreviations</h1>
+        <table class="table table-sm table-condensed small noborder">
+            <tr>
+                <td>AAS</td>
+                <td>Atomic Absorption Spectrometer</td>
+                <td>MIBK</td>
+                <td>(Metyl Isobutyl Ketone)</td>
+            </tr>
+            <tr>
+                <td>EC</td>
+                <td>Electric conductivity</td>
+                <td>pH</td>
+                <td>Hydrogen potential</td>
+            </tr>
+            <tr>
+                <td>FA</td>
+                <td>Fire Assay</td>
+                <td>TDS</td>
+                <td>Total Dissolved Solids</td>
+            </tr>
+            <tr>
+                <td>ICP-MS</td>
+                <td>Inductively Coupled Plasma- Mass Spectroscopy</td>
+                <td>TSS</td>
+                <td>Total Suspended Solids.</td>
+            </tr>
+            <tr>
+                <td>ICP-OES</td>
+                <td>Inductively Coupled Plasma -Optical Emission Spectroscopy</td>
+                <td>UV</td>
+                <td>Ultraviolet Spectrometer</td>
+            </tr>
+            <tr>
+                <td>LOI</td>
+                <td>Lost on Ignition</td>
+                <td>XRF</td>
+                <td>X-ray fluorescence</td>
+            </tr>
+        </table>
+        <h1></h1>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </tal:render>
+  <!-- /ABBREVIATIONS-->
+
+
   <!-- ATTACHMENTS -->
   <tal:render condition="python:True">
     <div class="row section-attachments no-gutters">
@@ -609,31 +769,29 @@
 
   <!--  SIGNATURES -->
   <tal:render condition="python:True">
-    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
+    <tal:responsibles>
+      <div class="row section-signatures no-gutters" tal:define="publisher python:view.get_publisher()">
+        <table class="table table-sm table-condensed">
+          <tr>
+            <td class="font-weight-bold"><span i18n:translate="">Published by</span></td>
+            <td><span i18n:translate="" tal:content="publisher/publisher"/></td>
+            <td class="font-weight-bold"><span i18n:translate="">Published date</span></td>
+            <td><span i18n:translate="" tal:content="publisher/today"/></td>
+          </tr>
+        </table>
+      </div>
+      <h1></h1>
       <div class="row section-signatures no-gutters">
         <div class="w-100">
-          <h1 i18n:translate="">Managers Responsible</h1>
           <table class="table table-sm table-condensed">
             <tr>
-              <tal:manager repeat="manager managers">
+              <tal:verifier define="verifier python:view.get_verifier(collection)">
                 <td style="border:none">
-                  <div>
-                    <img tal:condition="manager/Signature"
-                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
-                  </div>
                   <div class="font-weight-bold">
-                    <span tal:content="manager/Salutation"></span>
-                    <span tal:condition="manager/Salutation">&nbsp;</span>
-                    <span tal:content="manager/Fullname"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/JobTitle"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
+                    <span tal:content="verifier/verifier"></span>
                   </div>
                 </td>
-              </tal:manager>
+              </tal:verifier>
               <tal:reporter define="reporter python:view.current_user" condition="reporter">
                 <td style="border:none">
                   <div class="label" i18n:translate="">Published by</div>
@@ -649,57 +807,18 @@
     </tal:responsibles>
   </tal:render>
 
-  <!-- DISCREETER -->
-  <tal:render condition="python:True"
-              define="laboratory python:view.laboratory;">
-    <div class="row section-discreeter no-gutters">
-      <div class="w-100 text-muted font-weight-normal small">
-        <div class="discreeter-outofrange">
-          <span class="outofrange text-danger">
-              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-          </span>
-          <span i18n:translate="">Result out of client specified range.</span>
-        </div>
-        <div class="discreeter-subcontracted">
-          <span class="subcontracted text-danger">
-              <img tal:attributes="src python:report_images['subcontracted_symbol_url']" style="width:12px;height:12px"/>
-          </span>
-          <span i18n:translate="">Result that have subcontracted methods.</span>
-        </div>
-        <div class="discreeter-not-invoiced"
-             tal:condition="python:all(map(lambda m: m.InvoiceExclude, collection))"
-             i18n:translate="">
-          Not invoiced
-        </div>
-        <div class="discreeter-methods"
-             tal:condition="laboratory/LaboratoryAccredited">
-          <span class="accredited-symbol text-success"
-                style="font-family:Lucida Console, Courier, monospace;"
-                tal:content="accredited_symbol">
-          </span>
-          <span class="" i18n:translate="">
-            Methods included in the
-            <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory. Analysis remarks are not
-            accredited
-          </span>
-        </div>
-        <div class="discreeter-disclaimer"
-             i18n:translate="">
-          Analysis results relate only to the samples tested.
-        </div>
-        <div class="discreeter-copyright"
-             i18n:translate="">
-          This document shall not be reproduced except in full, without the written approval of
-          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
-        </div>
-        <div tal:define="confidence_level laboratory/Confidence"
-             tal:condition="confidence_level" i18n:translate="">
-          Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
-        </div>
+  <!-- END OF REPORT-->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100 align-center">
+        <h1 i18n:translate="">End of  Report</h1>
+        <h1></h1>
       </div>
     </div>
+    <div class="clearfix"></div>
   </tal:render>
+  <!-- /END OF REPORT-->
+
 
   <!-- CUSTOM FOOTER -->
   <tal:render condition="python:footer">
