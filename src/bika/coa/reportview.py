@@ -329,7 +329,7 @@ class MultiReportView(MRV):
             }
         else:
             return {
-                "fullname": ""
+                "fullname": "",
                 "role": roles[0],
                 "date_verified": date_verified,
                 "verifier": ""
