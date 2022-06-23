@@ -596,7 +596,6 @@
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1></h1>
-        <h1></h1>
         <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
         <p>As per specification given by the client</p>
         <h1></h1>
@@ -610,7 +609,7 @@
   <tal:render condition="python:True">
     <div class="row section-results no-gutters">
       <div class="w-100">
-        <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
+        <h1 i18n:translate="">Quality Protocol</h1>
         <p>The quality control protocol is summarized in the following:<br /><br />							
             Samples arriving at the lab are checked and confirmed according to the list sent by the customer and recorded in the sample
             listing form received in use in the laboratory, (SPF/FT/LA/01) that is attached to the chain of custody form, (QMF 009). <br/><br/>

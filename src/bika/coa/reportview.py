@@ -162,6 +162,8 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         analyses_parameters = []
         for c, analysis in enumerate(analyses):
+            if analysis.getCategory().Title() == "Preparation":
+                continue
             methods = analysis.getAnalysisService().getAvailableMethods()
             for m, method in enumerate(methods):
                 title = method.Title()
