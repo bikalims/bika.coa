@@ -552,11 +552,11 @@
 
   <!-- Additional Sample Information-->
   <tal:render condition="python:True">
-      <div style="margin-top:2mm; no-gutters" tal:condition="python:view.has_additional_info(collection)">
-          <table class="table table-sm table-condensed small noborder">
+      <div class="w-100" style="margin-top:2mm; no-gutters" tal:condition="python:view.has_additional_info(collection)">
+          <table class="table table-sm table-condensed small noborder w-100">
             <thead>
               <tr>
-                <th>
+                <th colspan=2>
                     <div class="col-12 label no-gutters">Additional Sample Information</div>
                 </th>
               </tr>
@@ -564,19 +564,19 @@
             <tbody>
                 <tal:model repeat="model collection">
                     <tr class="font-weight-bold">
-                        <td>
+                        <td style="width:30%">
                           <div class="col-6">Sample ID </div>
                         </td>
-                        <td>
+                        <td style="width:70%">
                           <div class="col-6" tal:content="model/getId">Sample ID </div>
                         </td>
                     </tr>
                     <tr tal:condition="python:view.has_remarks(collection)">
-                        <td>
-                          <div class="col-6">Sample Remarks </div>
+                        <td style="width:30%">
+                          <div class="col-12">Sample Remarks </div>
                         </td>
-                        <td>
-                          <div class="col-6">
+                        <td style="width:70%">
+                          <div class="col-12">
                             <div  tal:repeat="remark model/Remarks">
                               <span tal:replace="structure remark/content"></span>
                             </div>
@@ -588,24 +588,23 @@
                           <div class="col-12">Interpretation</div>
                         </td>
                     </tr>
-                    <tr>
-                        <td colspan=2>
-                          <!--  RESULTS INTERPRETATIONS -->
-                          <div class="col-12">
-                              <div tal:define="ris python:model.get_resultsinterpretation();
-                                               has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-                                <div class="" tal:condition="has_ri">
+                    <tr tal:define="ris python:model.get_resultsinterpretation();
+                                   has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+                        <td style="width:30%" tal:condition="has_ri">
                                   <tal:ri repeat="ri ris">
-                                    <div class="col-3"></div>
-                                    <div class="col-3"
+                                    <div class="col-12" style="margin-left:2mm"
                                         tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department
                                     </div>
-                                    <div class="col-6" tal:content="structure ri/richtext|nothing"></div>
+                                  </tal:ri>
+                        </td>
+                        <td style="width:70%" tal:condition="has_ri">
+                          <!--  RESULTS INTERPRETATIONS -->
+                                <div class="" tal:condition="has_ri">
+                                  <tal:ri repeat="ri ris">
+                                    <div class="col-12" tal:content="structure ri/richtext|nothing"></div>
                                     <div class="clearfix"></div>
                                   </tal:ri>
                                 </div>
-                              </div>
-                          </div>
                         </td>
                     </tr>
                 </tal:model>

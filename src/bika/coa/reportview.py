@@ -314,27 +314,21 @@ class MultiReportView(MRV):
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        if contact:
-            if contact.getSalutation():
-                verifier = '{}. {}'.format(contact.getSalutation(), contact.getFullname())
-            else:
-                verifier = '{}'.format(contact.getFullname())
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": ""}
+        if not contact:
+            return verifier
 
-            return {
-                "fullname": contact.getFullname(),
-                "role": roles[0],
-                "date_verified": date_verified,
-                "verifier": verifier,
-                "email": contact.getEmailAddress(),
-            }
+        verifier["fullname"] =  contact.getFullname()
+        verifier["role"] =  roles[0]
+        verifier["date_verified"] =  date_verified
+        verifier["email"] =  contact.getEmailAddress()
+
+        if contact.getSalutation():
+            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
         else:
-            return {
-                "fullname": "",
-                "role": roles[0],
-                "date_verified": date_verified,
-                "verifier": "",
-                "email": "",
-            }
+            verifier["verifier"] = "{}".format(contact.getFullname())
+
+        return verifier
 
     def get_publisher(self):
         publisher = {
@@ -363,10 +357,9 @@ class MultiReportView(MRV):
         return has_additional_info
 
     def has_remarks(self, collection):
-        analyses = self.get_analyses_by(collection)
         has_additional_info = False
-        for analysis in analyses:
-            if analysis.getRemarks():
+        for model in collection:
+            if model.getRemarks():
                 has_additional_info = True
                 break
         return has_additional_info
@@ -374,7 +367,7 @@ class MultiReportView(MRV):
     def has_additional_info(self, collection):
         has_additional_info = False
         if self.has_results_intepretation(collection) or self.has_remarks(collection):
-            has_results_intepretation = True
+            has_additional_info = True
         return has_additional_info
 
 
