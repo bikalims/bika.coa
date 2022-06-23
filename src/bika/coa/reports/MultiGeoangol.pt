@@ -769,8 +769,8 @@
 
   <!--  SIGNATURES -->
   <tal:render condition="python:True">
-    <tal:responsibles>
-      <div class="row section-signatures no-gutters" tal:define="publisher python:view.get_publisher()">
+    <tal:responsibles define="publisher python:view.get_publisher()">
+      <div class="row section-signatures no-gutters">
         <table class="table table-sm table-condensed">
           <tr>
             <td class="font-weight-bold"><span i18n:translate="">Published by</span></td>
@@ -788,16 +788,33 @@
               <tal:verifier define="verifier python:view.get_verifier(collection)">
                 <td style="border:none">
                   <div class="font-weight-bold">
+                    <span>Verified by</span>
+                  </div>
+                  <div class="clearfix"></div>
+                  <div class="font-weight-bold">
                     <span tal:content="verifier/verifier"></span>
                   </div>
+                  <div class="clearfix"></div>
+                  <div class="font-weight-bold">
+                    <span tal:content="verifier/email"></span>
+                  </div>
+                  <div class="clearfix"></div>
                 </td>
               </tal:verifier>
-              <tal:reporter define="reporter python:view.current_user" condition="reporter">
+              <tal:reporter condition="publisher">
                 <td style="border:none">
-                  <div class="label" i18n:translate="">Published by</div>
-                  <div>
-                    <span tal:content="reporter/fullname|reporter/username"></span>
+                  <div class="font-weight-bold">
+                    <span>Published by</span>
                   </div>
+                  <div class="clearfix"></div>
+                  <div class="font-weight-bold">
+                    <span tal:content="publisher/publisher"></span>
+                  </div>
+                  <div class="clearfix"></div>
+                  <div class="font-weight-bold">
+                    <span tal:content="publisher/email"></span>
+                  </div>
+                  <div class="clearfix"></div>
                 </td>
               </tal:reporter>
             </tr>
@@ -810,7 +827,7 @@
   <!-- END OF REPORT-->
   <tal:render condition="python:True">
     <div class="row section-results no-gutters">
-      <div class="w-100 align-center">
+      <div class="w-100 text-center">
         <h1 i18n:translate="">End of  Report</h1>
         <h1></h1>
       </div>

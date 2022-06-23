@@ -305,39 +305,42 @@ class MultiReportView(MRV):
     def get_verifier(self, collection):
         model = collection[0]
         analyses = self.get_analyses_by([model])
-        actor = getTransitionUsers(analyses[0], "verify")
+        actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
-            return {
-                "fullname": '',
-                "verifier": 'admin',
-            }
+            return {"verifier": 'admin'}
             
         user_name = actor[0] if actor else ""
-        user = api.get_user(user_name)
+        user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
+        contact = api.get_user_contact(user_obj)
+        if contact.getSalutation():
+            verifier = '{}. {}'.format(contact.getSalutation(), contact.getFullname())
+        else:
+            verifier = '{}'.format(contact.getFullname())
         return {
-            "fullname": user.fullname,
+            "fullname": contact.getFullname(),
             "role": roles[0],
             "date_verified": date_verified,
+            "verifier": verifier,
+            "email": contact.getEmailAddress(),
         }
 
     def get_publisher(self):
-        today = DateTime()
+        publisher = {"today":"{}".format(DateTime().strftime("%Y-%m-%d"))}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
-        if user:
-            if user.salutation:
-                publisher = '{}. {}'.format(user.salutation, user.fullname)
-            else:
-                publisher = '{}'.format(user.fullname)
-        else:
-            publisher = '{}'.format(current_user.id)
+        if not user:
+            publisher["publisher"] = '{}'.format(current_user.id)
+            return publisher
 
-        return {
-            "publisher": publisher,
-            "today":"{}".format(today.strftime("%Y-%m-%d")),
-        }
+        publisher["email"] = '{}'.format(user.getEmailAddress())
+        if user.getSalutation():
+            publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
+        else:
+            publisher["publisher"] = '{}'.format(user.fullname)
+
+        return publisher
 
     def get_analyst(self, collection):
         model = collection[0]
