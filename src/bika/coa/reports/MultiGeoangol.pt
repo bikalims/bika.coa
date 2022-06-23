@@ -291,6 +291,20 @@
   <div class="clearfix"></div>
   <!-- /Analysis Parameters -->
 
+  <!-- Preparation -->
+  <div style="margin-top:2mm;">
+    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_preparations(collection)">
+      <div class="col-4 label">Preparation</div>
+      <div class="col-8">
+            <tal:by_preparation repeat="rec python:view.get_analyses_preparations(collection)">
+                <div tal:condition="rec" tal:content="rec/an_parameter"/>
+            </tal:by_preparation>
+      </div>
+    </div>
+  </div>
+  <div class="clearfix"></div>
+  <!-- /Preparation -->
+
   <!-- Equipment Used-->
   <div style="margin-top:2mm;">
     <div class="row section-info no-gutters" tal:condition="equipment_used">
@@ -305,19 +319,6 @@
   <div class="clearfix"></div>
   <!-- /Equipment Used-->
 
-  <!-- Preparation -->
-  <div style="margin-top:2mm;">
-    <div class="row section-info no-gutters" tal:condition="python:view.get_analyses_preparations(collection)">
-      <div class="col-4 label">Preparation</div>
-      <div class="col-8">
-            <tal:by_preparation repeat="rec python:view.get_analyses_preparations(collection)">
-                <div tal:condition="rec" tal:content="rec/an_parameter"/>
-            </tal:by_preparation>
-      </div>
-    </div>
-  </div>
-  <div class="clearfix"></div>
-  <!-- /Preparation -->
   </tal:render>
   <!-- SAMPLES -->
   <tal:render condition="python:True"
@@ -461,22 +462,9 @@
                                     tal:condition="not:result"></span>
                             </td>
                             <td class="text-left">
-                              <span tal:condition="python:model.is_out_of_range(analysis)"
-                                    class="font-weight-normal">
-                                <span class="outofrange text-danger">
-                                      <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                                </span>
-                              </span>
-                              <span tal:condition="python:view.is_analysis_method_subcontracted(analysis)"
-                                    class="font-weight-normal">
-                                <span class="outofrange text-danger">
-                                      <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
-                                </span>
-                              </span>
                               <span class="accredited-symbol text-success"
-                                  tal:condition="python:view.is_analysis_method_accreditted(analysis)"
-                                  style="font-family:Lucida Console, Courier, monospace;"
-                                  tal:content="accredited_symbol">
+                                  tal:condition="python:view.is_analysis_method_accreditted(analysis)">
+                                      <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                               </span>
                             </td>
                           </tal:analysis>
@@ -502,18 +490,6 @@
               define="laboratory python:view.laboratory;">
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-normal small">
-        <div class="discreeter-outofrange">
-          <span class="outofrange text-danger">
-              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-          </span>
-          <span i18n:translate="">Result out of client specified range.</span>
-        </div>
-        <div class="discreeter-subcontracted">
-          <span class="subcontracted text-danger">
-              <img tal:attributes="src python:report_images['subcontracted_symbol_url']" style="width:12px;height:12px"/>
-          </span>
-          <span i18n:translate="">Result that have subcontracted methods.</span>
-        </div>
         <div class="discreeter-not-invoiced"
              tal:condition="python:all(map(lambda m: m.InvoiceExclude, collection))"
              i18n:translate="">
@@ -552,12 +528,12 @@
 
   <!-- Additional Sample Information-->
   <tal:render condition="python:True">
-      <div class="w-100" style="margin-top:2mm; no-gutters" tal:condition="python:view.has_additional_info(collection)">
+      <div class="w-100 row section-results no-gutters" style="margin-top:5mm; no-gutters" tal:condition="python:view.has_additional_info(collection)">
           <table class="table table-sm table-condensed small noborder w-100">
             <thead>
               <tr>
                 <th colspan=2>
-                    <div class="col-12 label no-gutters">Additional Sample Information</div>
+                    <div class="" style="font-weight:normal; font-size:140%;"><h1>Additional Sample Information</h1></div>
                 </th>
               </tr>
             </thead>
@@ -620,6 +596,7 @@
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1></h1>
+        <h1></h1>
         <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
         <p>As per specification given by the client</p>
         <h1></h1>
@@ -634,25 +611,25 @@
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
-        <p>The quality control protocol is summarized in the following:<br />							
+        <p>The quality control protocol is summarized in the following:<br /><br />							
             Samples arriving at the lab are checked and confirmed according to the list sent by the customer and recorded in the sample
-            listing form received in use in the laboratory, (SPF/FT/LA/01) that is attached to the chain of custody form, (QMF 009). <br/>
+            listing form received in use in the laboratory, (SPF/FT/LA/01) that is attached to the chain of custody form, (QMF 009). <br/><br/>
 
             Any discrepancies between the physical samples and the list received are discussed with the customer, 
-            by phone or via e-mail, prior to their registration in the laboratory.<br />
+            by phone or via e-mail, prior to their registration in the laboratory.<br /><br/>
 
-            The samples are dried at moderate temperatures, crushed in jaw crushers and ground in sprayers.<br />
+            The samples are dried at moderate temperatures, crushed in jaw crushers and ground in sprayers.<br /><br/>
             Crushers are cleaned with compressed air, then between one sample and another a white (silica) is used to 
             ensure that there is no cross-contamination between the samples.<br />
             The white material is analyzed in the chemical laboratory in a sequence of 10 out of 10 samples (QMP 0022) 
-            for process control issues and result reported as part of the flow of analyzed samples.<br />
+            for process control issues and result reported as part of the flow of analyzed samples.<br /><br/>
             Grinding is done in ring and disc sprayers (LM2), in this process similar to crushing, 
             contamination is avoided by cleaning the spray pan with compressed air after each sample processed 
-            and with silica material before the following sample, when the material adheres to the walls of the pan.<br />
-            The choice of reference material depends on the matrix of the samples, as well as the mean concentration ranges.<br />
+            and with silica material before the following sample, when the material adheres to the walls of the pan.<br /><br/>
+            The choice of reference material depends on the matrix of the samples, as well as the mean concentration ranges.<br /><br/>
             <span tal:replace="laboratory/title|nothing"/> currently participates in international 
             proficiency testing schemes (PT), AMIS PT, GeoPT and China NIL PT; 
-            and also uses samples from these PT schemes, and OREAS reference materials; for quality control purposes.							
+            and also uses samples from these PT schemes, and OREAS reference materials; for quality control purposes.
         </p>
         <h1></h1>
       </div>
