@@ -552,7 +552,7 @@
 
   <!-- Additional Sample Information-->
   <tal:render condition="python:True">
-      <div style="margin-top:2mm; no-gutters">
+      <div style="margin-top:2mm; no-gutters" tal:condition="python:view.has_additional_info(collection)">
           <table class="table table-sm table-condensed small noborder">
             <thead>
               <tr>
@@ -571,7 +571,7 @@
                           <div class="col-6" tal:content="model/getId">Sample ID </div>
                         </td>
                     </tr>
-                    <tr>
+                    <tr tal:condition="python:view.has_remarks(collection)">
                         <td>
                           <div class="col-6">Sample Remarks </div>
                         </td>
@@ -620,6 +620,7 @@
   <tal:render condition="python:True">
     <div class="row section-results no-gutters">
       <div class="w-100">
+        <h1></h1>
         <h1 i18n:translate="">Declaration of Conformity and Decision Rule</h1>
         <p>As per specification given by the client</p>
         <h1></h1>

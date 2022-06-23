@@ -314,20 +314,32 @@ class MultiReportView(MRV):
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        if contact.getSalutation():
-            verifier = '{}. {}'.format(contact.getSalutation(), contact.getFullname())
+        if contact:
+            if contact.getSalutation():
+                verifier = '{}. {}'.format(contact.getSalutation(), contact.getFullname())
+            else:
+                verifier = '{}'.format(contact.getFullname())
+
+            return {
+                "fullname": contact.getFullname(),
+                "role": roles[0],
+                "date_verified": date_verified,
+                "verifier": verifier,
+                "email": contact.getEmailAddress(),
+            }
         else:
-            verifier = '{}'.format(contact.getFullname())
-        return {
-            "fullname": contact.getFullname(),
-            "role": roles[0],
-            "date_verified": date_verified,
-            "verifier": verifier,
-            "email": contact.getEmailAddress(),
-        }
+            return {
+                "fullname": ""
+                "role": roles[0],
+                "date_verified": date_verified,
+                "verifier": ""
+                "email": ""
+            }
 
     def get_publisher(self):
-        publisher = {"today":"{}".format(DateTime().strftime("%Y-%m-%d"))}
+        publisher = {
+                "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
+                "email": "",}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         if not user:
@@ -341,6 +353,30 @@ class MultiReportView(MRV):
             publisher["publisher"] = '{}'.format(user.fullname)
 
         return publisher
+
+    def has_results_intepretation(self, collection):
+        has_additional_info = False
+        for model in collection:
+            if model.get_resultsinterpretation():
+                has_additional_info = True
+                break
+        return has_additional_info
+
+    def has_remarks(self, collection):
+        analyses = self.get_analyses_by(collection)
+        has_additional_info = False
+        for analysis in analyses:
+            if analysis.getRemarks():
+                has_additional_info = True
+                break
+        return has_additional_info
+
+    def has_additional_info(self, collection):
+        has_additional_info = False
+        if self.has_results_intepretation(collection) or self.has_remarks(collection):
+            has_results_intepretation = True
+        return has_additional_info
+
 
     def get_analyst(self, collection):
         model = collection[0]
