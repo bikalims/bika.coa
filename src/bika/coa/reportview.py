@@ -332,8 +332,8 @@ class MultiReportView(MRV):
                 "fullname": "",
                 "role": roles[0],
                 "date_verified": date_verified,
-                "verifier": ""
-                "email": ""
+                "verifier": "",
+                "email": "",
             }
 
     def get_publisher(self):
