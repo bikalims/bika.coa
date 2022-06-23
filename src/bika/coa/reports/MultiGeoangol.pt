@@ -497,9 +497,8 @@
         </div>
         <div class="discreeter-methods"
              tal:condition="laboratory/LaboratoryAccredited">
-          <span class="accredited-symbol text-success"
-                style="font-family:Lucida Console, Courier, monospace;"
-                tal:content="accredited_symbol">
+          <span class="outofrange text-danger">
+              <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
           </span>
           <span class="" i18n:translate="">
             Methods included in the
@@ -522,6 +521,7 @@
           Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
         </div>
       </div>
+    <h1></h1>
     </div>
   </tal:render>
 
