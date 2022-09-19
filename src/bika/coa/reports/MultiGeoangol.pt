@@ -617,12 +617,12 @@
             by phone or via e-mail, prior to their registration in the laboratory.<br /><br/>
 
             The samples are dried at moderate temperatures, crushed in jaw crushers and ground in sprayers.<br /><br/>
-            Crushers are cleaned with compressed air, then between one sample and another a white (silica) is used to 
+            Crushers are cleaned with compressed air, then between one sample and another a blank (silica) is used to 
             ensure that there is no cross-contamination between the samples.<br />
-            The white material is analyzed in the chemical laboratory in a sequence of 10 out of 10 samples (QMP 0022) 
-            for process control issues and result reported as part of the flow of analyzed samples.<br /><br/>
-            Grinding is done in ring and disc sprayers (LM2), in this process similar to crushing, 
-            contamination is avoided by cleaning the spray pan with compressed air after each sample processed 
+            The blank material is analyzed in the chemical laboratory in a sequence of 10 out of 10 samples (QMP 0022) 
+            for process control issues and the result is reported as part of the flow of analyzed samples.<br /><br/>
+            Grinding is done in ring and disc pulveriser (LM2), in this process similar to crushing, 
+            contamination is avoided by cleaning the inside of the pulveriser bowl and disk with compressed air after each sample processed 
             and with silica material before the following sample, when the material adheres to the walls of the pan.<br /><br/>
             The choice of reference material depends on the matrix of the samples, as well as the mean concentration ranges.<br /><br/>
             <span tal:replace="laboratory/title|nothing"/> currently participates in international 
