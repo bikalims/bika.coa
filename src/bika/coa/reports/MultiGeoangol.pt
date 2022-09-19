@@ -626,7 +626,7 @@
             and with silica material before the following sample, when the material adheres to the walls of the pan.<br /><br/>
             The choice of reference material depends on the matrix of the samples, as well as the mean concentration ranges.<br /><br/>
             <span tal:replace="laboratory/title|nothing"/> currently participates in international 
-            proficiency testing schemes (PT), AMIS PT, GeoPT and China NIL PT; 
+            proficiency testing schemes (PT), AMIS PT, GeoPT and China NIL PT; YesYesYYesYesYesYesYes
             and also uses samples from these PT schemes, and OREAS reference materials; for quality control purposes.
         </p>
         <h1></h1>
