@@ -226,6 +226,5 @@ class AjaxPublishView(AP):
     def ajax_templates(self):
         """Returns the available templates
         """
-        finder = getUtility(ITemplateFinder)
-        templates = finder.get_templates(extensions=[".pt", ".html"])
-        return sorted([item[0] for item in templates if 'bika' in item[0]])
+        templates = api.get_registry_record("senaite.impress.templates")
+        return sorted([item for item in templates if 'bika' in item])
