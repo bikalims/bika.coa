@@ -326,7 +326,7 @@
           <table class="table table-sm table-condensed small" >
             <thead tal:define="num repeat/poc/number" tal:condition="python:num==1">
               <tr>
-                <th>Sample ID <span tal:content=num> </span></th>
+                <th>Sample ID</th>
                 <th></th>
                 <th></th>
                 <tal:ar repeat="model page">
@@ -369,24 +369,12 @@
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
                 <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
-                   <!-- <td class="font-weight-bold table-warning">
-                       <span tal:content="category/Title"/> 
-                   </td>  -->
-                   <!-- <td class="font-weight-bold">Method</td>  -->
-                   <!-- <td class="font-weight-bold">Unit</td> 
-                   <tal:results repeat="model page">
-                       <td class="font-weight-bold text-center" colspan="2">Result</td> 
-                   </tal:results> -->
                 </tr> 
-
                 <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
                     tal:repeat="row_data python:common_row_data">
                   <td class="text-secondary">
                     <span tal:content="python: row_data[0]"/>
                   </td>
-                  <!-- <td class="text-secondary">
-                    <span tal:content="python: row_data[1]"/>
-                  </td> -->
                   <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
                   </td>

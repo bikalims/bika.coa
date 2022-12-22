@@ -230,7 +230,8 @@ class AjaxPublishView(AP):
                 sample_Types.append(lab_Analysis_service.get("sampleType"))
             position_at_top = sample_ids.index(lab_Analysis_service.get("sampleID")) - 1
             title = lab_Analysis_service.get('title')
-            lab_analyses[title][position_at_top] = lab_Analysis_service.get("result")
+            if lab_analyses.get(title):
+                lab_analyses.get(title)[position_at_top] = lab_Analysis_service.get("result")
         sample_headers = [sample_ids,sample_Points,sample_Types]
         return sample_headers,field_analyses,lab_analyses
 
