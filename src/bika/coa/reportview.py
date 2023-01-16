@@ -158,6 +158,29 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
+    def get_common_row_data_by_poc(self, collection, poc):
+        model = collection[0]
+        all_analyses = self.get_analyses_by_poc(collection)
+        analyses = all_analyses.get(poc)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
     def get_analyses_parameters(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         analyses_parameters = []

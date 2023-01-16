@@ -134,13 +134,18 @@ class AjaxPublishView(AP):
         field_analyses = {}
         lab_analyses = {}
         analysis_services = api.get_setup().bika_analysisservices.values()
+
         for AS in analysis_services:
             if AS.getPointOfCapture()=="field":
                 if AS.Title() not in field_analyses.keys():
-                    field_analyses[AS.Title()] = [""]*len(samples)
+                    full_columns = [""]*len(samples)
+                    full_columns.append(AS.getSortKey())
+                    field_analyses[AS.Title()] = full_columns
             else:
                 if AS.Title() not in lab_analyses.keys():
-                    lab_analyses[AS.Title()] = [""]*len(samples)
+                    full_columns = [""]*len(samples)
+                    full_columns.append(AS.getSortKey())
+                    lab_analyses[AS.Title()] = full_columns
 
         for sample in samples:
             date_received = sample.DateReceived
@@ -187,41 +192,51 @@ class AjaxPublishView(AP):
                 for i in top_headers[len(headers_line):]:
                     headers_line.append('')
 
-        sample_data, final_field_analyses, final_lab_analyses = self.create_sample_rows(group_cats,field_analyses,lab_analyses)
+        sample_data, penultimate_field_analyses, penultimate_lab_analyses = self.create_sample_rows(group_cats,field_analyses,lab_analyses)
         header_rows = self.merge_header_and_values(top_headers,headers_line)
 
+        final_field_analyses = self.sort_analyses_to_list(penultimate_field_analyses)
+        final_lab_analyses = self.sort_analyses_to_list(penultimate_lab_analyses)
+        
         for row in header_rows:
             writer.writerow(row)
 
         for new_row in sample_data:
             writer.writerow(new_row)
+
         writer.writerow(["Field Analyses"])
-        for analyses_row in final_field_analyses.items():
-            results_row = analyses_row[1]
-            results_row.insert(0,analyses_row[0])
+        for field_analyses_row in final_field_analyses:
+            results_row = field_analyses_row[1]
+            results_row.insert(0,field_analyses_row[0])
+            results_row.pop()
             writer.writerow(results_row)
 
         writer.writerow(["Lab Analyses"])
-        for lab_analyses_row in final_lab_analyses.items():
+        for lab_analyses_row in final_lab_analyses:
             lab_results_row = lab_analyses_row[1]
             lab_results_row.insert(0,lab_analyses_row[0])
+            lab_results_row.pop()
             writer.writerow(lab_results_row)
-
         return output.getvalue()
+
+    def sort_analyses_to_list(self,analyses):
+        title_sort = sorted(analyses.items(), key=lambda x:x[0])
+        key_sort = sorted(title_sort, key=lambda x:(x[1][-1] is None,x[1][-1]))
+        return key_sort
 
     def create_sample_rows(self,grouped_analyses,field_analyses,lab_analyses):
         sample_ids = ["Sample ID"]
         sample_Points = ["Sample Points"]
         sample_Types = ["Sample Types"]
 
-        for Analysis_service in grouped_analyses.get("field"):
-            if Analysis_service.get("sampleID") not in sample_ids:
-                sample_ids.append(Analysis_service.get("sampleID"))
-                sample_Points.append(Analysis_service.get("samplePoint"))
-                sample_Types.append(Analysis_service.get("sampleType"))
-            position_at_top = sample_ids.index(Analysis_service.get("sampleID")) - 1
-            title = Analysis_service.get('title')
-            field_analyses[title][position_at_top] = Analysis_service.get("result")
+        for field_Analysis_service in grouped_analyses.get("field"):
+            if field_Analysis_service.get("sampleID") not in sample_ids:
+                sample_ids.append(field_Analysis_service.get("sampleID"))
+                sample_Points.append(field_Analysis_service.get("samplePoint"))
+                sample_Types.append(field_Analysis_service.get("sampleType"))
+            position_at_top = sample_ids.index(field_Analysis_service.get("sampleID")) - 1
+            title = field_Analysis_service.get('title')
+            field_analyses[title][position_at_top] = field_Analysis_service.get("result")
         
         for lab_Analysis_service in grouped_analyses.get("lab"):
             if lab_Analysis_service.get("sampleID") not in sample_ids:

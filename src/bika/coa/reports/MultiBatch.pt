@@ -366,11 +366,9 @@
             </thead>
             <tbody>
               <th tal:content="python:view.points_of_capture.get(poc)"></th>
-              <!-- Categories in PoC -->
-              <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
-                </tr> 
-                <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
+              <!-- Analyses in PoC -->
+              <tal:analyses_in_poc >
+                <tr tal:define="common_row_data python:view.get_common_row_data_by_poc(page, poc=poc)"
                     tal:repeat="row_data python:common_row_data">
                   <td class="text-secondary">
                     <span tal:content="python: row_data[0]"/>
@@ -408,7 +406,7 @@
                     </tal:analyses>
                   </tal:results>
                 </tr>
-              </tal:categories_in_poc>
+              </tal:analyses_in_poc>
             </tbody>
           </table>
         </tal:poc>
