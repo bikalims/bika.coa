@@ -136,16 +136,17 @@ class AjaxPublishView(AP):
         analysis_services = api.get_setup().bika_analysisservices.values()
 
         for AS in analysis_services:
-            if AS.getPointOfCapture()=="field":
-                if AS.Title() not in field_analyses.keys():
-                    full_columns = [""]*len(samples)
-                    full_columns.append(AS.getSortKey())
-                    field_analyses[AS.Title()] = full_columns
-            else:
-                if AS.Title() not in lab_analyses.keys():
-                    full_columns = [""]*len(samples)
-                    full_columns.append(AS.getSortKey())
-                    lab_analyses[AS.Title()] = full_columns
+            if not AS.getHidden():
+                if AS.getPointOfCapture()=="field":
+                    if AS.Title() not in field_analyses.keys():
+                        full_columns = [""]*len(samples)
+                        full_columns.append(AS.getSortKey())
+                        field_analyses[AS.Title()] = full_columns
+                else:
+                    if AS.Title() not in lab_analyses.keys():
+                        full_columns = [""]*len(samples)
+                        full_columns.append(AS.getSortKey())
+                        lab_analyses[AS.Title()] = full_columns
 
         for sample in samples:
             date_received = sample.DateReceived
@@ -191,7 +192,7 @@ class AjaxPublishView(AP):
             if len(headers_line) != len(top_headers):
                 for i in top_headers[len(headers_line):]:
                     headers_line.append('')
-
+        
         sample_data, penultimate_field_analyses, penultimate_lab_analyses = self.create_sample_rows(group_cats,field_analyses,lab_analyses)
         header_rows = self.merge_header_and_values(top_headers,headers_line)
 
@@ -207,16 +208,18 @@ class AjaxPublishView(AP):
         writer.writerow(["Field Analyses"])
         for field_analyses_row in final_field_analyses:
             results_row = field_analyses_row[1]
-            results_row.insert(0,field_analyses_row[0])
-            results_row.pop()
-            writer.writerow(results_row)
+            if not all('' == s or s is None for s in results_row):
+                results_row.insert(0,field_analyses_row[0])
+                results_row.pop()
+                writer.writerow(results_row)
 
         writer.writerow(["Lab Analyses"])
         for lab_analyses_row in final_lab_analyses:
             lab_results_row = lab_analyses_row[1]
-            lab_results_row.insert(0,lab_analyses_row[0])
-            lab_results_row.pop()
-            writer.writerow(lab_results_row)
+            if not all('' == s or s is None for s in lab_results_row):
+                lab_results_row.insert(0,lab_analyses_row[0])
+                lab_results_row.pop()
+                writer.writerow(lab_results_row)
         return output.getvalue()
 
     def sort_analyses_to_list(self,analyses):
@@ -228,25 +231,25 @@ class AjaxPublishView(AP):
         sample_ids = ["Sample ID"]
         sample_Points = ["Sample Points"]
         sample_Types = ["Sample Types"]
-
-        for field_Analysis_service in grouped_analyses.get("field"):
-            if field_Analysis_service.get("sampleID") not in sample_ids:
-                sample_ids.append(field_Analysis_service.get("sampleID"))
-                sample_Points.append(field_Analysis_service.get("samplePoint"))
-                sample_Types.append(field_Analysis_service.get("sampleType"))
-            position_at_top = sample_ids.index(field_Analysis_service.get("sampleID")) - 1
-            title = field_Analysis_service.get('title')
-            field_analyses[title][position_at_top] = field_Analysis_service.get("result")
-        
-        for lab_Analysis_service in grouped_analyses.get("lab"):
-            if lab_Analysis_service.get("sampleID") not in sample_ids:
-                sample_ids.append(lab_Analysis_service.get("sampleID"))
-                sample_Points.append(lab_Analysis_service.get("samplePoint"))
-                sample_Types.append(lab_Analysis_service.get("sampleType"))
-            position_at_top = sample_ids.index(lab_Analysis_service.get("sampleID")) - 1
-            title = lab_Analysis_service.get('title')
-            if lab_analyses.get(title):
-                lab_analyses.get(title)[position_at_top] = lab_Analysis_service.get("result")
+        if grouped_analyses.get("field"):
+            for field_Analysis_service in grouped_analyses.get("field"):
+                if field_Analysis_service.get("sampleID") not in sample_ids:
+                    sample_ids.append(field_Analysis_service.get("sampleID"))
+                    sample_Points.append(field_Analysis_service.get("samplePoint"))
+                    sample_Types.append(field_Analysis_service.get("sampleType"))
+                position_at_top = sample_ids.index(field_Analysis_service.get("sampleID")) - 1
+                title = field_Analysis_service.get('title')
+                field_analyses[title][position_at_top] = field_Analysis_service.get("result")
+        if grouped_analyses.get("lab"):
+            for lab_Analysis_service in grouped_analyses.get("lab"):
+                if lab_Analysis_service.get("sampleID") not in sample_ids:
+                    sample_ids.append(lab_Analysis_service.get("sampleID"))
+                    sample_Points.append(lab_Analysis_service.get("samplePoint"))
+                    sample_Types.append(lab_Analysis_service.get("sampleType"))
+                position_at_top = sample_ids.index(lab_Analysis_service.get("sampleID")) - 1
+                title = lab_Analysis_service.get('title')
+                if lab_analyses.get(title):
+                    lab_analyses.get(title)[position_at_top] = lab_Analysis_service.get("result")
         sample_headers = [sample_ids,sample_Points,sample_Types]
         return sample_headers,field_analyses,lab_analyses
 
