@@ -364,7 +364,7 @@
                 </tal:ar>
               </tr>
             </thead>
-            <tbody>
+            <tbody tal:define="num repeat/poc/number">
               <th tal:content="python:view.points_of_capture.get(poc)"></th>
               <!-- Analyses in PoC -->
               <tal:analyses_in_poc >
@@ -372,6 +372,8 @@
                     tal:repeat="row_data python:common_row_data">
                   <td class="text-secondary">
                     <span tal:content="python: row_data[0]"/>
+                  </td>
+                  <td class="text-right" tal:condition="python:num==1">
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
