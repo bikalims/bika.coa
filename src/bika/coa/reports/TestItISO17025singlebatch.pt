@@ -126,33 +126,6 @@
   <div>Certificate of Analysis:<strong tal:condition="batch" tal:content="model/getId"> </div> </div>
      
   </tal:render>
-  <!-- /HEADER COA Block-->
-
-
-<style type="text/css">
-.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
-.tg td{border-style:solid;border-width:0px;font-family:Arial, sans-serif;font-size:14px;overflow:hidden;
-  padding:10px 5px;word-break:normal;}
-.tg th{border-style:solid;border-width:0px;font-family:Arial, sans-serif;font-size:14px;font-weight:normal;
-  overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-</style>
-<table class="tg" style="undefined;table-layout: fixed; width: 100%">
-<colgroup>
-<col style="width: 40%">
-<col style="width: 40%">
-<col style="width: 20%">
-</colgroup>
-<thead>
-  <tr>
-    <td class="tg-c3ow">Client info</td>
-    <td class="tg-c3ow"><img class="logo image-fluid" style="object-fit:contain;"
-                 tal:attributes="src python:view.get_toolbar_logo();"/></td>
-    <td class="tg-0pky">Lab Info</td>
-  </tr>
-</thead>
-</table>
 
   <!-- INFO -->
   <tal:render condition="python:True">
