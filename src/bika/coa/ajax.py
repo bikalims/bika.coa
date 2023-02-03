@@ -74,10 +74,10 @@ class AjaxPublishView(AP):
 
         
         is_multi_template = self.is_multi_template(template)
-        if template == "bika.coa.GeochemistryBatch.pt":
+        if template == "bika.coa:MultiGeochemistryBatch.pt":
             csv_report = self.create_geochemistry_csv_report(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
-        if template == "bika.coa:MultiBatch.pt":
+        elif template == "bika.coa:MultiBatch.pt":
             csv_report= self.create_batch_csv_reports(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
@@ -133,6 +133,7 @@ class AjaxPublishView(AP):
         output = StringIO.StringIO()
         top_headers= ["Unique COA ID","Project Title","Batch ID","Client","Date Sampled","Date Reported"]
         group_cats = {}
+        writer = csv.writer(output)
 
         # The key is the is the analysis service followed space to enter the results of the analysis service
         # for the sample in question
@@ -168,8 +169,6 @@ class AjaxPublishView(AP):
                 date_verified = date_verified.strftime('%m-%d-%y')
             if sample.Batch:
                 batch_title = sample.Batch.title
-
-            writer = csv.writer(output) #Move this outside of loop
 
             headers_line= [
                 coa_id,
