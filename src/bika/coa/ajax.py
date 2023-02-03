@@ -287,7 +287,10 @@ class AjaxPublishView(AP):
         final_body_rows = []
 
         for analysis_service in eligible_analysis_services:
-            methods_list.append(analysis_service.getMethod().getMethodID())
+            if analysis_service.getMethod():
+                methods_list.append(analysis_service.getMethod().getMethodID())
+            else:
+                methods_list.append("")
             analysis_Ids_list.append(analysis_service.getProtocolID())
             unit_list.append(analysis_service.getUnit())
             ldl_list.append(analysis_service.getLowerDetectionLimit())
