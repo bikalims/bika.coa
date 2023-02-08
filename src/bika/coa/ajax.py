@@ -253,7 +253,7 @@ class AjaxPublishView(AP):
             sample_results = [sample[0].ClientSampleID]
             for analysis_service in analysis_services:
                 if analysis_service.getKeyword() in sample_analyses_ids[indx]:
-                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getResult())
+                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getFormattedResult(html=False))
                 else:
                     sample_results.append("")
             sample_data.append(sample_results)
