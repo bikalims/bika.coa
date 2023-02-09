@@ -53,7 +53,6 @@ class SingleReportView(SRV):
         decimalmark = setup.getDecimalMark()
         uncertainty = format_uncertainty(
             analysis.instance,
-            analysis.getResult(),
             decimalmark=decimalmark,
             sciformat=sciformat,
         )
