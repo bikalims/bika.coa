@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import StringIO
 import csv
 from bika.coa import logger
@@ -70,9 +72,12 @@ class AjaxPublishView(AP):
             sample = getAdapter(sample, ISuperModel)
             samples.append(sample)
 
-        csv_reports = []
+        
         is_multi_template = self.is_multi_template(template)
-        if template == "bika.coa:MultiBatch.pt":
+        if template == "bika.coa:MultiGeochemistryBatch.pt":
+            csv_report = self.create_geochemistry_csv_report(samples,coa_num)
+            csv_reports = [csv_report for i in range(len(pdf_reports))]
+        elif template == "bika.coa:MultiBatch.pt":
             csv_report= self.create_batch_csv_reports(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
@@ -128,6 +133,7 @@ class AjaxPublishView(AP):
         output = StringIO.StringIO()
         top_headers= ["Unique COA ID","Project Title","Batch ID","Client","Date Sampled","Date Reported"]
         group_cats = {}
+        writer = csv.writer(output)
 
         # The key is the is the analysis service followed space to enter the results of the analysis service
         # for the sample in question
@@ -163,8 +169,6 @@ class AjaxPublishView(AP):
                 date_verified = date_verified.strftime('%m-%d-%y')
             if sample.Batch:
                 batch_title = sample.Batch.title
-
-            writer = csv.writer(output)
 
             headers_line= [
                 coa_id,
@@ -221,6 +225,146 @@ class AjaxPublishView(AP):
                 lab_results_row.pop()
                 writer.writerow(lab_results_row)
         return output.getvalue()
+
+    def create_geochemistry_csv_report(self,samples,coa_num):
+        output = StringIO.StringIO()
+        writer = csv.writer(output)
+        headers = self.get_geochemistry_headers(samples,coa_num)
+        analysis_services,body = self.get_geochemistry_body(samples)
+        sample_data = self.get_geochemistry_analysis_request(analysis_services,samples)
+
+        #write headers
+        for header in headers:
+            writer.writerow(header)
+        #write body
+        for row in body:
+            writer.writerow(row)
+        #write sample data
+        for data in sample_data:
+            writer.writerow(data)
+
+        return output.getvalue()
+
+    def get_geochemistry_analysis_request(self,analysis_services,samples):
+        sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
+        sample_data = []
+        sample_analyses,sample_analyses_ids = self.get_sample_analyses(sorted_samples) #The first entry is the sample and the rest are the analyses of those samples
+        for indx,sample in enumerate(sample_analyses):
+            sample_results = [sample[0].ClientSampleID]
+            for analysis_service in analysis_services:
+                if analysis_service.getKeyword() in sample_analyses_ids[indx]:
+                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getFormattedResult(html=False))
+                else:
+                    sample_results.append("")
+            sample_data.append(sample_results)
+            sample_data.append(["\n"])
+        sample_data.pop()
+        return sample_data
+
+    def get_sample_analyses(self,samples):
+        all_samples_with_analyses = []
+        all_sample_ids = []
+        for sample in samples:
+            sample_analyses = sample.Analyses
+            sample_analyses.insert(0,sample)
+            all_samples_with_analyses.append(sample_analyses)
+            all_sample_ids.append([i.get("id") for i in sample_analyses])
+        return all_samples_with_analyses,all_sample_ids
+
+
+    def get_geochemistry_body(self,samples):
+        analysis_services_full_list = api.get_setup().bika_analysisservices.values()
+        eligible_analysis_services = sorted([item for item in analysis_services_full_list if item.getSortKey()], key=lambda x:x.getSortKey())
+        methods_list = ["Method"]
+        analysis_Ids_list = ["Element"]
+        unit_list = ["Unit"]
+        ldl_list = ["LDL"]
+        udl_list = ["UDL"]
+        tolerance_list = ["TOLERANCE"]
+        digestion_list = ["DIGESTION"]
+        temperature_list = ["TEMPERATURE"]
+        time_list = ["TIME"]
+        final_body_rows = []
+
+        for analysis_service in eligible_analysis_services:
+            if analysis_service.getMethod():
+                methods_list.append(analysis_service.getMethod().getMethodID())
+            else:
+                methods_list.append("")
+            analysis_Ids_list.append(analysis_service.getProtocolID())
+            unit_list.append(analysis_service.getUnit())
+            ldl_list.append(analysis_service.getLowerDetectionLimit())
+            udl_list.append(analysis_service.getUpperDetectionLimit())
+            if analysis_service.getKeyword == "Au":
+                tolerance_list.append("6%")
+                digestion_list.append("FA-FUS02")
+                temperature_list.append("1050°C")
+                time_list.append("60 mins.")
+            else:
+                tolerance_list.append("NA")
+                digestion_list.append("NA")
+                temperature_list.append("NA")
+                time_list.append("NA")
+        
+        final_body_rows = [
+            methods_list,["\n"],analysis_Ids_list,["\n"],unit_list,["\n"],
+            ldl_list,["\n"],udl_list,["\n"],tolerance_list,["\n"],digestion_list,["\n"],
+            temperature_list,["\n"],time_list,["\n"]]
+
+        return eligible_analysis_services,final_body_rows
+
+
+    def get_geochemistry_headers(self,samples,coa_num):
+        sample = samples[0]
+        current_user = api.get_current_user()
+        user = api.get_user_contact(current_user)
+        lab_obj = self.context.bika_setup.laboratory
+        if not user:
+            user = '{}'.format(current_user.id)
+        headers = []
+        headers.append(['Lab Certificate Number',coa_num])
+        headers.append(["\n"])
+        headers.append(["Client Name",sample.Client.title])
+        headers.append(["\n"])
+        headers.append(["Client Reference Number", sample.BatchID])
+        headers.append(["\n"])
+        headers.append(["Lab Name and Location",lab_obj.getName(),lab_obj.getPhysicalAddress().get('city')])
+        headers.append(["\n"])
+        headers.append(["Country of Sample Origin",sample.Client.PostalAddress.get('country')])
+        headers.append(["\n"])
+        headers.append(["Project Name",sample.Batch.title])
+        headers.append(["\n"])
+
+        date_received = ""
+        if sample.DateReceived:
+            date_received = sample.DateReceived.strftime('20%y/%m/%d')
+        headers.append(["Date Sample Received at Lab",date_received])
+        headers.append(["\n"])
+        date_verified = ""
+        if sample.getDateVerified():
+            date_verified = sample.getDateVerified().strftime('20%y/%m/%d')
+        headers.append(["Date of Analysis Finalization",date_verified])
+        headers.append(["\n"])
+        date_published = ""
+        if sample.DatePublished:
+            date_published = sample.DatePublished.strftime('20%y/%m/%d')
+
+        headers.append(["Date Assay Report Delivered",date_published])
+        headers.append(["\n"])
+        headers.append(["Total Number of Samples Submitted to Lab",len(samples)])
+        headers.append(["\n"])
+        headers.append(["Sample Type",sample.SampleTypeTitle])
+        headers.append(["\n"])
+        headers.append(["Certificate Comments",sample.Batch.COARemarks])
+        headers.append(["\n"])
+        headers.append(["Final Approval",user])
+        headers.append(["\n"])
+        profiles = ""
+        if sample.Profiles:
+            profiles = sample.Profiles
+        headers.append(["Analysis",profiles])
+        headers.append(["\n"])
+        return headers
 
     def sort_analyses_to_list(self,analyses):
         title_sort = sorted(analyses.items(), key=lambda x:x[0])
