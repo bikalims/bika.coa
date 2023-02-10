@@ -71,7 +71,7 @@
      .report .section-footer {
        position: fixed;
        left: -20mm;
-       bottom: -20mm;
+       bottom: -15mm;
        margin-left: 20mm;
        margin-top: 10mm;
        height: 20mm;
@@ -371,18 +371,20 @@
                                    repeat="category python:view.sort_items(categories_by_poc.get(poc))">
 
               <!-- Analysis in POC and Category -->
-              <table class="table table-sm table-condensed" style="font-size: 10px">
+               <table class="table table-sm table-condensed" style="font-size: 10px">
                 <colgroup>
                   <!-- Category -->
                   <col style="width: 30%;">
                   <!-- Method -->
                   <col style="width: 20%;">
                   <!-- Result -->
-                  <col style="width: 20%">
+                  <col style="width: 16%">
                   <!-- Unit -->
                   <col style="width: 15%">
-                  <!-- Range -->
-                  <col style="width: 10%">
+                  <!-- Range Upper -->
+                  <col style="width: 7%">
+                  <!-- Range lower -->
+                  <col style="width: 7%">
                   <!-- Out of Range -->
                   <col style="width: 5%">
                 </colgroup>
@@ -401,7 +403,10 @@
                       <span i18n:translate="">Unit</span>
                     </th>
                     <th class="specs">
-                      <span style="text-align: center;" i18n:translate="">Spesification Limit</span>
+                      <span style="text-align: center;" i18n:translate="">≤Lower Limit</span>
+                    </th>
+                      <th class="specs">
+                      <span style="text-align: center;" i18n:translate="">≥Upper Limit</span>
                     </th>
                     <th class="outofrange">
                       <span i18n:translate=""></span>
@@ -419,41 +424,55 @@
                         <span tal:condition="analysis/ScientificName">
                           <span class="font-italic" tal:content="analysis/title"></span>
                         </span>
-
                         <span class="text-success"
                               style="font-family:sans;"
                               tal:content="accredited_symbol"
                               tal:condition="analysis/Accredited">
-
-                    <td class="text-left">
-                      <span tal:condition="analysis/Method">
-                        <span class="font-normal" tal:content="analysis/Method/ShortTitle|analysis/Method/Title"></span>
-                      </span>
-                      <span tal:condition="not: analysis/Method">
-                        <span class="font-normal">-</span> 
-                      </span>
-                    </td>
-
+                      <td class="text-left">
+                        <span tal:condition="analysis/Method">
+                          <span class="font-normal" tal:content="analysis/Method/ShortTitle|analysis/Method/Title"></span>
+                        </span>
+                        <span tal:condition="not: analysis/Method">
+                          <span class="font-normal">-</span>
+                        </span>
+                      </td>
                       </td>
                       <td class="text-right">
-                        <span class="result" tal:content="structure python:model.get_formatted_result(analysis)">23</span>
+                        <span class="result" tal:content="structure python:model.get_formatted_result(analysis)"></span>
                       </td>
                       <td class="text-left text-muted font-italic">
                         <span class="units" tal:content="structure python:model.get_formatted_unit(analysis)"></span>
                       </td>
-                      <td class="specs">
-                        <span tal:condition="analysis/Uncertainty"
-                              tal:content="structure python:model.get_formatted_uncertainty(analysis)"></span>
-                        <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
-                        <span tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
+                      <td class="lowerspecs">
+                        <span tal:condition="model/PublicationSpecification">
+                          <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
+                                <span tal:condition="python:analysis.getKeyword()==pubspec['keyword']"
+                                        tal:content="python:'%s' % (pubspec['min'])"></span>
+                          </tal:pubspecs>
+                        </span>
                       </td>
-                      <td class="text-center align-middle">
-                        <span tal:condition="python:model.is_out_of_range(analysis)"
-                              class="font-weight-light">
-                          <span class="outofrange text-danger"
-                                style="font-family:Lucida Console, Courier, monospace;"
-                                tal:content="outofrange_symbol">
-                          </span>
+
+                      <td class="upperspecs" style="text-align: center">
+                        <span tal:condition="model/PublicationSpecification">
+                          <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
+                            <span tal:condition="python:analysis.getKeyword()==pubspec['keyword']"
+                                  tal:content="python:'%s' % (pubspec['max'])"></span>
+                          </tal:pubspecs>
+                        </span>
+                      </td>
+
+                      <td>
+                        <span tal:condition="model/PublicationSpecification">
+                          <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
+                            <span tal:condition="python:analysis.getKeyword()==pubspec['keyword']">
+                              <span tal:condition="python:model.is_out_of_range(analysis, object_type='Sample')" class="font-weight-light">
+                                <span class="outofrange text-danger"
+                                  style="font-family:Lucida Console, Courier, monospace;"
+                                  tal:content="outofrange_symbol">
+                                </span>
+                              </span>
+                            </span>
+                          </tal:pubspecs>
                         </span>
                       </td>
                     </tr>
@@ -476,8 +495,11 @@
             </tal:poc>
         </div>
       </div>
+        <div class="text-center">
+   <th> <strong>END OF RESULTS FOR <h3 i18n:translate><span tal:content="python:model.ClientSampleID or '-'"/> (<a tal:content="model/getId">)</h3></strong></th>
+  </div>
+      <p style="page-break-after: always;"></p>
     </tal:model>
-    <p style="page-break-after: always;"></p>
   </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
@@ -497,14 +519,7 @@
     </tal:model>
   </tal:render>
 
-  <div class="text-center">
- <th>
-  <strong>
-   END OF RESULTS
-  </strong>
-  <HR>
- </th>
-</div>
+
 
   <!-- QC RESULTS -->
   <!--<tal:render condition="python:True">
@@ -627,6 +642,14 @@
         </tal:attachment>
       </tal:model>
     </div>
+    <div class="text-center">
+ <th>
+  <strong>
+   END OF REPORT
+  </strong>
+  <HR>
+ </th>
+</div>
   </tal:render>
 
   <!-- CUSTOM FOOTER -->
@@ -641,40 +664,26 @@
   <!-- DEFAULT FOOTER -->
   <tal:render condition="python:not footer"
               define="laboratory python:view.laboratory;">
+
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
-      <div id="footer-line"></div>
-      <table class="w-100">
-        <tr>
-          <td>
-            <div>
-              <strong tal:content="laboratory/Name">Lab Name</strong>
-              • <span tal:content="laboratory/PhysicalAddress/address">Lab Street and Number</span>
-              • <span tal:content="laboratory/PhysicalAddress/zip">Lab ZIP</span>
-                <span tal:content="laboratory/PhysicalAddress/city">Lab City</span>
-              • <span tal:content="laboratory/PhysicalAddress/country">Lab Country</span>
-            </div>
-            <div>
-              <span i18n:translate="">Phone</span>:
-              <span tal:content="laboratory/Phone">Lab Phone Number</span>
-              • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
-                <span tal:content="laboratory/EmailAddress">Lab Email</span>
-              </a>
-              • <a href="#" tal:attributes="href laboratory/LabURL">
-                <span tal:content="laboratory/LabURL">Lab URL</span>
-              </a>
-            </div>
-          </td>
-        </tr>
-      </table>
-    </div>
+
+<table style="width:100%;border:1px solid black;text-align: left;">
+  <tr style="width:100%;border:1px solid black;">
+    <td style="width:20%;border:1px solid black;">Compiler</td>
+    <td style="width:20%;border:1px solid black;">Francois le Roux</td>
+    <td style="width:20%;border:1px solid black;">QM No. 7.8/R-01</td>
+  </tr>
+    <tr style="width:100%;border:1px solid black;">
+    <td style="width:20%;border:1px solid black;">Reviewer</td>
+    <td style="width:20%;border:1px solid black;">Elsabe Botes</td>
+    <td style="width:20%;border:1px solid black;">Rev 08 </td>
+  </tr>
+    <tr style="width:100%;border:1px solid black;">
+    <td style="width:20%;border:1px solid black;">Approver</td>
+    <td style="width:20%;border:1px solid black;">Elsabe Botes</td>
+    <td style="width:20%;border:1px solid black;">09/02/2023</td>
+  </tr>
+</table>
   </tal:render>
-<div class="text-center">
- <th>
-  <strong>
-   END OF REPORT
-  </strong>
-  <HR>
- </th>
-</div>
 </tal:report>
