@@ -232,6 +232,9 @@ class AjaxPublishView(AP):
         headers = self.get_geochemistry_headers(samples,coa_num)
         analysis_services,body = self.get_geochemistry_body(samples)
         sample_data = self.get_geochemistry_analysis_request(analysis_services,samples)
+        if sample_data:
+            removal_keys = self.get_index_of_columns_to_be_removed(sample_data)
+        body,sample_data = self.remove_empty_services(body,sample_data,removal_keys)
 
         #write headers
         for header in headers:
@@ -244,6 +247,14 @@ class AjaxPublishView(AP):
             writer.writerow(data)
 
         return output.getvalue()
+
+    def get_index_of_columns_to_be_removed(self,sample_data):
+        removal_keys = []
+        for indx in range(len(sample_data[0])):
+            column = [i[indx] for i in sample_data if len(i) > 1]
+            if all('' == s or s is None for s in column):
+                removal_keys.append(indx)
+        return removal_keys
 
     def get_geochemistry_analysis_request(self,analysis_services,samples):
         sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
@@ -296,7 +307,7 @@ class AjaxPublishView(AP):
             ldl_list.append(analysis_service.getLowerDetectionLimit())
             udl_list.append(analysis_service.getUpperDetectionLimit())
             if analysis_service.getKeyword == "Au":
-                tolerance_list.append("6%")
+                tolerance_list.append("0.05")
                 digestion_list.append("FA-FUS02")
                 temperature_list.append("1050°C")
                 time_list.append("60 mins.")
@@ -326,13 +337,16 @@ class AjaxPublishView(AP):
         headers.append(["\n"])
         headers.append(["Client Name",sample.Client.title])
         headers.append(["\n"])
-        headers.append(["Client Reference Number", sample.BatchID])
+        headers.append(["Client Reference Number", sample.getBatchID()])
         headers.append(["\n"])
         headers.append(["Lab Name and Location",lab_obj.getName(),lab_obj.getPhysicalAddress().get('city')])
         headers.append(["\n"])
         headers.append(["Country of Sample Origin",sample.Client.PostalAddress.get('country')])
         headers.append(["\n"])
-        headers.append(["Project Name",sample.Batch.title])
+        batch_title = ''
+        if sample.Batch:
+            batch_title = sample.Batch.title
+        headers.append(["Project Name",batch_title])
         headers.append(["\n"])
 
         date_received = ""
@@ -355,16 +369,33 @@ class AjaxPublishView(AP):
         headers.append(["\n"])
         headers.append(["Sample Type",sample.SampleTypeTitle])
         headers.append(["\n"])
-        headers.append(["Certificate Comments",sample.Batch.COARemarks])
+        coa_remarks = ''
+        if sample.Batch:
+            coa_remarks = sample.Batch.COARemarks
+        headers.append(["Certificate Comments",coa_remarks])
         headers.append(["\n"])
         headers.append(["Final Approval",user])
         headers.append(["\n"])
-        profiles = ""
+        profiles_titles = ""
         if sample.Profiles:
-            profiles = sample.Profiles
-        headers.append(["Analysis",profiles])
+            profiles_titles = [i.title for i in sample.Profiles]
+        if len(profiles_titles) == 1:
+            profiles_titles = profiles_titles[0]
+        headers.append(["Analysis",profiles_titles])
         headers.append(["\n"])
         return headers
+
+    def remove_empty_services(self,body,analyses,removal_keys):
+        sorted_removal_keys = sorted(removal_keys,reverse=True)
+        for indx,item in enumerate(analyses):
+            if len(item) > 1:
+                for rem_key in sorted_removal_keys:
+                    analyses[indx].pop(rem_key)
+        for indx2,item2 in enumerate(body):
+            if len(item2) > 1:
+                for rem_key in sorted_removal_keys:
+                    body[indx2].pop(rem_key)
+        return body, analyses
 
     def sort_analyses_to_list(self,analyses):
         title_sort = sorted(analyses.items(), key=lambda x:x[0])
