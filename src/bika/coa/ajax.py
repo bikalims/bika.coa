@@ -306,7 +306,7 @@ class AjaxPublishView(AP):
             unit_list.append(analysis_service.getUnit())
             ldl_list.append(analysis_service.getLowerDetectionLimit())
             udl_list.append(analysis_service.getUpperDetectionLimit())
-            if analysis_service.getKeyword == "Au":
+            if analysis_service.getKeyword() == "Au":
                 tolerance_list.append("0.05")
                 digestion_list.append("FA-FUS02")
                 temperature_list.append("1050°C")
