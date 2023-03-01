@@ -71,7 +71,7 @@
      .report .section-footer {
        position: fixed;
        left: -20mm;
-       bottom: -15mm;
+       bottom: -20mm;
        margin-left: 20mm;
        margin-top: 10mm;
        height: 20mm;
@@ -465,7 +465,7 @@
                         <span tal:condition="model/PublicationSpecification">
                           <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
                             <span tal:condition="python:analysis.getKeyword()==pubspec['keyword']">
-                              <span tal:condition="python:model.is_out_of_range(analysis, object_type='Sample')" class="font-weight-light">
+                              <span tal:condition="python:view.is_out_of_range(analysis, spec_type='PublicationSpecification')" class="font-weight-light">
                                 <span class="outofrange text-danger"
                                   style="font-family:Lucida Console, Courier, monospace;"
                                   tal:content="outofrange_symbol">
@@ -495,11 +495,8 @@
             </tal:poc>
         </div>
       </div>
-        <div class="text-center">
-   <th> <strong>END OF RESULTS FOR <h3 i18n:translate><span tal:content="python:model.ClientSampleID or '-'"/> (<a tal:content="model/getId">)</h3></strong></th>
-  </div>
-      <p style="page-break-after: always;"></p>
     </tal:model>
+    <p style="page-break-after: always;"></p>
   </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
@@ -519,7 +516,14 @@
     </tal:model>
   </tal:render>
 
-
+  <div class="text-center">
+ <th>
+  <strong>
+   END OF RESULTS
+  </strong>
+  <HR>
+ </th>
+</div>
 
   <!-- QC RESULTS -->
   <!--<tal:render condition="python:True">
@@ -642,14 +646,6 @@
         </tal:attachment>
       </tal:model>
     </div>
-    <div class="text-center">
- <th>
-  <strong>
-   END OF REPORT
-  </strong>
-  <HR>
- </th>
-</div>
   </tal:render>
 
   <!-- CUSTOM FOOTER -->
@@ -664,26 +660,40 @@
   <!-- DEFAULT FOOTER -->
   <tal:render condition="python:not footer"
               define="laboratory python:view.laboratory;">
-
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
-
-<table style="width:100%;border:1px solid black;text-align: left;">
-  <tr style="width:100%;border:1px solid black;">
-    <td style="width:20%;border:1px solid black;">Compiler</td>
-    <td style="width:20%;border:1px solid black;">Francois le Roux</td>
-    <td style="width:20%;border:1px solid black;">QM No. 7.8/R-01</td>
-  </tr>
-    <tr style="width:100%;border:1px solid black;">
-    <td style="width:20%;border:1px solid black;">Reviewer</td>
-    <td style="width:20%;border:1px solid black;">Elsabe Botes</td>
-    <td style="width:20%;border:1px solid black;">Rev 08 </td>
-  </tr>
-    <tr style="width:100%;border:1px solid black;">
-    <td style="width:20%;border:1px solid black;">Approver</td>
-    <td style="width:20%;border:1px solid black;">Elsabe Botes</td>
-    <td style="width:20%;border:1px solid black;">09/02/2023</td>
-  </tr>
-</table>
+      <div id="footer-line"></div>
+      <table class="w-100">
+        <tr>
+          <td>
+            <div>
+              <strong tal:content="laboratory/Name">Lab Name</strong>
+              • <span tal:content="laboratory/PhysicalAddress/address">Lab Street and Number</span>
+              • <span tal:content="laboratory/PhysicalAddress/zip">Lab ZIP</span>
+                <span tal:content="laboratory/PhysicalAddress/city">Lab City</span>
+              • <span tal:content="laboratory/PhysicalAddress/country">Lab Country</span>
+            </div>
+            <div>
+              <span i18n:translate="">Phone</span>:
+              <span tal:content="laboratory/Phone">Lab Phone Number</span>
+              • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
+                <span tal:content="laboratory/EmailAddress">Lab Email</span>
+              </a>
+              • <a href="#" tal:attributes="href laboratory/LabURL">
+                <span tal:content="laboratory/LabURL">Lab URL</span>
+              </a>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
   </tal:render>
+<div class="text-center">
+ <th>
+  <strong>
+   END OF REPORT
+  </strong>
+  <HR>
+ </th>
+</div>
 </tal:report>

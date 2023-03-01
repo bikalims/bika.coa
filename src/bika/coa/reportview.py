@@ -1,17 +1,147 @@
-from bika.coa import logger
-from bika.lims import api
-from bika.lims.workflow import getTransitionUsers
 from DateTime import DateTime
 from plone import api as ploneapi
 from plone.registry.interfaces import IRegistry
-from bika.lims.utils.analysis import format_uncertainty
+from zope.component import getUtility
+from zope.component._api import getAdapters
+
+from bika.coa import logger
+from bika.lims import api
+from bika.lims.api import _marker
+from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
+    IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
+from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils.analysis import format_uncertainty
+from bika.lims.workflow import getTransitionUsers
 from senaite.app.supermodel import SuperModel
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
-from zope.component import getUtility
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
+
+
+def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
+    """
+    Taken from bika.lims.api.analysis is_out_of_range and inculded the 
+    spec_type.
+    :param spec_type: Specification type to be returned, it could the
+    Specficification or PublicationSpecification type result_range
+    """
+    analysis = api.get_object(brain_or_object)
+    if not IAnalysis.providedBy(analysis) and \
+            not IReferenceAnalysis.providedBy(analysis):
+        api.fail("{} is not supported. Needs to be IAnalysis or "
+                 "IReferenceAnalysis".format(repr(analysis)))
+
+    if result is _marker:
+        result = api.safe_getattr(analysis, "getResult", None)
+
+    if result in [None, '']:
+        # Empty result
+        return False, False
+
+    if IDuplicateAnalysis.providedBy(analysis):
+        # Result range for duplicate analyses is calculated from the original
+        # result, applying a variation % in shoulders. If the analysis has
+        # result options enabled or string results enabled, system returns an
+        # empty result range for the duplicate: result must match %100 with the
+        # original result
+        original = analysis.getAnalysis()
+        original_result = original.getResult()
+
+        # Does original analysis have a valid result?
+        if original_result in [None, '']:
+            return False, False
+
+        # Does original result type matches with duplicate result type?
+        if api.is_floatable(result) != api.is_floatable(original_result):
+            return True, True
+
+        # Does analysis has result options enabled or non-floatable?
+        if analysis.getResultOptions() or not api.is_floatable(original_result):
+            # Let's always assume the result is 'out from shoulders', cause we
+            # consider the shoulders are precisely the duplicate variation %
+            out_of_range = original_result != result
+            return out_of_range, out_of_range
+
+    elif not api.is_floatable(result):
+        # A non-duplicate with non-floatable result. There is no chance to know
+        # if the result is out-of-range
+        return False, False
+
+    # Convert result to a float
+    result = api.to_float(result)
+
+    # Note that routine analyses, duplicates and reference analyses all them
+    # implement the function getResultRange:
+    # - For routine analyses, the function returns the valid range based on the
+    #   specs assigned during the creation process.
+    # - For duplicates, the valid range is the result of the analysis the
+    #   the duplicate was generated from +/- the duplicate variation.
+    # - For reference analyses, getResultRange returns the valid range as
+    #   indicated in the Reference Sample from which the analysis was created.
+    result_range = None
+    if spec_type == "Specification":
+        result_range = api.safe_getattr(analysis, "getResultsRange", None)
+    if spec_type == "PublicationSpecification":
+        sample = analysis.getRequest()
+        pub_spec = sample.getPublicationSpecification()
+        result_ranges = api.safe_getattr(pub_spec, "getResultsRange", None)
+        keyword = analysis.getKeyword()
+        for index, i in enumerate(result_ranges):
+            if i["keyword"] == keyword:
+                result_range = i
+                break
+
+    if not result_range:
+        # No result range defined or the passed in object does not suit
+        return False, False
+
+    # Maybe there is a custom adapter
+    adapters = getAdapters((analysis,), IResultOutOfRange)
+    for name, adapter in adapters:
+        ret = adapter(result=result, specification=result_range)
+        if not ret or not ret.get('out_of_range', False):
+            continue
+        if not ret.get('acceptable', True):
+            # Out of range + out of shoulders
+            return True, True
+        # Out of range, but in shoulders
+        return True, False
+
+    result_range = ResultsRangeDict(result_range)
+
+    # The assignment of result as default fallback for min and max guarantees
+    # the result will be in range also if no min/max values are defined
+    specs_min = api.to_float(result_range.min, result)
+    specs_max = api.to_float(result_range.max, result)
+
+    in_range = False
+    min_operator = result_range.min_operator
+    if min_operator == "geq":
+        in_range = result >= specs_min
+    else:
+        in_range = result > specs_min
+
+    max_operator = result_range.max_operator
+    if in_range:
+        if max_operator == "leq":
+            in_range = result <= specs_max
+        else:
+            in_range = result < specs_max
+
+    # If in range, no need to check shoulders
+    if in_range:
+        return False, False
+
+    # Out of range, check shoulders. If no explicit warn_min or warn_max have
+    # been defined, no shoulders must be considered for this analysis. Thus, use
+    # specs' min and max as default fallback values
+    warn_min = api.to_float(result_range.warn_min, specs_min)
+    warn_max = api.to_float(result_range.warn_max, specs_max)
+    in_shoulder = warn_min <= result <= warn_max
+    return True, not in_shoulder
 
 
 class SingleReportView(SRV):
@@ -269,6 +399,8 @@ class MultiReportView(MRV):
                 return True
         return False
 
+    def is_out_of_range(self, analysis, spec_type="Specification"):
+        return is_out_of_range(analysis.instance, spec_type=spec_type)[0]
 
     def get_extra_data(self, collection=None, poc=None, category=None):
         analyses = self.get_analyses_by(collection)
