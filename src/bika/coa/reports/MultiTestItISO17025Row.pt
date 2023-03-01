@@ -466,9 +466,8 @@
                           <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
                             <span tal:condition="python:analysis.getKeyword()==pubspec['keyword']">
                               <span tal:condition="python:view.is_out_of_range(analysis, spec_type='PublicationSpecification')" class="font-weight-light">
-                                <span class="outofrange text-danger"
-                                  style="font-family:Lucida Console, Courier, monospace;"
-                                  tal:content="outofrange_symbol">
+                                <span class="outofrange text-danger">
+                                  <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                                 </span>
                               </span>
                             </span>
