@@ -233,9 +233,8 @@
 <li>Information provided by <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                       <a tal:content="client/Name"/>
 </tal:by_client>include and is not limited to Sample Type, Sampler, Publication Spesification, Date/Time Sampled.</li>
-<li>                           <span class="outofrange text-danger"
-                                style="font-family:Lucida Console, Courier, monospace;"
-                                tal:content="outofrange_symbol">
+<li>                           <span class="outofrange text-danger">
+                                  <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                           </span> Result out of client specified range</li>
 <li>Outsourced or subcontracted tests indicated per method</li>
 <br>
