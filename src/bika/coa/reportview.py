@@ -382,6 +382,9 @@ class MultiReportView(MRV):
             return collection[0].Batch.id
         return None
 
+    def is_batch_unique(self, collection=None):
+        return len(set([getattr(i.Batch , "id", '') for i in collection])) == 1
+
     def get_order_number(self, collection=None):
         if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
             return collection[0].ClientOrderNumber

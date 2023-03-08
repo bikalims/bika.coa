@@ -310,7 +310,7 @@
   </tal:render>
 
   <!-- RESULTS -->
-  <tal:render condition="python:True"
+  <tal:render condition="python:view.is_batch_unique(collection)"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="row section-results no-gutters">
@@ -415,6 +415,9 @@
         </tal:page>
       </div>
     </div>
+  </tal:render>
+  <tal:render condition="python:not view.is_batch_unique(collection)">
+  <p> Mutli Batches found</p>
   </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
