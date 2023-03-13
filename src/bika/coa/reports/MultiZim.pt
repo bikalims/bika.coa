@@ -156,15 +156,6 @@
                     </tal:by_client>
                   </td>
                 </tr>
-                <!-- Contact Name(s) -->
-                <tr>
-                  <td class="label" i18n:translate="">Contact</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/Fullname"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
                 <!-- Physical Address -->
                 <tr>
                   <td class="label" i18n:translate="">Physical Address</td>
@@ -178,6 +169,15 @@
                     </tal:by_client>
                   </td>
                 </tr>
+                <!-- Contact Name(s) -->
+                <tr>
+                  <td class="label" i18n:translate="">Contact</td>
+                  <td class="field">
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:content="contact/Fullname"/>
+                    </tal:by_contact>
+                  </td>
+                </tr>
                 <!-- Email Address -->
                 <tr>
                   <td class="label" i18n:translate="">Email Address</td>
@@ -187,6 +187,16 @@
                     </tal:by_contact>
                   </td>
                 </tr>
+                <!-- Tel No -->
+                <tr>
+                  <td class="label" i18n:translate="">Telephone Number</td>
+                  <td class="field">
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:content="contact/Phone|nothing"/>
+                    </tal:by_contact>
+                  </td>
+                </tr>
+                <!-- Reporter -->
                 <tr>
                   <td class="label" i18n:translate="">Date Published</td>
                   <td tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"></td>
@@ -204,10 +214,24 @@
                 </tr>
               </table>
             </td>
+            <!-- Accreditaion Logo -->
             <td style="border:none;" class="align-top pl-2">
-              <!-- Right Table -->
-              <table class="table table-sm table-condensed ml-1"
-                     tal:define="laboratory python:view.laboratory;">
+              <table class="table table-sm table-condensed ml-1">
+                <tr>
+                  <td>
+                    <div class="accreditation-logo text-right"
+                        tal:define="accredited laboratory/LaboratoryAccredited;
+                                    accreditation_logo laboratory/AccreditationBodyLogo;"
+                        tal:condition="accredited">
+                      <img class="img-fluid"
+                          tal:condition="accreditation_logo"
+                          tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
+                      <img class="img-fluid"
+                          tal:condition="not:accreditation_logo"
+                          tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
+                    </div>
+                  </td>
+                </tr>
                 <tr>
                   <td>
                     <!-- Laboratory Info -->
@@ -242,25 +266,6 @@
                 </tr>
               </table>
             </td>
-            <td style="border:none;" class="align-top pl-2">
-              <table class="table table-sm table-condensed ml-1">
-                <tr>
-                  <td>
-            <div class="accreditation-logo text-left"
-                 tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo;"
-                 tal:condition="accredited">
-              <img class="img-fluid"
-                   tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
-              <img class="img-fluid"
-                   tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
-            </div>
-                  </td>
-                </tr>
-              </table>
-          </td>
           </tr>
         </table>
       </div>
