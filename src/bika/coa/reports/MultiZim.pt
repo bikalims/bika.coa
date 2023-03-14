@@ -117,8 +117,8 @@
       <!-- Header Table -->
         <div class="col-6 text-left">
           <!-- Header Left -->
-          <h1>Certificate of Analysis</h1>
-          <h1 name='coa_num' tal:content="python: coa_num"/>
+          <h1></h1>
+          <!-- <h1 name='coa_num' tal:content="python: coa_num"/> -->
         </div>
         <div class="col-6 text-right">
             <!-- Header Right -->
@@ -192,24 +192,8 @@
                   <td class="label" i18n:translate="">Telephone Number</td>
                   <td class="field">
                     <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/Phone|nothing"/>
+                      <div class="contact-phone" tal:content="contact/Phone|nothing"/>
                     </tal:by_contact>
-                  </td>
-                </tr>
-                <!-- Reporter -->
-                <tr>
-                  <td class="label" i18n:translate="">Date Published</td>
-                  <td tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"></td>
-                </tr>
-                <tr tal:condition="reporter">
-                  <td class="label" i18n:translate="">Published by</td>
-                  <td>
-                    <span tal:content="reporter/fullname|reporter/username"/>
-                    <tal:email tal:condition="reporter/email|nothing"
-                               tal:define="email reporter/email|nothing">
-                      (<a tal:content="email"
-                          tal:attributes="href string:mailto:${email}"></a>)
-                    </tal:email>
                   </td>
                 </tr>
               </table>
@@ -276,7 +260,90 @@
     </div>
   </tal:render>
 
-  <!-- ALERTS -->
+    <!-- Certificate of Analysis Header -->
+  <tal:render condition="python:True"
+              define="primarymodel python:collection[0];">
+    <div class="row section-header no-gutters">
+      <!-- Header Table -->
+        <div class="col-6 text-right">
+          <h1>Certificate of Analysis:</h1>
+        </div>
+        <div class="col-6">
+          <h1 name='coa_num' tal:content="python: coa_num"/>
+        </div>
+        <div class="col-6 text-right">
+            <!-- <div tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/> -->
+            <h2 tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
+        </div>
+    </div>
+  </tal:render>
+      <!-- Certificate of Analysis Header -->
+  
+      <!-- Certificate of Analysis Table -->
+  <tal:render condition="python:len(collection)>0"
+              define="primarymodel python:collection[0];
+                      batch primarymodel/Batch;">
+    <table class="table table-sm table-condensed ml-1">
+    <!-- First Row -->
+      <tr>
+        <td class="label" i18n:translate="">Project</td>
+        <td class='field'>
+          <div tal:content="batch/getId"/>
+        </td>
+        <td class="label" i18n:translate="">Sample Type</td>
+        <td class='field'>
+          <div tal:content="python:primarymodel.SampleTypeTitle or '-'"/>
+        </td>
+      </tr>
+        <!-- Second Row  -->
+      <tr>
+        <td class="label" i18n:translate="">Date Received</td>
+        <td class='field'>
+          <div tal:content="python:primarymodel.DateReceived and view.to_localized_date(primarymodel.DateReceived) or '-'"/>
+        </td>
+        <td class="label" i18n:translate="">Date Sampled</td>
+        <td class='field'>
+          <div tal:content="python:primarymodel.DateSampled and view.to_localized_date(primarymodel.DateSampled) or '-'"/>
+        </td>
+      </tr>
+      <tr>
+        <td class='label' i18n:translate="">Date Analyzed</td>
+        <td class='label text-right' i18n:translate="">Date Verified</td>
+      </tr>
+      <tr>
+        <td class="label" i18n:translate="">Soft Copy Number</td>
+        <td class='field'>
+          <div tal:content="string:Pending"/>
+        </td>
+        <td class="label" i18n:translate="">No. of Samples</td>
+        <td class='field'>
+          <div tal:content="string:Pending"/>
+        </td>
+      </tr>
+    </table>
+  </tal:render>
+   <!-- Certificate of Analysis Table -->
+
+    <!-- Disclaimers -->
+    <!-- <img tal:attributes="src laboratory/AccreditationBodyLogo/absolute_url;style styles/ac_styles"/> -->
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 i18n:translate="">Disclaimers</h1>
+        <ol type='1'>
+          <li>The test results only relate to samples received and tested </li>
+          <li>This Test Certificate shall not be reproduced except in full without written approval of <span tal:replace="laboratory/title|nothing"/></li>
+          <li>Parameter/ Elements and Method Code marked with ** in this Certificate are  accreditated and are included
+              in the <span tal:replace="laboratory/AccreditationBody|nothing"/> Schedule  of Accreditation for  this Laboratory</li>
+          <li>Opinions and interpretaions expressed herein are outside the scope of <span tal:replace="laboratory/AccreditationBody|nothing"/> accreditation</li>
+        </ol>
+      </div>
+    </div>
+      <div class="clearfix"></div>
+  </tal:render>
+    <!-- Disclaimers -->
+
+  <!-- ALERTS Does this stay or not we'll find out! -->
   <tal:render condition="python:True">
     <div class="row section-alerts no-gutters">
       <div class="w-100">
