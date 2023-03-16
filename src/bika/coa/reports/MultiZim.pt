@@ -306,10 +306,12 @@
           <div tal:content="python:primarymodel.DateSampled and view.to_localized_date(primarymodel.DateSampled) or '-'"/>
         </td>
       </tr>
+        <!-- Third Row  -->
       <tr>
         <td class='label' i18n:translate="">Date Analyzed</td>
         <td class='label text-right' i18n:translate="">Date Verified</td>
       </tr>
+      <!-- Fourth Row  -->
       <tr>
         <td class="label" i18n:translate="">Soft Copy Number</td>
         <td class='field'>
@@ -324,8 +326,7 @@
   </tal:render>
    <!-- Certificate of Analysis Table -->
 
-    <!-- Disclaimers -->
-    <!-- <img tal:attributes="src laboratory/AccreditationBodyLogo/absolute_url;style styles/ac_styles"/> -->
+    <!-- Disclaimers start -->
   <tal:render condition="python:True">
     <div class="row section-results no-gutters">
       <div class="w-100">
@@ -341,7 +342,38 @@
     </div>
       <div class="clearfix"></div>
   </tal:render>
-    <!-- Disclaimers -->
+    <!-- Disclaimers end -->
+
+    <!-- Methods Table start -->
+  <tal:render condition="python:len(collection)>0"
+              define="methods_data python:(view.get_methods_data(collection)).values()">
+    <h1 i18n:translate="">Methods</h1>
+    <table class="table table-sm table-condensed ml-1" title="Methods">
+      <thead>
+        <tr>
+          <th>Elements</th>
+          <th>Method</th>
+          <th>Summary of Method(s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tal:methods_data repeat="method methods_data">
+        <tr>
+          <td class='field'>
+            <div tal:content="python: method[1]"/>
+          </td>
+          <td class='field'>
+            <div tal:content="python: method[0]"/>
+          </td>
+          <td class='field'>
+            <div tal:content="python: method[2]"/>
+          </td>
+        </tr>
+        </tal:methods_data>
+      </tbody>
+    </table>
+  </tal:render>
+  <!-- Methods Table end-->
 
   <!-- ALERTS Does this stay or not we'll find out! -->
   <tal:render condition="python:True">

@@ -287,6 +287,17 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
+    def get_methods_data(self,collection):
+        analyses = self.get_analyses_by(collection)
+        methods = {}
+        for analysis in analyses:
+            if analysis.Method:
+                if analysis.Method.Title() not in methods.keys():
+                    methods[analysis.Method.Title()] = [analysis.Method.Title(),analysis.Title(),analysis.Method.description]
+                elif analysis.Title() not in methods[analysis.Method.Title()][1]:
+                    methods[analysis.Method.Title()][1] = methods[analysis.Method.Title()][1] +", "+ analysis.Title()
+        return methods
+
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
         all_analyses = self.get_analyses_by_poc(collection)
