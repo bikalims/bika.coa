@@ -61,20 +61,7 @@ class PdfReportStorageAdapter(PRSA):
         parent._p_jar.sync()
 
         if coa_num is None:
-            client = parent.aq_parent
-            today = DateTime()
-            query = {
-                'portal_type': 'ARReport',
-                'path': {
-                    'query': api.get_path(client)
-                },
-                'modified': {
-                    'query': today.Date(),
-                    'range': 'min'
-                }
-            }
-            brains = api.search(query, 'portal_catalog')
-            coa_num = 'COA{}-{}'.format(client.getClientID(), today.strftime("%Y-%m-%d"), len(brains) + 1)
+            coa_num = self.get_coa_number()
 
         # Create the report object
         report = api.create(
@@ -100,3 +87,21 @@ class PdfReportStorageAdapter(PRSA):
         logger.info("Create Report for {} [DONE]".format(parent_id))
 
         return report
+
+    def get_coa_number(self):
+        today = DateTime()
+        query = {
+            "portal_type": "ARReport",
+            "created": {"query": today.Date(), "range": "min"},
+            "sort_on": "created",
+            "sort_order": "descending",
+        }
+        brains = api.search(query, "portal_catalog")
+        num = 1
+        if len(brains):
+            coa = brains[0]
+            num = coa.Title.split("-")[-1]
+            num = int(num)
+            num += 1
+        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
+        return coa_num

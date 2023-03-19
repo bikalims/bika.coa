@@ -573,7 +573,6 @@ class MultiReportView(MRV):
         today = DateTime()
         query = {
             "portal_type": "ARReport",
-            "path": {"query": api.get_path(client)},
             "created": {"query": today.Date(), "range": "min"},
             "sort_on": "created",
             "sort_order": "descending",
