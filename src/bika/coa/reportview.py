@@ -23,7 +23,7 @@ LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 
 def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     """
-    Taken from bika.lims.api.analysis is_out_of_range and inculded the 
+    Taken from bika.lims.api.analysis is_out_of_range and inculded the
     spec_type.
     :param spec_type: Specification type to be returned, it could the
     Specficification or PublicationSpecification type result_range
@@ -149,12 +149,9 @@ class SingleReportView(SRV):
     """
 
     def get_coa_number(self, model):
-        instance = model.instance
-        client = instance.aq_parent
         today = DateTime()
         query = {
             "portal_type": "ARReport",
-            "path": {"query": api.get_path(client)},
             "created": {"query": today.Date(), "range": "min"},
             "sort_on": "created",
             "sort_order": "descending",
@@ -568,8 +565,6 @@ class MultiReportView(MRV):
         return self.to_localized_time(date)[:10]
 
     def get_coa_number(self):
-        instance = self.collection[0].instance
-        client = instance.aq_parent
         today = DateTime()
         query = {
             "portal_type": "ARReport",
