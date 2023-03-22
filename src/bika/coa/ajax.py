@@ -80,6 +80,9 @@ class AjaxPublishView(AP):
         elif template == "bika.coa:MultiBatch.pt":
             csv_report= self.create_batch_csv_reports(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
+        if template == "bika.coa:MultiZim.pt":
+            csv_report = self.create_zlabs_csv_report(samples,coa_num)
+            csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
             csv_report = self.create_csv_reports(samples)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
@@ -440,6 +443,134 @@ class AjaxPublishView(AP):
                 row2.append(headers[num])
                 row2.append(values[num])
         return [row1,row2]
+
+#ZimLabs CSV begin
+
+    def create_zlabs_csv_report(self,samples,coa_num):
+        output = StringIO.StringIO()
+        writer = csv.writer(output)
+        headers = self.get_zlabs_headers(samples,coa_num)
+        analysis_services,body = self.get_zlabs_body()
+        extra_column = True
+        sample_data = self.get_zlabs_analysis_request(samples,analysis_services,extra_column)
+        if sample_data:
+            removal_keys = self.get_index_of_columns_to_be_removed(sample_data)
+        body,sample_data = self.remove_empty_services(body,sample_data,removal_keys)
+
+        #write headers
+        for header in headers:
+            writer.writerow(header)
+        #write body
+        for row in body:
+            writer.writerow(row)
+        #write sample data
+        for data in sample_data:
+            writer.writerow(data)
+
+        return output.getvalue()
+
+    def get_zlabs_headers(self,samples,coa_num):
+        sample = samples[0]
+        current_user = api.get_current_user()
+        user = api.get_user_contact(current_user)
+        if not user:
+            user = '{}'.format(current_user.id)
+        headers = []
+        headers.append(['COA',coa_num])
+        headers.append(["Client Name",sample.Client.title,"Client Contact",sample.Contact.title,"Client Contact Email Addresss",sample.Contact.EmailAddress])
+        headers.append(["Project", sample.getBatchID(),"Sample Type",sample.SampleTypeTitle,"No of Samples",len(samples)])
+
+        date_received = ""
+        if sample.DateReceived:
+            date_received = sample.DateReceived.strftime('%d/%m/20%y')
+        headers.append(["Date Received",date_received])
+
+        analyzed_from,analyzed_to = self.get_analyzed_dates(samples)
+        headers.append(["Date Analyzed",analyzed_from,"to",analyzed_to])
+
+        verified_from,verified_to = self.get_verified_dates(samples)
+        headers.append(["Date Verified",verified_from,"to",verified_to])
+
+        date_published = ""
+        if sample.DatePublished:
+            date_published = sample.DatePublished.strftime('%d/%m/20%y')
+        headers.append(["Date Published",date_published])
+
+        headers.append(["Soft Copy Number","To be Confirmed"])
+        return headers
+    
+    def get_verified_dates(self,samples):
+        verified_from = ""
+        verified_to = ""
+        all_dates = []
+        for sample in samples:
+            date_verified = sample.getDateVerified()
+            if date_verified:
+                all_dates.append(date_verified)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[0].strftime('%d/%m/20%y')
+        return verified_from,verified_to
+
+    def get_analyzed_dates(self,samples):
+        analyzed_from = ""
+        analyzed_to = ""
+        all_dates = []
+        for sample in samples:
+            for analysis in sample.Analyses:
+                date_analyzed = analysis.ResultCaptureDate
+                if date_analyzed:
+                    all_dates.append(date_analyzed)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[0].strftime('%d/%m/20%y')
+        return analyzed_from,analyzed_to
+
+    def get_zlabs_body(self):
+        analysis_services_full_list = api.get_setup().bika_analysisservices.values()
+        eligible_analysis_services = sorted([item for item in analysis_services_full_list if item.getSortKey()], key=lambda x:x.getSortKey())
+        analysis_Ids_list = ["Analysis",""]
+        methods_list = ["Method",""]
+        unit_list = ["Unit",""]
+        final_body_rows = []
+
+        for analysis_service in eligible_analysis_services:
+            if analysis_service.getMethod():
+                methods_list.append(analysis_service.getMethod().Title())
+            else:
+                methods_list.append("")
+            analysis_Ids_list.append(analysis_service.Title())
+            unit_list.append(analysis_service.getUnit())
+        
+        final_body_rows = [
+            analysis_Ids_list,methods_list,unit_list,]
+        return eligible_analysis_services,final_body_rows
+    
+    def get_zlabs_analysis_request(self,samples,analysis_services,extra_column):
+        sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
+        sample_data = []
+        sample_analyses,sample_analyses_ids = self.get_sample_analyses(sorted_samples) #The first entry is the sample and the rest are the analyses of those samples
+        for indx,sample in enumerate(sample_analyses):
+            sample_results = [sample[0].ClientSampleID]
+            if extra_column:
+                sample_results.append(sample[0].id)
+            for analysis_service in analysis_services:
+                if analysis_service.getKeyword() in sample_analyses_ids[indx]:
+                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getFormattedResult(html=False))
+                else:
+                    sample_results.append("")
+            sample_data.append(sample_results)
+        return sample_data
+
+#ZimLabs CSV end
 
     def create_csv_report(self, sample):
         analyses = []
