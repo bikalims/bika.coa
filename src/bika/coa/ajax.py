@@ -477,7 +477,7 @@ class AjaxPublishView(AP):
             user = '{}'.format(current_user.id)
         headers = []
         headers.append(['COA',coa_num])
-        headers.append(["Client Name",sample.Client.title,"Client Contact",sample.Contact.title,"Client Contact Email Addresss",sample.Contact.EmailAddress])
+        headers.append(["Client Name",sample.Client.title,"Client Contact",sample.Contact.title,"Client Contact Email Address",sample.Contact.EmailAddress])
         headers.append(["Project", sample.getBatchID(),"Sample Type",sample.SampleTypeTitle,"No of Samples",len(samples)])
 
         date_received = ""
