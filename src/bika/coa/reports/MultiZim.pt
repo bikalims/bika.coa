@@ -132,7 +132,6 @@
   <!-- INFO -->
   <tal:render condition="python:len(collection)>0"
               define="primarymodel python:collection[0];">
-
     <div class="row section-info no-gutters">
       <div class="w-100">
         <!-- Client Info -->
@@ -144,65 +143,43 @@
             <col style="width: 20%">
           </colgroup>
           <tr>
-            <td style="border:none;" class="align-top pr-2">
-              <!-- Left Table -->
-              <table class="table table-sm table-condensed">
-                <!-- Client Name(s) -->
-                <tr>
-                  <td class="label" i18n:translate="">Client</td>
-                  <td class="field">
-                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                      <div tal:content="client/Name"/>
-                    </tal:by_client>
-                  </td>
-                </tr>
-                <!-- Physical Address -->
-                <tr>
-                  <td class="label" i18n:translate="">Physical Address</td>
-                  <td class="field">
-                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                      <div tal:content="client/PhysicalAddress/address"/>
-                      <div tal:content="client/PhysicalAddress/city"/>
-                      <div tal:content="client/PhysicalAddress/zip"/>
-                      <div tal:content="client/PhysicalAddress/state"/>
-                      <div tal:content="client/PhysicalAddress/country"/>
-                    </tal:by_client>
-                  </td>
-                </tr>
-                <!-- Contact Name(s) -->
-                <tr>
-                  <td class="label" i18n:translate="">Contact</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/Fullname"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
-                <!-- Email Address -->
-                <tr>
-                  <td class="label" i18n:translate="">Email Address</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div tal:content="contact/EmailAddress"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
-                <!-- Tel No -->
-                <tr>
-                  <td class="label" i18n:translate="">Telephone Number</td>
-                  <td class="field">
-                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                      <div class="contact-phone" tal:content="contact/Phone|nothing"/>
-                    </tal:by_contact>
-                  </td>
-                </tr>
-              </table>
+            <td style="border:none;">
+              <address class="client-address">
+              <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                <div class="client-name font-weight-bold">
+                  <div tal:replace="client/Name|nothing"></div>
+                </div>
+                <div class="client-street">
+                  <div tal:replace="client/PostalAddress/address|nothing"></div>
+                </div>
+                <span class="client-zip">
+                  <div tal:replace="client/PostalAddress/zip|nothing"></div>
+                </span>
+                <span class="client-city">
+                  <div tal:replace="client/PostalAddress/city|nothing"></div>
+                </span>
+                <div class="client-country">
+                  <div tal:replace="client/PostalAddress/country|nothing"></div>
+                </div>
+              </tal:by_client>
+              <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">  
+                <div class="contact-fullname">
+                  <div tal:replace="contact/Fullname|nothing"></div>
+                </div>
+                <div class="contact-email">
+                  <div tal:replace="contact/EmailAddress|nothing"></div>
+                </div>
+                <div class="contact-phone">  
+                  <div tal:replace="contact/Phone|nothing"></div>
+                </div>
+              </tal:by_contact>
+              </address>
             </td>
             <!-- Accreditaion Logo -->
             <td style="border:none;" class="align-top pl-2">
               <table class="table table-sm table-condensed ml-1">
                 <tr>
-                  <td>
+                  <td style="border:none;">
                     <div class="accreditation-logo text-right"
                         tal:define="accredited laboratory/LaboratoryAccredited;
                                     accreditation_logo laboratory/AccreditationBodyLogo;"
@@ -217,7 +194,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td>
+                  <td style="border:none;">
                     <!-- Laboratory Info -->
                     <address class="laboratory-address text-right">
                       <div class="lab-title font-weight-bold">
