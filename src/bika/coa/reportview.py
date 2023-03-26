@@ -374,6 +374,41 @@ class MultiReportView(MRV):
             all_samples_with_analyses.append(sample_analyses)
             all_sample_ids.append([i.get("id") for i in sample_analyses])
         return all_samples_with_analyses,all_sample_ids
+
+    def get_verified_dates(self,samples):
+        verified_from = ""
+        verified_to = ""
+        all_dates = []
+        for sample in samples:
+            date_verified = sample.getDateVerified()
+            if date_verified:
+                all_dates.append(date_verified)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[0].strftime('%d/%m/20%y')
+        return [verified_from,verified_to]
+
+    def get_analyzed_dates(self,samples):
+        analyzed_from = ""
+        analyzed_to = ""
+        all_dates = []
+        for sample in samples:
+            for analysis in sample.Analyses:
+                date_analyzed = analysis.ResultCaptureDate
+                if date_analyzed:
+                    all_dates.append(date_analyzed)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[0].strftime('%d/%m/20%y')
+        return [analyzed_from,analyzed_to]
 #----------------zlabs end-------------------------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
@@ -473,6 +508,16 @@ class MultiReportView(MRV):
 
     def is_batch_unique(self, collection=None):
         return len(set([getattr(i.Batch , "id", '') for i in collection])) == 1
+    
+    def is_batch_unique_2(self, collection=None):
+        batches = []
+        for sample in collection:
+            if sample.Batch:
+                if sample.Batch.id not in batches:
+                    batches.append(sample.Batch.id)
+            else:
+                return False
+        return len(batches) == 1
 
     def get_order_number(self, collection=None):
         if all([getattr(i, "ClientOrderNumber", '') for i in collection]):

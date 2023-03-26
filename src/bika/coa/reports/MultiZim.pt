@@ -105,14 +105,22 @@
          vertical-align: top;
          margin-top: 2mm;
          font-size: 9pt;
-         content: "<tal:t i18n:translate=''>Page</tal:t> " counter(page) " <tal:t i18n:translate=''>of</tal:t> " counter(pages);
+         content: ""counter(page) " <tal:t i18n:translate=''>/</tal:t> " counter(pages);
        }
      }
     </style>
   </tal:css>
 
+  <!-- Batch error message start -->
+  <tal:render condition="python:not view.is_batch_unique_2(collection)">
+    <div>
+      <h1> Please make sure all Samples are on the same batch</h1>
+    </div>
+  </tal:render>
+  <!-- Batch error message end -->
+
   <!-- HEADER -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
         <div class="col-6 text-left">
@@ -130,7 +138,7 @@
   <!-- /HEADER -->
 
   <!-- INFO -->
-  <tal:render condition="python:len(collection)>0"
+  <tal:render condition="python:len(collection)>0 and view.is_batch_unique_2(collection)"
               define="primarymodel python:collection[0];">
     <div class="row section-info no-gutters">
       <div class="w-100">
@@ -238,7 +246,7 @@
   </tal:render>
 
     <!-- Certificate of Analysis Header -->
-  <tal:render condition="python:True"
+  <tal:render condition="python:view.is_batch_unique_2(collection)"
               define="primarymodel python:collection[0];">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
@@ -257,9 +265,11 @@
       <!-- Certificate of Analysis Header -->
   
       <!-- Certificate of Analysis Table -->
-  <tal:render condition="python:len(collection)>0"
+  <tal:render condition="python:len(collection)>0 and view.is_batch_unique_2(collection)"
               define="primarymodel python:collection[0];
-                      batch primarymodel/Batch;">
+                      batch primarymodel/Batch;
+                      verified_dates python: view.get_verified_dates(collection);
+                      analyzed_dates python: view.get_analyzed_dates(collection);">
     <table class="table table-sm table-condensed ml-1">
     <!-- First Row -->
       <tr>
@@ -285,10 +295,38 @@
       </tr>
         <!-- Third Row  -->
       <tr>
-        <td class='label' i18n:translate="">Date Analyzed</td>
-        <td class='label text-right' i18n:translate="">Date Verified</td>
+        <td class="label" i18n:translate="">Date Analyzed</td>
+        <td class='field'>
+          <!-- <div tal:content="batch/getId"/> -->
+        </td>
+        <td class="label" i18n:translate="">Date Verified</td>
+        <td class='field'>
+          <!-- <div tal:content="python:primarymodel.SampleTypeTitle or '-'"/> -->
+        </td>
       </tr>
-      <!-- Fourth Row  -->
+      <!-- Fourth Row -->
+      <tr>
+        <td class="label" i18n:translate="">From</td>
+        <td class='field'>
+          <div tal:content="python:analyzed_dates[0]"/>
+        </td>
+        <td class="label" i18n:translate="">From</td>
+        <td class='field'>
+          <div tal:content="python:verified_dates[0]"/>
+        </td>
+      </tr>
+            <!-- Fifth Row -->
+      <tr>
+        <td class="label" i18n:translate="">To</td>
+        <td class='field'>
+          <div tal:content="python:analyzed_dates[1]"/>
+        </td>
+        <td class="label" i18n:translate="">To</td>
+        <td class='field'>
+          <div tal:content="python:verified_dates[0]"/>
+        </td>
+      </tr>
+      <!-- Sixth Row  -->
       <tr>
         <td class="label" i18n:translate="">Soft Copy Number</td>
         <td class='field'>
@@ -296,7 +334,7 @@
         </td>
         <td class="label" i18n:translate="">No. of Samples</td>
         <td class='field'>
-          <div tal:content="string:Pending"/>
+          <div tal:content="python:len(collection)"/>
         </td>
       </tr>
     </table>
@@ -304,14 +342,14 @@
    <!-- Certificate of Analysis Table -->
 
     <!-- Disclaimers start -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1 i18n:translate="">Disclaimers</h1>
         <ol type='1'>
           <li>The test results only relate to samples received and tested </li>
           <li>This Test Certificate shall not be reproduced except in full without written approval of <span tal:replace="laboratory/title|nothing"/></li>
-          <li>Parameter/ Elements and Method Code marked with ** in this Certificate are  accreditated and are included
+          <li>Parameter/ Elements and Method Code marked with <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> in this Certificate are  accreditated and are included
               in the <span tal:replace="laboratory/AccreditationBody|nothing"/> Schedule  of Accreditation for  this Laboratory</li>
           <li>Opinions and interpretaions expressed herein are outside the scope of <span tal:replace="laboratory/AccreditationBody|nothing"/> accreditation</li>
         </ol>
@@ -322,7 +360,7 @@
     <!-- Disclaimers end -->
 
     <!-- Methods Table start -->
-  <tal:render condition="python:len(collection)>0"
+  <tal:render condition="python:len(collection)>0 and view.is_batch_unique_2(collection)"
               define="methods_data python:(view.get_methods_data(collection)).values()">
     <h1 i18n:translate="">Methods</h1>
     <table class="table table-sm table-condensed ml-1" title="Methods">
@@ -352,32 +390,32 @@
   </tal:render>
   <!-- Methods Table end-->
   
-  <!-- Signatirues start -->
-    <tal:render condition="python:True"
+  <!-- Signatories start -->
+    <tal:render condition="python:view.is_batch_unique_2(collection)"
                 define="verifier python:view.get_verifier(collection);
-                      publisher python:view.get_publisher()">
+                      publish python:view.get_publisher()">
     <h1 i18n:translate="">Signatories</h1>
     <table class="table table-sm table-condensed ml-1" title="Methods">
       <thead>
       </thead>
       <tbody>
         <tr>
-          <td class="label" i18n:translate="">Verified by</td>
-          <td class='field'>
-            <div tal:content="python:verifier.get('fullname')"/>
+          <td style="border:none;" class="label" i18n:translate="">Verified by</td>
+          <td style="border:none;" class='field'>
+            <div tal:content="verifier/fullname"/>
           </td>
         </tr>
         <tr>
-          <td class="label" i18n:translate="">Published by</td>
-          <td class='field'>
-            <div tal:content="publisher/publisher"/>
+          <td style="border:none;" class="label" i18n:translate="">Published by</td>
+          <td style="border:none;" class='field'>
+            <div tal:content="publish/publisher"/>
           </td>
         </tr>
         <tr>
-          <td class="label" i18n:translate="">Signature</td>
-          <td>
-            <img tal:condition="python:publisher.get('Signature')"
-                tal:attributes="src string:${publisher/absolute_url}/Signature" style="height:75px"/>
+          <td style="border:none;" class="label" i18n:translate="">Signature</td>
+          <td style="border:none;">
+            <img tal:condition="python:publish.get('Signature')"
+                tal:attributes="src string:${publish/absolute_url}/Signature" style="height:75px"/>
           </td>
         </tr>
       </tbody>
@@ -386,7 +424,7 @@
   <!-- Signatories end -->
   
   <!-- Quality Control start -->
-    <tal:render condition="python:True"
+    <tal:render condition="python:view.is_batch_unique_2(collection)"
               define="methods_data python:(view.get_methods_data(collection)).values()">
     <h1 i18n:translate="">Quality Control</h1>
     <table class="table table-sm table-condensed ml-1" title="Methods">
@@ -440,7 +478,7 @@
   <!-- Quality Control end -->
 
   <!-- Results start -->
-  <tal:render condition="python:True"
+  <tal:render condition="python:view.is_batch_unique_2(collection)"
               define="sample_data python:view.get_zlabs_formatting(collection);">
     <div class="row section-results no-gutters">
       <div class="w-100">
@@ -479,7 +517,7 @@
   <!-- Results end -->
 
   <!-- ALERTS Does this stay or not we'll find out! -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <div class="row section-alerts no-gutters">
       <div class="w-100">
         <tal:model repeat="model collection">
@@ -504,7 +542,7 @@
   </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <tal:model repeat="model collection">
       <div class="row section-resultsinterpretation no-gutters"
            tal:define="ris python:model.get_resultsinterpretation();
@@ -537,7 +575,7 @@
   </tal:render> -->
 
   <!-- REMARKS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <tal:model repeat="model collection">
       <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
         <div class="">
@@ -552,7 +590,7 @@
   </tal:render>
 
   <!-- ATTACHMENTS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique_2(collection)">
     <div class="row section-attachments no-gutters">
       <tal:model repeat="model collection">
         <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
@@ -595,7 +633,7 @@
   </tal:render>
 
   <!-- DISCREETER -->
-  <tal:render condition="python:True"
+  <tal:render condition="python:view.is_batch_unique_2(collection)"
               define="laboratory python:view.laboratory;">
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-normal small">
@@ -641,7 +679,7 @@
   </tal:render>
 
   <!-- CUSTOM FOOTER -->
-  <tal:render condition="python:footer">
+  <tal:render condition="python:footer and view.is_batch_unique_2(collection)">
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
       <div id="footer-line"></div>
@@ -650,7 +688,7 @@
   </tal:render>
 
   <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:not footer"
+  <tal:render condition="python:not footer and view.is_batch_unique_2(collection)"
               define="laboratory python:view.laboratory;">
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
