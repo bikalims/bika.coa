@@ -64,6 +64,7 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report table td.paddedlabel { padding-left: 1.2rem;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
@@ -295,33 +296,33 @@
       </tr>
         <!-- Third Row  -->
       <tr>
-        <td class="label" i18n:translate="">Date Analyzed</td>
+        <td class="label" i18n:translate="">Date Analyzed :</td>
         <td class='field'>
           <!-- <div tal:content="batch/getId"/> -->
         </td>
-        <td class="label" i18n:translate="">Date Verified</td>
+        <td class="label" i18n:translate="">Date Verified :</td>
         <td class='field'>
           <!-- <div tal:content="python:primarymodel.SampleTypeTitle or '-'"/> -->
         </td>
       </tr>
       <!-- Fourth Row -->
       <tr>
-        <td class="label" i18n:translate="">From</td>
+        <td class="paddedlabel" i18n:translate="">From</td>
         <td class='field'>
           <div tal:content="python:analyzed_dates[0]"/>
         </td>
-        <td class="label" i18n:translate="">From</td>
+        <td class="paddedlabel" i18n:translate="">From</td>
         <td class='field'>
           <div tal:content="python:verified_dates[0]"/>
         </td>
       </tr>
             <!-- Fifth Row -->
       <tr>
-        <td class="label" i18n:translate="">To</td>
+        <td class="paddedlabel" i18n:translate="">To</td>
         <td class='field'>
           <div tal:content="python:analyzed_dates[1]"/>
         </td>
-        <td class="label" i18n:translate="">To</td>
+        <td class="paddedlabel" i18n:translate="">To</td>
         <td class='field'>
           <div tal:content="python:verified_dates[0]"/>
         </td>
@@ -393,7 +394,7 @@
   <!-- Signatories start -->
     <tal:render condition="python:view.is_batch_unique_2(collection)"
                 define="verifier python:view.get_verifier(collection);
-                      publish python:view.get_publisher()">
+                        publish python:view.get_publisher()">
     <h1 i18n:translate="">Signatories</h1>
     <table class="table table-sm table-condensed ml-1" title="Methods">
       <thead>
@@ -402,7 +403,7 @@
         <tr>
           <td style="border:none;" class="label" i18n:translate="">Verified by</td>
           <td style="border:none;" class='field'>
-            <div tal:content="verifier/fullname"/>
+            <div tal:content="verifier/verifier"/>
           </td>
         </tr>
         <tr>
