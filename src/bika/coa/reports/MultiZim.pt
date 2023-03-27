@@ -425,7 +425,9 @@
   
   <!-- Quality Control start -->
     <tal:render condition="python:view.is_batch_unique_2(collection)"
-              define="methods_data python:(view.get_methods_data(collection)).values()">
+              define="methods_data python:(view.get_methods_data(collection)).values();
+                      primarymodel python:collection[0];
+                      batch primarymodel/Batch;"> 
     <h1 i18n:translate="">Quality Control</h1>
     <table class="table table-sm table-condensed ml-1" title="Methods">
       <thead>
@@ -439,40 +441,47 @@
       </thead>
       <tbody>
         <tal:model repeat="model collection">
-          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['verified', 'published'])">
+          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['verified', 'published'])"><!--Remove Assigned later-->
             <tal:qc repeat="qc qcanalyses">
-              <div class="row section-results no-gutters" tal:condition="qcanalyses">
-                <tr>
-                  <td class='field'>
-                    <div tal:content="python: qc"/>
-                  </td>
-                  <td class='field'>
-                    <div tal:content="python: model"/>
-                  </td>
-                  <td class='field'>
-                    <div tal:content="python: qcanalyses"/>
-                  </td>
-                  <td class='field'>
-                    <div tal:content="python: model"/>
-                  </td>
-                  <td class='field'>
-                    <div tal:content="python: qcanalyses"/>
-                  </td>
-                </tr>
-              </div>
+              <tal:qc_data condition= "python:(view.qc_analyses_data(model,qc))[0]" 
+                            define="qc_data python:(view.qc_analyses_data(model,qc))">
+                <div class="row section-results no-gutters" tal:condition="qcanalyses">
+                  <tr>
+                    <td class='field'>
+                      <div tal:content="python: qc.getReferenceDefinition().Title()"/>
+                    </td>
+                    <td class='field'>
+                      <div tal:content="python:qc_data[0]"/>
+                    </td>
+                    <td class='field'>
+                      <div tal:content="python: qc.getResult()"/>
+                    </td>
+                    <td class='field'>
+                      <div tal:content="python:qc_data[1]"/>
+                    </td>
+                    <td class='field'>
+                      <div tal:content="python:view.within_uncertainty(qc.getResult(),qc_data[1])"/>
+                    </td>
+                  </tr>
+                </div>
+              </tal:qc_data>
             </tal:qc>
           </tal:allqc>
         </tal:model>
       </tbody>
     </table>
     <div>
-      <ul>
-        <li>Statement of Conformity to a Specification or Standard (s)</li>
-        <li>Decision Rule Based on: Result implies noncompliance with an Upper limit if the measured value plus the uncertainty exceed the limit</li>
-        <li>Parameter marked Fail implies non-compliance</li>
-        <li>Any Additions to, deviations, or exclusions from the method?</li>
-        <li>Batch COA remarks, or if empty, "None"</li>
-      </ul>
+      <tal:model define="ref_titles python:view.reference_definition_titles(collection)">
+        <ul>
+          <li>Statement of Conformity to a Specification or Standard(s) <span tal:replace="ref_titles|nothing"/> </li>
+          <li>Decision Rule Based on: Result implies noncompliance with an Upper limit if the measured value plus the uncertainty exceed the limit</li>
+          <li>Parameter marked Fail implies non-compliance</li>
+          <tal:remarks condition="batch/COARemarks">
+            <li>Any Additions to, deviations, or exclusions from the method?</li>
+            <li><span tal:replace="batch/COARemarks"/></li>
+          </tal:remarks>
+        </ul>
+      </tal:model>
     </div>
   </tal:render>
   <!-- Quality Control end -->

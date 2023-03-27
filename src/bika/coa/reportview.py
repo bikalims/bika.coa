@@ -409,6 +409,36 @@ class MultiReportView(MRV):
             analyzed_from = all_dates[0].strftime('%d/%m/20%y')
             analyzed_to = all_dates[0].strftime('%d/%m/20%y')
         return [analyzed_from,analyzed_to]
+
+    def within_uncertainty(self,result,uncertainty):
+        if result and uncertainty:
+            if result -uncertainty < result < result + uncertainty:
+                return "Pass"
+        return "Fail"
+
+    def qc_analyses_data(self,sample,qc):
+        ref_def = qc.getReferenceDefinition().getReferenceResults()
+        for analysis in ref_def:
+            if qc.id in analysis.values():
+                expected = analysis.get('result')
+                uncertainty = analysis.get('error')
+                return [expected,uncertainty]
+        return ["",""]
+
+    def reference_definition_titles(self,samples):
+        final_titles = ""
+        titles = []
+        for sample in samples:
+            qcs = sample.getQCAnalyses(['assigned','verified', 'published'])
+            for qc in qcs:
+                title = qc.getReferenceDefinition().Title()
+                if title not in titles:
+                    titles.append(title)
+        for Title in titles:
+            final_titles = final_titles + ", " + Title
+        return final_titles
+            
+
 #----------------zlabs end-------------------------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
