@@ -667,7 +667,7 @@ class MultiReportView(MRV):
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
-            publisher["publisher"] = '{}'.format(user.fullname)
+            publisher["publisher"] = '{}'.format(user.getFullname())
 
         return publisher
 
