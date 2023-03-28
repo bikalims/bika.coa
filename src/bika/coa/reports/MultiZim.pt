@@ -233,6 +233,12 @@
                         <a tal:attributes="href laboratory/LabURL"
                            tal:content="laboratory/LabURL"></a>
                       </div>
+                      <div class="lab-title">
+                        <div tal:replace="laboratory/Phone|nothing"/>
+                      </div>
+                      <div class="lab-title">
+                        <div tal:replace="laboratory/EmailAddress|nothing"/>
+                      </div>
                     </address>
                   </td>
                 </tr>
