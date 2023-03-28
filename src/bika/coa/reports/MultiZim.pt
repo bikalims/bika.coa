@@ -53,6 +53,8 @@
     <style type="text/css">
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
+     .report h8 { font-size: 140%; padding-left: 0.5rem}
+     .report h9 { font-size: 120%; margin-top: 10mm;}
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
      .report { font-family: TitilliumText22L-Regular; }
@@ -246,24 +248,18 @@
     </div>
   </tal:render>
 
-    <!-- Certificate of Analysis Header -->
+    <!-- Certificate of Analysis Header start-->
   <tal:render condition="python:view.is_batch_unique_2(collection)"
               define="primarymodel python:collection[0];">
     <div class="row section-header no-gutters">
-      <!-- Header Table -->
         <div class="col-6 text-right">
-          <h1>Certificate of Analysis:</h1>
+          <h1>Certificate&nbsp;of&nbsp;Analysis:</h1>
+          <h9 tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
         </div>
-        <div class="col-6">
-          <h1 name='coa_num' tal:content="python: coa_num"/>
-        </div>
-        <div class="col-6 text-right">
-            <!-- <div tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/> -->
-            <h2 tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
-        </div>
+          <h8 tal:content="python:coa_num"/>
     </div>
   </tal:render>
-      <!-- Certificate of Analysis Header -->
+    <!-- Certificate of Analysis Header end-->
   
       <!-- Certificate of Analysis Table -->
   <tal:render condition="python:len(collection)>0 and view.is_batch_unique_2(collection)"

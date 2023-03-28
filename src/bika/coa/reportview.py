@@ -437,7 +437,9 @@ class MultiReportView(MRV):
         for Title in titles:
             final_titles = final_titles + ", " + Title
         return final_titles
-            
+
+    def get_date_string(self,num_date):
+        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
 
 #----------------zlabs end-------------------------------------------------
 
