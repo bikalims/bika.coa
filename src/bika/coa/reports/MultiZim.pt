@@ -262,7 +262,7 @@
           <h1>Certificate&nbsp;of&nbsp;Analysis:</h1>
           <h9 tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
         </div>
-          <h8 tal:content="python:coa_num"/>
+          <h8 name="coa_num" tal:content="python:coa_num"/>
     </div>
   </tal:render>
     <!-- Certificate of Analysis Header end-->
