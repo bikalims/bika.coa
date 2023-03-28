@@ -17,6 +17,7 @@ from bika.lims.workflow import getTransitionUsers
 from senaite.app.supermodel import SuperModel
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
+from bika.coa.ajax import AjaxPublishView as AP
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 
@@ -284,6 +285,161 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
+#---------------------------------- Z labs start ------------------------------------------
+    def get_methods_data(self,collection):
+        analyses = self.get_analyses_by(collection)
+        methods = {}
+        for analysis in analyses:
+            if analysis.Method:
+                if analysis.Method.Title() not in methods.keys():
+                    methods[analysis.Method.Title()] = [analysis.Method.Title(),analysis.Title(),analysis.Method.description]
+                elif analysis.Title() not in methods[analysis.Method.Title()][1]:
+                    methods[analysis.Method.Title()][1] = methods[analysis.Method.Title()][1] +", "+ analysis.Title()
+        return methods
+
+    def get_zlabs_formatting(self,samples):
+        analysis_services,body = self.get_zlabs_body()
+        extra_column = False
+        sample_data = self.get_zlabs_analysis_request(samples,analysis_services,extra_column)
+        if sample_data:
+            removal_keys = self.get_index_of_columns_to_be_removed(sample_data)
+        body,sample_data = self.remove_empty_services(body,sample_data,removal_keys)
+        return [body,sample_data]
+    
+    def get_zlabs_body(self):
+        analysis_services_full_list = api.get_setup().bika_analysisservices.values()
+        eligible_analysis_services = sorted([item for item in analysis_services_full_list if item.getSortKey()], key=lambda x:x.getSortKey())
+        analysis_Ids_list = ["Analysis"]
+        methods_list = ["Method"]
+        unit_list = ["Unit"]
+        final_body_rows = []
+
+        for analysis_service in eligible_analysis_services:
+            if analysis_service.getMethod():
+                methods_list.append(analysis_service.getMethod().Title())
+            else:
+                methods_list.append("")
+            analysis_Ids_list.append(analysis_service.Title())
+            unit_list.append(analysis_service.getUnit())
+        
+        final_body_rows = [
+            analysis_Ids_list,methods_list,unit_list,]
+        return eligible_analysis_services,final_body_rows
+    
+    def get_zlabs_analysis_request(self,samples,analysis_services,extra_column):
+        sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
+        sample_data = []
+        sample_analyses,sample_analyses_ids = self.get_sample_analyses(sorted_samples) #The first entry is the sample and the rest are the analyses of those samples
+        for indx,sample in enumerate(sample_analyses):
+            sample_results = [sample[0].ClientSampleID]
+            if extra_column:
+                sample_results.append(sample[0].id)
+            for analysis_service in analysis_services:
+                if analysis_service.getKeyword() in sample_analyses_ids[indx]:
+                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getFormattedResult(html=False))
+                else:
+                    sample_results.append("")
+            sample_data.append(sample_results)
+        return sample_data
+    
+    def get_index_of_columns_to_be_removed(self,sample_data):
+        removal_keys = []
+        for indx in range(len(sample_data[0])):
+            column = [i[indx] for i in sample_data if len(i) > 1]
+            if all('' == s or s is None for s in column):
+                removal_keys.append(indx)
+        return removal_keys
+    
+    def remove_empty_services(self,body,analyses,removal_keys):
+        sorted_removal_keys = sorted(removal_keys,reverse=True)
+        for indx,item in enumerate(analyses):
+            if len(item) > 1:
+                for rem_key in sorted_removal_keys:
+                    analyses[indx].pop(rem_key)
+        for indx2,item2 in enumerate(body):
+            if len(item2) > 1:
+                for rem_key in sorted_removal_keys:
+                    body[indx2].pop(rem_key)
+        return body, analyses
+
+    def get_sample_analyses(self,samples):
+        all_samples_with_analyses = []
+        all_sample_ids = []
+        for sample in samples:
+            sample_analyses = sample.Analyses
+            sample_analyses.insert(0,sample)
+            all_samples_with_analyses.append(sample_analyses)
+            all_sample_ids.append([i.get("id") for i in sample_analyses])
+        return all_samples_with_analyses,all_sample_ids
+
+    def get_verified_dates(self,samples):
+        verified_from = ""
+        verified_to = ""
+        all_dates = []
+        for sample in samples:
+            date_verified = sample.getDateVerified()
+            if date_verified:
+                all_dates.append(date_verified)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            verified_from = all_dates[0].strftime('%d/%m/20%y')
+            verified_to = all_dates[0].strftime('%d/%m/20%y')
+        return [verified_from,verified_to]
+
+    def get_analyzed_dates(self,samples):
+        analyzed_from = ""
+        analyzed_to = ""
+        all_dates = []
+        for sample in samples:
+            for analysis in sample.Analyses:
+                date_analyzed = analysis.ResultCaptureDate
+                if date_analyzed:
+                    all_dates.append(date_analyzed)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[-1].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_to = all_dates[0].strftime('%d/%m/20%y')
+        return [analyzed_from,analyzed_to]
+
+    def within_uncertainty(self,result,uncertainty):
+        if result and uncertainty:
+            if result -uncertainty < result < result + uncertainty:
+                return "Pass"
+        return "Fail"
+
+    def qc_analyses_data(self,sample,qc):
+        ref_def = qc.getReferenceDefinition().getReferenceResults()
+        for analysis in ref_def:
+            if qc.id in analysis.values():
+                expected = analysis.get('result')
+                uncertainty = analysis.get('error')
+                return [expected,uncertainty]
+        return ["",""]
+
+    def reference_definition_titles(self,samples):
+        final_titles = ""
+        titles = []
+        for sample in samples:
+            qcs = sample.getQCAnalyses(['assigned','verified', 'published'])
+            for qc in qcs:
+                title = qc.getReferenceDefinition().Title()
+                if title not in titles:
+                    titles.append(title)
+        for Title in titles:
+            final_titles = final_titles + ", " + Title
+        return final_titles
+
+    def get_date_string(self,num_date):
+        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
+
+#----------------zlabs end-------------------------------------------------
+
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
         all_analyses = self.get_analyses_by_poc(collection)
@@ -381,6 +537,16 @@ class MultiReportView(MRV):
 
     def is_batch_unique(self, collection=None):
         return len(set([getattr(i.Batch , "id", '') for i in collection])) == 1
+    
+    def is_batch_unique_2(self, collection=None):
+        batches = []
+        for sample in collection:
+            if sample.Batch:
+                if sample.Batch.id not in batches:
+                    batches.append(sample.Batch.id)
+            else:
+                return False
+        return len(batches) == 1
 
     def get_order_number(self, collection=None):
         if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
@@ -500,7 +666,7 @@ class MultiReportView(MRV):
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
-            publisher["publisher"] = '{}'.format(user.fullname)
+            publisher["publisher"] = '{}'.format(user.getFullname())
 
         return publisher
 
