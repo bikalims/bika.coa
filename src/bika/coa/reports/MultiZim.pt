@@ -398,31 +398,33 @@
                 define="verifier python:view.get_verifier(collection);
                         publish python:view.get_publisher()">
     <h1 i18n:translate="">Signatories</h1>
-    <table class="table table-sm table-condensed ml-1" title="Methods">
-      <thead>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="border:none;" class="label" i18n:translate="">Verified by</td>
-          <td style="border:none;" class='field'>
-            <div tal:content="verifier/verifier"/>
-          </td>
-        </tr>
-        <tr>
-          <td style="border:none;" class="label" i18n:translate="">Published by</td>
-          <td style="border:none;" class='field'>
-            <div tal:content="publish/publisher"/>
-          </td>
-        </tr>
-        <tr>
-          <td style="border:none;" class="label" i18n:translate="">Signature</td>
-          <td style="border:none;">
-            <img tal:condition="python:publish.get('Signature')"
-                tal:attributes="src string:${publish/absolute_url}/Signature" style="height:75px"/>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="row section-signatures no-gutters">
+      <table class="table table-sm table-condensed ml-1">
+        <thead>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="border:none;" class="label" i18n:translate="">Verified by</td>
+            <td style="border:none;" class='field'>
+              <div tal:content="verifier/verifier"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:none;" class="label" i18n:translate="">Published by</td>
+            <td style="border:none;" class='field'>
+              <div tal:content="publish/publisher"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:none;" class="label" i18n:translate="">Signature</td>
+            <td style="border:none;">
+              <img tal:condition="publish/user_url"
+                  tal:attributes="src string:${publish/user_url}/Signature" style="height:75px"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </tal:render>
   <!-- Signatories end -->
   
