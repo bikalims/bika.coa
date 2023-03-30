@@ -413,7 +413,7 @@ class MultiReportView(MRV):
         except ValueError:
             float_result = None
         if float_result is not None:
-            if float_result > min and float_result < max:
+            if float_result >= min and float_result <= max:
                 return "Pass"
         return "Fail"
 
