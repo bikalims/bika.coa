@@ -96,7 +96,7 @@
      } -->
      
       .report .watermark2 {
-        background-image:url("http://localhost:8080/zimlabs02/logo.png") no-repeat; 
+        background-image:url("logo.png") no-repeat; <!--don't think this changes much-->
         width: 100px;
         height: 100px;
         position: relative;
@@ -107,7 +107,7 @@
         left: 0%;
       }
 
-      .report .image{
+      .report .image2{
         width: 100px;
         height: 100px;
         position: relative;
@@ -392,10 +392,10 @@
         </ol>
       </div>
     </div>
-                       <div>
-<div class="image"><img src="http://localhost:8080/zimlabs02/logo.png" /></div>
-<div class="watermark2"></div>
-</div>
+    <div>
+      <div class="image2"><img tal:attributes="src python:view.get_toolbar_logo()"/></div>
+      <div class="watermark2"></div>
+    </div>
       <div class="clearfix"></div>
   </tal:render>
     <!-- Disclaimers end -->

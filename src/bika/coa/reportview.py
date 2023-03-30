@@ -307,8 +307,7 @@ class MultiReportView(MRV):
         return [body,sample_data]
     
     def get_zlabs_body(self):
-        analysis_services_full_list = api.get_setup().bika_analysisservices.values()
-        eligible_analysis_services = sorted([item for item in analysis_services_full_list if item.getSortKey()], key=lambda x:x.getSortKey())
+        eligible_analysis_services = api.get_setup().bika_analysisservices.values()
         analysis_Ids_list = ["Analysis"]
         methods_list = ["Method"]
         unit_list = ["Unit"]
@@ -345,9 +344,10 @@ class MultiReportView(MRV):
     def get_index_of_columns_to_be_removed(self,sample_data):
         removal_keys = []
         for indx in range(len(sample_data[0])):
-            column = [i[indx] for i in sample_data if len(i) > 1]
-            if all('' == s or s is None for s in column):
-                removal_keys.append(indx)
+            if indx > 0:
+                column = [i[indx] for i in sample_data if len(i) > 1]
+                if all('' == s or s is None for s in column):
+                    removal_keys.append(indx)
         return removal_keys
     
     def remove_empty_services(self,body,analyses,removal_keys):
