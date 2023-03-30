@@ -409,11 +409,11 @@ class MultiReportView(MRV):
 
     def within_uncertainty(self,result,min,max):
         try:
-            int_result = int(result)
+            float_result = float(result)
         except ValueError:
-            int_result = ''
-        if int_result:
-            if int_result > min and int_result < max:
+            float_result = None
+        if float_result is not None:
+            if float_result > min and float_result < max:
                 return "Pass"
         return "Fail"
 
@@ -433,7 +433,7 @@ class MultiReportView(MRV):
         final_titles = ""
         titles = []
         for sample in samples:
-            qcs = sample.getQCAnalyses(['assigned','verified', 'published'])
+            qcs = sample.getQCAnalyses(['verified', 'published'])
             for qc in qcs:
                 title = qc.getReferenceDefinition().Title()
                 if title not in titles:

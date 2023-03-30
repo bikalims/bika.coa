@@ -484,7 +484,7 @@
       </thead>
       <tbody>
         <tal:model repeat="model collection">
-          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['assigned','verified', 'published'])"><!--Remove Assigned later-->
+          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['verified', 'published'])"><!--Remove Assigned later-->
             <tal:qc repeat="qc qcanalyses">
               <tal:qc_data condition= "python: len(qcanalyses) > 0" 
                             define="qc_data python:view.qc_analyses_data(qc)">
