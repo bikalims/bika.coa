@@ -413,7 +413,7 @@ class MultiReportView(MRV):
         except ValueError:
             int_result = ''
         if int_result:
-            if min < int_result < max:
+            if int_result > min and int_result < max:
                 return "Pass"
         return "Fail"
 
