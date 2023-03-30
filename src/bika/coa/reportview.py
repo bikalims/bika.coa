@@ -407,20 +407,27 @@ class MultiReportView(MRV):
             analyzed_to = all_dates[0].strftime('%d/%m/20%y')
         return [analyzed_from,analyzed_to]
 
-    def within_uncertainty(self,result,uncertainty):
-        if result and uncertainty:
-            if result -uncertainty < result < result + uncertainty:
+    def within_uncertainty(self,result,min,max):
+        try:
+            int_result = int(result)
+        except ValueError:
+            int_result = ''
+        if int_result:
+            if min < int_result < max:
                 return "Pass"
         return "Fail"
 
-    def qc_analyses_data(self,sample,qc):
-        ref_def = qc.getReferenceDefinition().getReferenceResults()
-        for analysis in ref_def:
-            if qc.id in analysis.values():
-                expected = analysis.get('result')
-                uncertainty = analysis.get('error')
-                return [expected,uncertainty]
-        return ["",""]
+    def qc_analyses_data(self,qc):
+        analysis_service_uid = qc.getAnalysisService().UID()
+        ref_results = qc.getReferenceResults()
+        for res in ref_results:
+            if analysis_service_uid in res.values():
+                result = res.get("result")
+                min = res.get("min")
+                max = res.get("max")
+                uncertainty = res.get('error')
+                return [result,min,max,uncertainty]
+        return ["","","",""]
 
     def reference_definition_titles(self,samples):
         final_titles = ""

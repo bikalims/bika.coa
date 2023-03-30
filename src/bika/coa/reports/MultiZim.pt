@@ -484,10 +484,10 @@
       </thead>
       <tbody>
         <tal:model repeat="model collection">
-          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['verified', 'published'])"><!--Remove Assigned later-->
+          <tal:allqc define="qcanalyses python:model.getQCAnalyses(['assigned','verified', 'published'])"><!--Remove Assigned later-->
             <tal:qc repeat="qc qcanalyses">
-              <tal:qc_data condition= "python:(view.qc_analyses_data(model,qc))[0]" 
-                            define="qc_data python:(view.qc_analyses_data(model,qc))">
+              <tal:qc_data condition= "python: len(qcanalyses) > 0" 
+                            define="qc_data python:view.qc_analyses_data(qc)">
                 <div class="row section-results no-gutters" tal:condition="qcanalyses">
                   <tr>
                     <td class='field'>
@@ -497,13 +497,13 @@
                       <div tal:content="python:qc_data[0]"/>
                     </td>
                     <td class='field'>
-                      <div tal:content="python: qc.getResult()"/>
+                      <div tal:content="python:qc.Result"/>
                     </td>
                     <td class='field'>
-                      <div tal:content="python:qc_data[1]"/>
+                      <div tal:content="python:qc_data[3]"/>
                     </td>
                     <td class='field'>
-                      <div tal:content="python:view.within_uncertainty(qc.getResult(),qc_data[1])"/>
+                      <div tal:content="python:view.within_uncertainty(qc.Result,qc_data[1],qc_data[2])"/>
                     </td>
                   </tr>
                 </div>
