@@ -412,8 +412,16 @@ class MultiReportView(MRV):
             float_result = float(result)
         except ValueError:
             float_result = None
-        if float_result is not None:
-            if float_result >= min and float_result <= max:
+        try:
+            float_min = float(min)
+        except ValueError:
+            float_min = None
+        try:
+            float_max = float(max)
+        except ValueError:
+            float_max = None
+        if all(res is not None for res in [float_result,float_min,float_max]):
+            if float_result >= float_min and float_result <= float_max:
                 return "Pass"
         return "Fail"
 
@@ -425,9 +433,8 @@ class MultiReportView(MRV):
                 result = res.get("result")
                 min = res.get("min")
                 max = res.get("max")
-                uncertainty = res.get('error')
-                return [result,min,max,uncertainty]
-        return ["","","",""]
+                return [result,min,max]
+        return ["","",""]
 
     def reference_definition_titles(self,samples):
         final_titles = ""
