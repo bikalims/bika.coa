@@ -457,7 +457,7 @@
             <td style="border:none;" class="label" i18n:translate="">Signature</td>
             <td style="border:none;">
               <img tal:condition="publish/user_url"
-                  tal:attributes="src string:${publish/user_url}/Signature" style="height:100px"/>
+                  tal:attributes="src string:${publish/user_url}/Signature" style="height:125px"/>
             </td>
           </tr>
         </tbody>
@@ -476,6 +476,7 @@
       <thead>
         <tr>
           <th>Reference Standard</th>
+          <th>Analysis</th>
           <th>Expected value</th>
           <th>Actual value</th>
           <th>Uncertainty</th>
@@ -492,6 +493,9 @@
                   <tr>
                     <td class='field'>
                       <div tal:content="python: qc.getReferenceDefinition().Title()"/>
+                    </td>
+                    <td class='field'>
+                      <div tal:content="python:model.ClientSampleID"/>
                     </td>
                     <td class='field'>
                       <div tal:content="python:qc_data[0]"/>
