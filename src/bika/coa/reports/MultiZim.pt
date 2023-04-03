@@ -493,7 +493,7 @@
         <tal:model repeat="model collection">
           <tal:allqc define="qcanalyses python:model.getQCAnalyses(['verified', 'published'])"><!--Remove Assigned later-->
             <tal:qc repeat="qc qcanalyses">
-              <tal:qc_data condition= "python: len(qcanalyses) > 0" 
+              <tal:qc_data condition= "python: view.is_unique_qc(qc)" 
                             define="qc_data python:view.qc_analyses_data(qc)">
                 <div class="row section-results no-gutters" tal:condition="qcanalyses">
                   <tr>
@@ -501,7 +501,7 @@
                       <div tal:content="python: qc.getReferenceDefinition().Title()"/>
                     </td>
                     <td class='field'>
-                      <div tal:content="python:model.Title()"/>
+                      <div tal:content="python:qc.getAnalysisService().Title()"/>
                     </td>
                     <td class='field'>
                       <div tal:content="python:qc_data[0]"/>

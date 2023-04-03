@@ -20,6 +20,7 @@ from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 from bika.coa.ajax import AjaxPublishView as AP
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
+qc_list = []
 
 
 def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
@@ -435,6 +436,16 @@ class MultiReportView(MRV):
                 max = res.get("max")
                 return [result,min,max]
         return ["","",""]
+    
+    def is_unique_qc(self,qc):
+        if len(qc_list) == 0:
+            qc_list.append(qc)
+        else:
+            if qc in qc_list:
+                return False
+            else:
+                qc_list.append(qc)
+        return True
 
     def reference_definition_titles(self,samples):
         final_titles = ""
