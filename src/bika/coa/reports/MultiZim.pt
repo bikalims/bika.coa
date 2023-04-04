@@ -398,10 +398,10 @@
         </ol>
       </div>
     </div>
-    <div>
+    <!-- <div>
       <div class="image2"><img tal:attributes="src python:view.get_toolbar_logo()"/></div>
       <div class="watermark2"></div>
-    </div>
+    </div> -->
       <div class="clearfix"></div>
   </tal:render>
     <!-- Disclaimers end -->
