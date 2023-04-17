@@ -561,7 +561,13 @@ class MultiReportView(MRV):
             return collection[0].Batch.id
         return None
     
+
     def is_batch_unique(self, collection=None):
+        samples = collection
+        batches = [i.Batch.id for i in samples if getattr(i.Batch , "id", "")]
+        return len(set(batches)) == 1
+    
+    def is_batch_unique_2(self, collection=None):
         batches = []
         for sample in collection:
             if sample.Batch:
