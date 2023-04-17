@@ -147,7 +147,7 @@
   </tal:css>
 
   <!-- Batch error message start -->
-  <tal:render condition="python:not view.is_batch_unique_2(collection)">
+  <tal:render condition="python:not view.is_batch_unique(collection)">
     <div>
       <h1> Please make sure all Samples are on the same batch</h1>
     </div>
@@ -156,7 +156,7 @@
 
   <!-- HEADER -->
   <head>
-    <tal:render condition="python:view.is_batch_unique_2(collection)">
+    <tal:render condition="python:view.is_batch_unique(collection)">
       <div class="row section-header no-gutters">
         <!-- Header Table -->
           <div class="col-6 text-left">
@@ -167,7 +167,7 @@
               <!-- Header Right -->
               <img class="logo image-fluid" style="object-fit:contain"
                   tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
-        </div>
+        </div>:
       </div>
     </tal:render>
   </head>
@@ -175,7 +175,7 @@
 
   <!-- INFO -->
   <body>
-    <tal:is_batch condition="python: view.is_batch_unique_2(collection)">
+    <tal:is_batch condition="python: view.is_batch_unique(collection)">
       <tal:render condition="python:len(collection)>0"
                   define="primarymodel python:collection[0];">
         <div class="row section-info no-gutters">
