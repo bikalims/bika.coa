@@ -84,6 +84,17 @@
        font-size: 9pt;
      }
 
+    .bgbehind {
+        background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
+        z-index:100;
+        background-position: center;
+        background-size: 100px 100px;
+        opacity:0.1 !important;
+        background-repeat: repeat;
+        position: absolute;
+        width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
+        height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>
+    }
     <!-- .watermark {
         position: absolute;
         top: 50%;
@@ -146,6 +157,8 @@
     </style>
   </tal:css>
 
+  <div class="bgbehind">
+  </div>
   <!-- Batch error message start -->
   <tal:render condition="python:not view.is_batch_unique(collection)">
     <div>
@@ -155,7 +168,6 @@
   <!-- Batch error message end -->
 
   <!-- HEADER -->
-  <head>
     <tal:render condition="python:view.is_batch_unique(collection)">
       <div class="row section-header no-gutters">
         <!-- Header Table -->
@@ -170,11 +182,10 @@
         </div>:
       </div>
     </tal:render>
-  </head>
   <!-- /HEADER -->
 
+
   <!-- INFO -->
-  <body>
     <tal:is_batch condition="python: view.is_batch_unique(collection)">
       <tal:render condition="python:len(collection)>0"
                   define="primarymodel python:collection[0];">
@@ -439,6 +450,8 @@
         </table>
       </tal:render>
       <!-- Methods Table end-->
+  <div class="bgbehind">
+</div>
       
       <!-- Signatories start -->
         <tal:render define="verifier python:view.get_verifier(collection);
@@ -736,5 +749,4 @@
         </div>
       </tal:render>
     </tal:is_batch>
-  </body>
 </tal:report>
