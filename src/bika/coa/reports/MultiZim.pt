@@ -93,7 +93,9 @@
         background-repeat: repeat;
         position: absolute;
         width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
-        height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>
+        height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
+        margin: -20mm;
+        padding: -20mm;
     }
     <!-- .watermark {
         position: absolute;
@@ -450,13 +452,13 @@
         </table>
       </tal:render>
       <!-- Methods Table end-->
-  <div class="bgbehind">
-</div>
       
       <!-- Signatories start -->
         <tal:render define="verifier python:view.get_verifier(collection);
                             publish python:view.get_publisher()">
         <h1 i18n:translate="">Signatories</h1>
+        <div class="bgbehind">
+        </div>
         <div class="row section-signatures no-gutters">
           <table class="table table-sm table-condensed ml-1">
             <thead>
