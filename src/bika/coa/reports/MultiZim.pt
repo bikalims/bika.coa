@@ -88,44 +88,16 @@
         background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
         z-index:100;
         background-position: center;
-        background-size: 100px 100px;
+        background-size: 400px 300px;
         opacity:0.1 !important;
-        background-repeat: repeat;
+        background-repeat: no-repeat;
         position: absolute;
+        transform: rotate(315deg);
         width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
         height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
         margin: -20mm;
         padding: -20mm;
     }
-    <!-- .watermark {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        opacity: 0.5;
-        transform: translate(-50%, -50%);
-        background-image: url("zimlabs02/logo.png") ;
-        z-index: -10;
-    } -->
-
-    <!-- .watermarked {
-      position: relative;
-      }
-
-    .watermarked:after {
-      content: "";
-      display: block;
-      width: 50%;
-      height: 50%;
-      position: absolute;
-      top: 0%;
-      left: 0%;
-      background-image: url("zimlabs02/logo.png");
-      background-size: 100px 100px;
-      background-position: 30px 30px;
-      background-repeat: no-repeat;
-      opacity: 0.7;
-      z-index: -1;
-      } -->
 
      .report .section-footer #footer-line {
        width: 100%;
@@ -181,7 +153,7 @@
               <!-- Header Right -->
               <img class="logo image-fluid" style="object-fit:contain"
                   tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
-        </div>:
+        </div>
       </div>
     </tal:render>
   <!-- /HEADER -->
@@ -411,13 +383,6 @@
             </ol>
           </div>
         </div>
-        <!-- <div class="watermarked">
-          <img src="python:view.get_toolbar_logo()" alt="Photo">
-        </div> -->
-        <!-- <div>
-          <div class="image2"><img tal:attributes="src python:view.get_toolbar_logo()"/></div>
-          <div class="watermark2"></div>
-        </div> -->
           <div class="clearfix"></div>
       </tal:render>
         <!-- Disclaimers end -->
@@ -590,6 +555,7 @@
               </table>
           </div>
         </div>
+        <div class="clearfix"></div>
       </tal:render>
       <!-- Results end -->
 
