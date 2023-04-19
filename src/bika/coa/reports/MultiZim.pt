@@ -94,12 +94,12 @@
         background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
         z-index:100;
         background-position: top right;
-        background-size: 400px 300px;
+        background-size: auto auto;
         opacity:0.1 !important;
         background-repeat: no-repeat;
         position: absolute;
-        top: -600%;
-        left: 10%;
+        top: -650%;
+        left: 25%;
         transform: rotate(315deg);
         width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
         height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
