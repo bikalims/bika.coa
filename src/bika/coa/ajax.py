@@ -80,7 +80,7 @@ class AjaxPublishView(AP):
         elif template == "bika.coa:MultiBatch.pt":
             csv_report= self.create_batch_csv_reports(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
-        if template == "bika.coa:MultiZim.pt":
+        if template == "bika.coa:MultiSampleTransposed.pt":
             csv_report = self.create_zlabs_csv_report(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
