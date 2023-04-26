@@ -84,19 +84,25 @@
        font-size: 9pt;
      }
 
+    .footerContainer {
+        position:relative;
+        width:100%;
+        height:100px;
+    }
+
     .bgbehind {
         background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
         z-index:100;
-        background-position: center;
-        background-size: 400px 300px;
+        background-position: top right;
+        background-size: 833px 290px; 
         opacity:0.1 !important;
         background-repeat: no-repeat;
         position: absolute;
-        transform: rotate(315deg);
+        top: -850%;
+        left: 40%;
+        transform: rotate(305deg);
         width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
         height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
-        margin: -20mm;
-        padding: -20mm;
     }
 
      .report .section-footer #footer-line {
@@ -104,7 +110,6 @@
        height: 2mm;
        border-top: 1px solid black;
      }
-     
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -131,8 +136,7 @@
     </style>
   </tal:css>
 
-  <div class="bgbehind">
-  </div>
+
   <!-- Batch error message start -->
   <tal:render condition="python:not view.is_batch_unique(collection)">
     <div>
@@ -422,8 +426,6 @@
         <tal:render define="verifier python:view.get_verifier(collection);
                             publish python:view.get_publisher()">
         <h1 i18n:translate="">Signatories</h1>
-        <div class="bgbehind">
-        </div>
         <div class="row section-signatures no-gutters">
           <table class="table table-sm table-condensed ml-1">
             <thead>
@@ -686,9 +688,13 @@
       </tal:render>
 
       <!-- DEFAULT FOOTER -->
+      <!-- If no custom footer then watermark will appear -->
       <tal:render condition="python:not footer"
                   define="laboratory python:view.laboratory;">
         <div class="row section-footer no-gutters">
+          <div class="footerContainer">
+            <div class="bgbehind"> <!-- An absolute div within a relative div -->
+            </div>
           <!-- Footer Line -->
           <div id="footer-line"></div>
           <table class="w-100">
@@ -714,6 +720,7 @@
               </td>
             </tr>
           </table>
+          </div>
         </div>
       </tal:render>
     </tal:is_batch>
