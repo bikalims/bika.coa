@@ -466,6 +466,63 @@ class MultiReportView(MRV):
 
 #----------------zlabs end-------------------------------------------------
 
+#------------------------GHill begin-------------------------------------
+
+    def get_worksheet_dates(self,samples):
+        earliest_creation_date = ""
+        all_dates = []
+        for sample in samples:
+            for analysis in sample.Analyses:
+                worksheet = analysis.getWorksheet()
+                date_worksheet_created = worksheet.created()
+                if date_worksheet_created:
+                    all_dates.append(date_worksheet_created)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            earliest_creation_date = all_dates[0].strftime('%d/%m/20%y')
+        if len(all_dates) == 1:
+            earliest_creation_date = all_dates[0].strftime('%d/%m/20%y')
+        return earliest_creation_date
+
+
+    def get_common_row_data_green(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            first_datum = datum[0]
+            if self.is_analysis_method_accreditted(analysis):
+                if self.is_analysis_method_subcontracted(analysis):
+                    datum[0] = ["Accredited and Subcontracted",first_datum]
+                else:
+                    datum[0] = ["Accredited",first_datum]
+            else:
+                if self.is_analysis_method_subcontracted(analysis):
+                    datum[0] = ["Subcontracted",first_datum]
+                else:
+                    datum[0] = ["",first_datum]
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+    
+    def get_datetime_string(self,num_date):
+        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
+
+#------------------------GHill end---------------------------------------
+
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
         all_analyses = self.get_analyses_by_poc(collection)
