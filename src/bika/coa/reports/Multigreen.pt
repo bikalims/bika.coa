@@ -53,13 +53,12 @@
     <style type="text/css">
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
-     .report h8 { font-size: 140%; padding-left: 0.5rem}
-     .report h9 { font-size: 120%; margin-top: 10mm;}
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
      .report .alnright { text-align: right; }
      .report .alnleft { text-align: left; }
      .report .alncenter { text-align: center; }
+     .report .padtop { padding-top:1em; }
      .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
@@ -481,96 +480,95 @@
 
       <!-- Legend start -->
       <tal:render>
-        <h2 i18n:translate="">Legend</h2>
-        <table>
-          <tr>
-            <td>
-              <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span>
-            </td>
-            <td colspan='4'>
-              Accredited methods
-            </td>
-          </tr>
-          <tr>
-            <td>
-              ^
-            </td>
-            <td colspan='4'>
-              South African Veterinary Council registered
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>
-            </td>
-            <td colspan='4'>
-              Subcontracted methods
-            </td>
-          </tr>
-        </table>
+      <div>
+          <div>
+            <h2 i18n:translate="">Legend</h2>
+          </div>
+          <div>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
+          </div>
+          <div>
+            <h3 i18n:translate="">^ South African Veterinary Council registered</h3>
+          </div>
+          <div>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
+          </div>
+        </div>
       </tal:render>
       <!-- Legend end -->
 
       <!-- Results interpretation start -->
       <tal:render condition="python:True">
-        <h1>Additional Information</h1>
-        <table>
-          <tal:model repeat="model collection">
-            <tr>
-              <div class="row section-resultsinterpretation no-gutters"
-                  tal:define="ris python:model.get_resultsinterpretation();
-                              has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-                <div class="" tal:condition="has_ri">
-                  <td>
-                  <h1 i18n:translate><span tal:replace="model/getId"/></h1>
-                  </td>
-                  <td>
-                    <tal:ri repeat="ri ris">
-                      <!-- <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2> -->
-                      <span><div class="text-info" tal:content="structure ri/richtext|nothing"></div></span>
-                     </tal:ri>
-                  </td>
-                </div>
-              </div>
-            </tr>
-          </tal:model>
-        </table>
+        <div>
+          <div class='padtop'>
+            <h1>Additional Information</h1>
+          <div>
+            <table class="table table-sm table-condensed small">
+              <tal:model repeat="model collection">
+                <tr>
+                  <div class="row section-resultsinterpretation no-gutters"
+                      tal:define="ris python:model.get_resultsinterpretation();
+                                  has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+                    <div class="" tal:condition="has_ri">
+                      <td>
+                        <h2 class='alnleft' i18n:translate><span tal:replace="model/getId"/></h2>
+                      </td>
+                      <td>
+                        <tal:ri repeat="ri ris">
+                          <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
+                          <span> <div class='alnirigh' tal:content="structure ri/richtext|nothing"></div></span>
+                          <!-- <span><div class="text-info" tal:content="ris"></div></span> -->
+                        </tal:ri>
+                      </td>
+                    </div>
+                  </div>
+                </tr>
+              </tal:model>
+            </table>
+          </div>
+        </div>
       </tal:render>
       <!-- Results interpretation end -->
 
       <!-- Publisher start -->
       <tal:render define="publish python:view.get_publisher();
                           primarymodel python:collection[0]">
-        <table>
-          <tr>
-            <td colspan='2' class='label'>
-              <h2>Publisher</h2>
-            </td>
-            <td colspan='2'>
-              <h2 tal:content="publish/publisher"/>
-            </td>
-            <td colspan='2' class='label'>
-              <h2>Date Time Published</h2>
-            </td>
-            <td colspan='2'>
-              <h2 tal:content="python:view.get_datetime_string(primarymodel.DatePublished or view.timestamp)"/>
-            </td>
-          </tr>
-        </table>
+        <div>
+          <table class="table table-condensed">
+              <tr>
+                <td colspan='2' class='label'>
+                  <h2>Publisher</h2>
+                </td>
+                <td colspan='2'>
+                  <h3 tal:content="publish/publisher"/>
+                </td>
+                <td colspan='2' class='label'>
+                  <h2>Date Published</h2>
+                </td>
+                <td colspan='2'>
+                  <h3 tal:content="python:view.get_datetime_string(primarymodel.DatePublished or view.timestamp)"/>
+                </td>
+              </tr>
+            </table>
+        <div>
       </tal:render>
       <!-- Publisher end -->
 
       <!-- Authorised start -->
         <tal:render>
+        <div>
           <h1>Authorised by</h1>
-          <h1> Pending response</h1>
+        </div>
+        <div>
+          <h3> --Pending response--</h3>
+        </div>
         </tal:render>
       <!-- Authorised end -->
         <!-- Disclaimers start -->
       <tal:render>
         <div class="row section-results no-gutters">
           <div class="w-100">
-            <h1 i18n:translate="">Disclaimers</h1>
+            <h1 class='padtop' i18n:translate="">Disclaimers</h1>
             <ol type='1'>
               <li>The results apply only to the samples / items as received, tested, and described above.</li>
               <li>Where customer-provided details will affect the validity of the results, <span tal:replace="laboratory/title|nothing"/> cannot be held liable if this information is not received, or supplied incorrectly.</li>
