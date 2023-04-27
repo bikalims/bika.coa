@@ -278,30 +278,15 @@
         <!-- Certificate of Analysis Header start-->
       <tal:render define="primarymodel python:collection[0];
                           batch primarymodel/Batch;">
-        <table class="table table-sm table-condensed ml-1 noborder">
-          <tr>
-            <td class="alnright">
-              <h1>Certificate&nbsp;of&nbsp;Analysis</h1>
-            </td>
-            <td class="field">
-              <h1 name="coa_num" tal:content="python:coa_num"/>
-            </td> 
-          </tr>
-          <tr>
-            <td class="alnright">
-              <h1>Batch</h1>
-            </td>
-            <td class="field">
-              <h1 tal:content="python: batch.getId() +', ' + batch.Title()"/>
-            </td> 
-          </tr>
-          <tr>
-            <td colspan="2" class="alncenter">
-              <h1 tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
-            </td>
-          </tr>
-        </table>
-
+        <div>
+          <h1 class="alncenter" name="coa_num" tal:content="python:'Certificate of Analysis '+ str(coa_num)"/>
+        </div>
+        <div>
+          <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
+        </div>
+        <div>
+          <h2 class="alncenter" tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
+        </div>
       </tal:render>
         <!-- Certificate of Analysis Header end-->
       
