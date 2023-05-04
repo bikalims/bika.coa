@@ -15,7 +15,7 @@
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
           pages python:view.get_pages(options);
-          report_images python:view.get_report_images();
+          report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
       ">
 
@@ -300,7 +300,7 @@
           <tr>
             <td colspan='2' class="label" i18n:translate="">Container</td>
             <td class='field'>
-              <div tal:content="python:'Pending'"/>
+              <div tal:content="python:batch.ContainerNumber or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Sample Type</td>
             <td colspan='2' class='field'>
@@ -418,16 +418,15 @@
                     <tr tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                         tal:repeat="row_data python:common_row_data">
                       <td class="text-secondary">
-                         <tal:is_accredited tal:condition="python:row_data[0][0] == 'Accredited'">
+                         <tal:is_accredited tal:condition="python:'Accredited' in row_data[0][0]">
                           <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span>
                          </tal:is_accredited>
-                         <tal:is_subcontracted tal:condition="python:row_data[0][0] == 'Subcontracted'">
+                         <tal:is_subcontracted tal:condition="python:'Subcontracted' in row_data[0][0]">
                           <span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>
                          </tal:is_subcontracted>
-                         <tal:is_accredited_and_subcontracted tal:condition="python:row_data[0][0] == 'Accredited and Subcontracted'">
-                          <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span>
-                          <span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>
-                         </tal:is_accredited_and_subcontracted>
+                         <tal:is_savcregistered tal:condition="python:'SAVCregistered' in row_data[0][0]">
+                          <span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>
+                         </tal:is_savcregistered>
                          <span tal:content="python: row_data[0][1]"/>
                       </td>
                       <td class="text-secondary">
@@ -488,7 +487,7 @@
             <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
           </div>
           <div>
-            <h3 i18n:translate="">^ South African Veterinary Council registered</h3>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>  South African Veterinary Council registered</h3>
           </div>
           <div>
             <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
@@ -586,7 +585,7 @@
                     </tr>
                     <tr>
                       <td>
-                        ^
+                        <span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>
                       </td>
                       <td colspan='4'>
                         South African Veterinary Council registered

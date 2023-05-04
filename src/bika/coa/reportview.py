@@ -504,22 +504,39 @@ class MultiReportView(MRV):
                     instr_list.append(title)
                 datum[3] = " ".join(instr_list)
             first_datum = datum[0]
+            images = []
             if self.is_analysis_method_accreditted(analysis):
-                if self.is_analysis_method_subcontracted(analysis):
-                    datum[0] = ["Accredited and Subcontracted",first_datum]
-                else:
-                    datum[0] = ["Accredited",first_datum]
-            else:
-                if self.is_analysis_method_subcontracted(analysis):
-                    datum[0] = ["Subcontracted",first_datum]
-                else:
-                    datum[0] = ["",first_datum]
+                images.append("Accredited")
+            if self.is_analysis_method_subcontracted(analysis):
+                images.append("Subcontracted")
+            if self.is_analysis_method_savcregistered(analysis):
+                images.append("SAVCregistered")
+            datum[0] = [images,first_datum]
             common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
     
     def get_datetime_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
+
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        savcregistered_symbol_url = "{}/++resource++bika.coa.images/savcregistered.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,
+                "savcregistered_symbol_url": savcregistered_symbol_url,}
+        return datum
 
 #------------------------GHill end---------------------------------------
 
@@ -642,6 +659,12 @@ class MultiReportView(MRV):
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
             if analysis.Method.Supplier:
+                return True
+        return False
+    
+    def is_analysis_method_savcregistered(self, analysis):
+        if analysis.Method:
+            if analysis.Method.SAVCRegistered:
                 return True
         return False
 
