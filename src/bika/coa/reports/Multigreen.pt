@@ -284,6 +284,9 @@
           <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
         </div>
         <div>
+          <h2 class="alncenter" tal:content="python: 'DALLRD number' + ' ' + str(getattr(batch,'DALRRDNumber','-'))"/>
+        </div>
+        <div>
           <h2 class="alncenter" tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
         </div>
       </tal:render>
@@ -298,14 +301,42 @@
         <table class="table table-sm table-condensed ml-1">
         <!-- First Row -->
           <tr>
+            <td colspan='2' class="label" i18n:translate="">Facility number</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'FacilityNumber','-')"/>
+            </td>
+          </tr>
+          <tr>
             <td colspan='2' class="label" i18n:translate="">Container</td>
             <td class='field'>
-              <div tal:content="python:batch.ContainerNumber or '-'"/>
+              <div tal:content="python: getattr(batch,'ContainerNumber','-')"/>
             </td>
+            <td colspan='2' class="label" i18n:translate="">Seal number</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'SealNumber','-')"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class="label" i18n:translate="">Removal permit</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'RemovalPermit','-')"/>
+            </td>
+            <td colspan='2' class="label" i18n:translate="">Seal intact</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'SealIntact','-')"/>
+            </td>
+            <!-- <td></td> -->
+          </tr>
+          <tr>
             <td colspan='2' class="label" i18n:translate="">Sample Type</td>
             <td colspan='2' class='field'>
               <div tal:content="python:primarymodel.SampleTypeTitle or '-'"/>
             </td>
+            <td colspan='2' class="label" i18n:translate="">Country of origin</td>
+            <td colspan='2' class='field'>
+              <div tal:content="python:getattr(batch,'CountryOfOrigin','-')"/>
+            </td>
+            <td></td>
             <td></td>
           </tr>
             <!-- Second Row  -->

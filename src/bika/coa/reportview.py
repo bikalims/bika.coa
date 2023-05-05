@@ -664,7 +664,7 @@ class MultiReportView(MRV):
     
     def is_analysis_method_savcregistered(self, analysis):
         if analysis.Method:
-            if analysis.Method.SAVCRegistered:
+            if getattr(analysis.Method,'SAVCRegistered',''):
                 return True
         return False
 
