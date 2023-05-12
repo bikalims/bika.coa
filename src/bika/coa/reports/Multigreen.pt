@@ -570,13 +570,13 @@
                 <td colspan='2' class='label'>
                   <h2>Publisher</h2>
                 </td>
-                <td colspan='2'>
+                <td colspan='3'>
                   <h3 tal:content="publish/publisher"/>
                 </td>
                 <td colspan='2' class='label'>
                   <h2>Date Published</h2>
                 </td>
-                <td colspan='2'>
+                <td colspan='3'>
                   <h3 tal:content="python:view.get_datetime_string(primarymodel.DatePublished or view.timestamp)"/>
                 </td>
               </tr>
@@ -584,7 +584,7 @@
                 <td colspan='2' class='label'>
                   <h2>Authorised by</h2>
                 </td>
-                <td colspan='2'>
+                <td colspan='3'>
                   <h3 tal:content="Verifier/verifier"/>
                 </td>
               </tr>
@@ -603,7 +603,7 @@
               <li>Where customer-provided details will affect the validity of the results, <span tal:replace="laboratory/title|nothing"/> cannot be held liable if this information is not received, or supplied incorrectly.</li>
               <li>This test report shall not be reproduced except in full, and not without written approval of <span tal:replace="laboratory/title|nothing"/>.</li>
               <li>Our interpretation of the results is for your benefit as guidance, for which we cannot be held liable if misinterpreted or misapplied.</li>
-              <li>
+              <!-- <li>
                   <table>
                     <tr>
                       <td>
@@ -630,7 +630,7 @@
                       </td>
                     </tr>
                   </table>
-              </li>
+              </li> -->
             </ol>
           </div>
         </div>
