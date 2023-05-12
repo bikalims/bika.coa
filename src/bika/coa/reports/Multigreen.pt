@@ -283,12 +283,12 @@
         <div>
           <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
         </div>
-        <div>
+        <!-- <div>
           <h2 class="alncenter" tal:content="python: 'DALLRD number' + ' ' + str(getattr(batch,'DALRRDNumber','-'))"/>
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <h2 class="alncenter" tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
-        </div>
+        </div> -->
       </tal:render>
         <!-- Certificate of Analysis Header end-->
       
@@ -301,19 +301,23 @@
         <table class="table table-sm table-condensed ml-1">
         <!-- First Row -->
           <tr>
-            <td colspan='2' class="label" i18n:translate="">Facility number</td>
-            <td class='field'>
-              <div tal:content="python: getattr(batch,'FacilityNumber','-')"/>
-            </td>
-          </tr>
-          <tr>
             <td colspan='2' class="label" i18n:translate="">Container</td>
             <td class='field'>
               <div tal:content="python: getattr(batch,'ContainerNumber','-')"/>
             </td>
-            <td colspan='2' class="label" i18n:translate="">Seal number</td>
+            <td colspan='2' class="label" i18n:translate="">Date Published</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'SealNumber','-')"/>
+              <div tal:content="python: primarymodel.DatePublished or '-'"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class="label" i18n:translate="">DALLRD number</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'DALRRDNumber','-')"/>
+            </td>
+            <td colspan='2' class="label" i18n:translate="">Facility number</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'Facility','-')"/>
             </td>
           </tr>
           <tr>
@@ -321,23 +325,20 @@
             <td class='field'>
               <div tal:content="python: getattr(batch,'RemovalPermit','-')"/>
             </td>
-            <td colspan='2' class="label" i18n:translate="">Seal intact</td>
-            <td class='field'>
-              <div tal:content="python: getattr(batch,'SealIntact','-')"/>
-            </td>
-            <!-- <td></td> -->
-          </tr>
-          <tr>
-            <td colspan='2' class="label" i18n:translate="">Sample Type</td>
-            <td colspan='2' class='field'>
-              <div tal:content="python:primarymodel.SampleTypeTitle or '-'"/>
-            </td>
             <td colspan='2' class="label" i18n:translate="">Country of origin</td>
             <td colspan='2' class='field'>
               <div tal:content="python:getattr(batch,'CountryOfOrigin','-')"/>
             </td>
-            <td></td>
-            <td></td>
+          </tr>
+          <tr>
+            <td colspan='2' class="label" i18n:translate="">Seal number</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'SealNumber','-')"/>
+            </td>
+            <td colspan='2' class="label" i18n:translate="">Seal intact</td>
+            <td class='field'>
+              <div tal:content="python: getattr(batch,'SealIntact','-')"/>
+            </td>
           </tr>
             <!-- Second Row  -->
           <tr>
@@ -528,7 +529,7 @@
       <!-- Legend end -->
 
       <!-- Results interpretation start -->
-      <tal:render condition="python:True">
+      <!-- <tal:render condition="python:True">
         <div>
           <div class='padtop'>
             <h1>Additional Information</h1>
@@ -547,7 +548,6 @@
                         <tal:ri repeat="ri ris">
                           <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
                           <span> <div class='alnirigh' tal:content="structure ri/richtext|nothing"></div></span>
-                          <!-- <span><div class="text-info" tal:content="ris"></div></span> -->
                         </tal:ri>
                       </td>
                     </div>
@@ -557,12 +557,13 @@
             </table>
           </div>
         </div>
-      </tal:render>
+      </tal:render> -->
       <!-- Results interpretation end -->
 
       <!-- Publisher start -->
       <tal:render define="publish python:view.get_publisher();
-                          primarymodel python:collection[0]">
+                          primarymodel python:collection[0];
+                          Verifier python:view.get_verifier(collection)">
         <div>
           <table class="table table-condensed">
               <tr>
@@ -579,21 +580,19 @@
                   <h3 tal:content="python:view.get_datetime_string(primarymodel.DatePublished or view.timestamp)"/>
                 </td>
               </tr>
+              <tr>
+                <td colspan='2' class='label'>
+                  <h2>Authorised by</h2>
+                </td>
+                <td colspan='2'>
+                  <h3 tal:content="Verifier/verifier"/>
+                </td>
+              </tr>
             </table>
         <div>
       </tal:render>
       <!-- Publisher end -->
 
-      <!-- Authorised start -->
-        <tal:render>
-        <div>
-          <h1>Authorised by</h1>
-        </div>
-        <div>
-          <h3> --Pending response--</h3>
-        </div>
-        </tal:render>
-      <!-- Authorised end -->
         <!-- Disclaimers start -->
       <tal:render>
         <div class="row section-results no-gutters">
