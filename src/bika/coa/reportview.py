@@ -490,29 +490,30 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
-            if analysis.Method:
-                datum[1] = analysis.Method.Title()
-            instruments = analysis.getAnalysisService().getInstruments()
-            # TODO: Use getInstruments
-            instr_list = []
-            if instruments:
-                for i, instrument in enumerate(instruments):
-                    title = instrument.Title()
-                    if title in instr_list:
-                        continue
-                    instr_list.append(title)
-                datum[3] = " ".join(instr_list)
-            first_datum = datum[0]
-            images = []
-            if self.is_analysis_method_accreditted(analysis):
-                images.append("Accredited")
-            if self.is_analysis_method_subcontracted(analysis):
-                images.append("Subcontracted")
-            if self.is_analysis_method_savcregistered(analysis):
-                images.append("SAVCregistered")
-            datum[0] = [images,first_datum]
-            common_data.append(datum)
+            if analysis.getSortKey():
+                datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+                if analysis.Method:
+                    datum[1] = analysis.Method.Title()
+                instruments = analysis.getAnalysisService().getInstruments()
+                # TODO: Use getInstruments
+                instr_list = []
+                if instruments:
+                    for i, instrument in enumerate(instruments):
+                        title = instrument.Title()
+                        if title in instr_list:
+                            continue
+                        instr_list.append(title)
+                    datum[3] = " ".join(instr_list)
+                first_datum = datum[0]
+                images = []
+                if analysis.Accredited:
+                    images.append("Accredited")
+                if self.is_analysis_method_subcontracted(analysis):
+                    images.append("Subcontracted")
+                if self.is_analysis_method_savcregistered(analysis):
+                    images.append("SAVCregistered")
+                datum[0] = [images,first_datum]
+                common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
     
