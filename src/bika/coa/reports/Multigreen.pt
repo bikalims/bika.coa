@@ -317,7 +317,12 @@
             </td>
             <td colspan='2' class="label" i18n:translate="">Facility number</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'Facility','-')"/>
+              <tal:has_facility condition="python: getattr(batch,'Facility','')">
+                <div tal:content="python: getattr(batch.Facility,'number','-')"/>
+              </tal:has_facility>
+              <tal:has_no_facility condition="python: not getattr(batch,'Facility','')">
+                <div tal:content="python: '-'"/>
+              </tal:has_no_facility>
             </td>
           </tr>
           <tr>
@@ -639,47 +644,6 @@
       
       <tal:render>
         <h1> End of Certificate </h1>
-      </tal:render>
-
-      <!-- CUSTOM FOOTER -->
-      <tal:render condition="python:footer">
-        <div class="row section-footer no-gutters">
-          <!-- Footer Line -->
-          <div id="footer-line"></div>
-          <div tal:replace="structure footer"/>
-        </div>
-      </tal:render>
-
-      <!-- DEFAULT FOOTER -->
-      <!-- If no custom footer then watermark will appear -->
-      <tal:render condition="python:not footer"
-                  define="laboratory python:view.laboratory;">
-        <div class="row section-footer no-gutters">
-          <!-- Footer Line -->
-          <div id="footer-line"></div>
-          <table class="w-100">
-            <tr>
-              <td>
-                <div>
-                  <strong tal:content="laboratory/Name">Lab Name</strong>
-                  • <span tal:content="laboratory/PhysicalAddress/zip">Lab ZIP</span>
-                    <span tal:content="laboratory/PhysicalAddress/city">Lab City</span>
-                  • <span tal:content="laboratory/PhysicalAddress/country">Lab Country</span>
-                </div>
-                <div>
-                  <span i18n:translate="">Phone</span>:
-                  <span tal:content="laboratory/Phone">Lab Phone Number</span>
-                  • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
-                    <span tal:content="laboratory/EmailAddress">Lab Email</span>
-                  </a>
-                  • <a href="#" tal:attributes="href laboratory/LabURL">
-                    <span tal:content="laboratory/LabURL">Lab URL</span>
-                  </a>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </div>
       </tal:render>
     </tal:is_batch>
 </tal:report>
