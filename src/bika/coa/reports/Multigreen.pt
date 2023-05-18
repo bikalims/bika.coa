@@ -332,7 +332,7 @@
             </td>
             <td colspan='2' class="label" i18n:translate="">Country of origin</td>
             <td colspan='2' class='field'>
-              <div tal:content="python:getattr(batch,'CountryOfOrigin','-')"/>
+              <div tal:content="python:view.get_country_name(getattr(batch,'CountryOfOrigin',''))"/>
             </td>
           </tr>
           <tr>

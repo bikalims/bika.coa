@@ -18,6 +18,7 @@ from senaite.app.supermodel import SuperModel
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 from bika.coa.ajax import AjaxPublishView as AP
+from senaite.core.api import geo
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
@@ -538,6 +539,17 @@ class MultiReportView(MRV):
                 "accredited_symbol_url": accredited_symbol_url,
                 "savcregistered_symbol_url": savcregistered_symbol_url,}
         return datum
+    
+    def get_country_name(self,country_code):
+        countries = geo.get_countries()
+        items = map(lambda item: (item.alpha_2, item.name), countries)
+        if not country_code:
+            return "-"
+        for pair in items:
+            if country_code in pair[0]:
+                country_name = pair[1]
+                return country_name
+        return "-"
 
 #------------------------GHill end---------------------------------------
 
