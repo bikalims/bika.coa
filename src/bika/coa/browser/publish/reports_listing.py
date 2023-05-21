@@ -98,6 +98,8 @@ class ReportsListingView(RLV):
                 "title": _("Review State")},),
             ("PDF", {
                 "title": _("Download PDF")},),
+            ("CSV", {
+                "title": _("Download CSV")},),
             ("FileSize", {
                 "title": _("Filesize")},),
             ("Date", {
@@ -143,6 +145,14 @@ class ReportsListingView(RLV):
         except (POSKeyError, TypeError):
             return None
 
+    def get_csv(self, obj):
+        """Get the report csv
+        """
+        try:
+            return obj.CSV
+        except (POSKeyError, TypeError):
+            return None
+
     def folderitem(self, obj, item, index):
         """Augment folder listing item
         """
@@ -178,6 +188,13 @@ class ReportsListingView(RLV):
             url = "{}/at_download/Pdf".format(obj.absolute_url())
             item["replace"]["PDF"] = get_link(
                 url, value="PDF", target="_blank")
+
+        csv = self.get_csv(obj)
+        filesize_csv = self.get_filesize(csv)
+        if filesize_csv > 0:
+            url = "{}/at_download/CSV".format(obj.absolute_url())
+            item["replace"]["CSV"] = get_link(
+                url, value="CSV", target="_blank")
 
         item["State"] = _BMF(status_title)
         item["state_class"] = "state-{}".format(review_state)
