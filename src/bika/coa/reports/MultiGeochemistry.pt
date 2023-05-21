@@ -52,6 +52,7 @@
 
   <tal:css>
     <style type="text/css">
+     .noborder { border: none !important}
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
@@ -333,40 +334,84 @@
         <tal:poc tal:repeat="poc analyses_by_poc">
           <!-- Results table per PoC -->
           <table class="table table-sm table-condensed small">
-              <tbody>
+            <thead>
               <tr>
-                <th>
-                    <div class="text-left">Sample ID</div>
-                    <div class="text-left">Client Sample ID</div>
-                    <div class="text-left">Sample Type</div>
-                    <div class="text-left">Sample Point</div>
-                    <div class="text-left">Date Sampled</div> 
-                    <div class="text-left">Date Received</div>
-                    <div class="text-left">Date Analysed</div>
-                    <div class="text-left">Date Verified</div>
-                </th>
+                <th>Sample ID</th>
+                <th></th>
+                <th></th>
                 <tal:ar repeat="model page">
-                  <th class="font-weight-normal text-center">
-                    <div class="text-center text-primary"
-                         tal:content="python:model.title or '-'"/>
-                    <div class="text-center label font-weight-bold"
-                         tal:content="python:model.ClientSampleID or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SampleTypeTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SamplePointTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                  <th colspan="2" class="font-weight-normal">
+                    <div class="text-primary text-center"
+                         tal:content="model/Title"/>
                   </th>
                 </tal:ar>
               </tr>
-              <tbody>
+              <tr class="noborder" style="border:none !important">
+                <tal:ar repeat="model page">
+                  <th colspan="3" tal:condition="python: repeat['model'].start" class="noborder">
+                        Client Sample ID
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder  label font-weight-bold">
+                      <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                  <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                        <div class="text-left">Sample Type</div>
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder">
+                      <div class="text-center"
+                           tal:content="python:model.SampleTypeTitle or '-'"/>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Sample Point</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center noborder">
+                    <div class="text-center"
+                         tal:content="python:model.SamplePointTitle or '-'"/>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Date Sampled</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center noborder">
+                    <div class="text-center"
+                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Date Received</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center noborder">
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                <th colspan="3" tal:condition="python: repeat['model'].start" style="border-top: none">
+                    <div class="text-left">Date Verified</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none">
+                    <div class="text-center"
+                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                </th>
+                </tal:ar>
+               </tr>
+            </thead>
           </table>
         </tal:poc>
         </tal:page>
