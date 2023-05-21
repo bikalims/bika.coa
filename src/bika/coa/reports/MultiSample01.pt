@@ -324,33 +324,70 @@
                 </tal:ar>
               </tr>
               <tr>
-                <th>
-                    <div class="text-left">Client Sample ID</div>
-                    <div class="text-left">Sample Type</div>
-                    <div class="text-left">Sample Point</div>
-                    <div class="text-left">Date Sampled</div> 
-                    <div class="text-left">Date Received</div>
-                    <div class="text-left">Date Verified</div>
-                </th>
-                <th></th>
-                <th></th>
                 <tal:ar repeat="model page">
+                  <th colspan="3" tal:condition="python: repeat['model'].start">
+                        Client Sample ID
+                  </th>
                   <th colspan="2" class="font-weight-normal text-center">
-                    <div class="text-center"
-                         tal:content="python:model.ClientSampleID or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SampleTypeTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.SamplePointTitle or '-'"/>
-                    <div class="text-center"
-                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                    <div class="text-center"
-                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                      <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                   </th>
                 </tal:ar>
               </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                  <th colspan="3" tal:condition="python: repeat['model'].start">
+                        <div class="text-left">Sample Type</div>
+                  </th>
+                      <th colspan="2" class="font-weight-normal text-center">
+                          <div class="text-center"
+                               tal:content="python:model.SampleTypeTitle or '-'"/>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                <th colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Sample Point</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center">
+                    <div class="text-center"
+                         tal:content="python:model.SamplePointTitle or '-'"/>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                <th colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Date Sampled</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center">
+                    <div class="text-center"
+                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                <th colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Date Received</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center">
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
+                </th>
+                </tal:ar>
+              </tr>
+              <tr>
+                <tal:ar repeat="model page">
+                <th colspan="3" tal:condition="python: repeat['model'].start">
+                    <div class="text-left">Date Verified</div>
+                </th>
+                 <th colspan="2" class="font-weight-normal text-center">
+                    <div class="text-center"
+                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                </th>
+                </tal:ar>
+               </tr>
             </thead>
             <tbody>
               <!-- Categories in PoC -->
