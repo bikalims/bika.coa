@@ -287,12 +287,12 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-#---------------------------------- Z labs start ------------------------------------------
+    #---------------------------------- Z labs start ------------------------------------------
     def get_methods_data(self,collection):
         analyses = self.get_analyses_by(collection)
         methods = {}
         for analysis in analyses:
-            if analysis.Method:
+            if analysis.Method: #add variable to analysis.method.Title, try not to pass 80 characters on a line.
                 if analysis.Method.Title() not in methods.keys():
                     methods[analysis.Method.Title()] = [analysis.Method.Title(),analysis.Title(),analysis.Method.description]
                 elif analysis.Title() not in methods[analysis.Method.Title()][1]:
@@ -465,23 +465,22 @@ class MultiReportView(MRV):
     def get_date_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
 
-#----------------zlabs end-------------------------------------------------
+    #----------------zlabs end-------------------------------------------------
 
-#------------------------GHill begin-------------------------------------
+    #------------------------GHill begin-------------------------------------
 
     def get_worksheet_dates(self,samples):
-        earliest_creation_date = ""
+        earliest_creation_date = "-"
         all_dates = []
         for sample in samples:
             for analysis in sample.Analyses:
                 worksheet = analysis.getWorksheet()
-                date_worksheet_created = worksheet.created()
-                if date_worksheet_created:
+                date_worksheet_created_obj = getattr(worksheet,'created','')
+                if date_worksheet_created_obj:
+                    date_worksheet_created = worksheet.created()
                     all_dates.append(date_worksheet_created)
         all_dates.sort()
-        if len(all_dates) > 1:
-            earliest_creation_date = all_dates[0].strftime('%d/%m/20%y')
-        if len(all_dates) == 1:
+        if len(all_dates) > 0:
             earliest_creation_date = all_dates[0].strftime('%d/%m/20%y')
         return earliest_creation_date
 
@@ -551,7 +550,7 @@ class MultiReportView(MRV):
                 return country_name
         return "-"
 
-#------------------------GHill end---------------------------------------
+    #------------------------GHill end---------------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
