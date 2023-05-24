@@ -284,7 +284,7 @@
           <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
         </div>
         <!-- <div>
-          <h2 class="alncenter" tal:content="python: 'DALLRD number' + ' ' + str(getattr(batch,'DALRRDNumber','-'))"/>
+          <h2 class="alncenter" tal:content="python: 'DALRRD number' + ' ' + str(getattr(batch,'DALRRDNumber','-'))"/>
         </div> -->
         <!-- <div>
           <h2 class="alncenter" tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
@@ -297,7 +297,7 @@
                   define="primarymodel python:collection[0];
                           batch primarymodel/Batch;
                           verified_dates python: view.get_verified_dates(collection);
-                          worksheet_date python: view.get_worksheet_dates(collection);">
+                          received_date python: view.get_received_dates(collection);">
         <table class="table table-sm table-condensed ml-1">
         <!-- First Row -->
           <tr>
@@ -311,14 +311,14 @@
             </td>
           </tr>
           <tr>
-            <td colspan='2' class="label" i18n:translate="">DALLRD number</td>
+            <td colspan='2' class="label" i18n:translate="">DALRRD number</td>
             <td class='field'>
               <div tal:content="python: getattr(batch,'DALRRDNumber','-')"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Facility number</td>
             <td class='field'>
-              <tal:has_facility condition="python: getattr(batch,'Facility','')">
-                <div tal:content="python: getattr(batch.Facility,'number','-')"/>
+              <tal:has_facility condition="python: getattr(batch, 'Facility', '')">
+                <div tal:content="python: getattr(batch, 'Facility', '-')"/>
               </tal:has_facility>
               <tal:has_no_facility condition="python: not getattr(batch,'Facility','')">
                 <div tal:content="python: '-'"/>
@@ -362,7 +362,7 @@
             <td colspan='2' class="label" i18n:translate="">Analyzed</td>
             <td class='alncenter' i18n:translate="">From</td>
             <td class='alncenter' i18n:translate="">
-              <div tal:content="python:worksheet_date"/>
+              <div tal:content="python:received_date"/>
             </td>
             <td class='alncenter' i18n:translate="">To</td>
             <td class='alncenter' i18n:translate="">
@@ -511,8 +511,6 @@
       </tal:render>
       <!-- Results end -->
 
-
-
       <!-- Legend start -->
       <tal:render>
       <div>
@@ -532,37 +530,6 @@
       </tal:render>
       <!-- Legend end -->
 
-      <!-- Results interpretation start -->
-      <!-- <tal:render condition="python:True">
-        <div>
-          <div class='padtop'>
-            <h1>Additional Information</h1>
-          <div>
-            <table class="table table-sm table-condensed small">
-              <tal:model repeat="model collection">
-                <tr>
-                  <div class="row section-resultsinterpretation no-gutters"
-                      tal:define="ris python:model.get_resultsinterpretation();
-                                  has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-                    <div class="" tal:condition="has_ri">
-                      <td>
-                        <h2 class='alnleft' i18n:translate><span tal:replace="model/getId"/></h2>
-                      </td>
-                      <td>
-                        <tal:ri repeat="ri ris">
-                          <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-                          <span> <div class='alnirigh' tal:content="structure ri/richtext|nothing"></div></span>
-                        </tal:ri>
-                      </td>
-                    </div>
-                  </div>
-                </tr>
-              </tal:model>
-            </table>
-          </div>
-        </div>
-      </tal:render> -->
-      <!-- Results interpretation end -->
 
       <!-- Publisher start -->
       <tal:render define="publish python:view.get_publisher();
@@ -607,34 +574,6 @@
               <li>Where customer-provided details will affect the validity of the results, <span tal:replace="laboratory/title|nothing"/> cannot be held liable if this information is not received, or supplied incorrectly.</li>
               <li>This test report shall not be reproduced except in full, and not without written approval of <span tal:replace="laboratory/title|nothing"/>.</li>
               <li>Our interpretation of the results is for your benefit as guidance, for which we cannot be held liable if misinterpreted or misapplied.</li>
-              <!-- <li>
-                  <table>
-                    <tr>
-                      <td>
-                        <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span>
-                      </td>
-                      <td colspan='4'>
-                        Accredited methods
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>
-                      </td>
-                      <td colspan='4'>
-                        South African Veterinary Council registered
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>
-                      </td>
-                      <td colspan='4'>
-                        Subcontracted methods
-                      </td>
-                    </tr>
-                  </table>
-              </li> -->
             </ol>
           </div>
         </div>

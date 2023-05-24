@@ -384,11 +384,11 @@ class MultiReportView(MRV):
                 all_dates.append(date_verified)
         all_dates.sort()
         if len(all_dates) > 1:
-            verified_from = all_dates[0].strftime('%d/%m/20%y')
-            verified_to = all_dates[-1].strftime('%d/%m/20%y')
+            verified_from = all_dates[0].strftime('%d/%m/%Y')
+            verified_to = all_dates[-1].strftime('%d/%m/%Y')
         if len(all_dates) == 1:
-            verified_from = all_dates[0].strftime('%d/%m/20%y')
-            verified_to = all_dates[0].strftime('%d/%m/20%y')
+            verified_from = all_dates[0].strftime('%d/%m/%Y')
+            verified_to = all_dates[0].strftime('%d/%m/%Y')
         return [verified_from,verified_to]
 
     def get_analyzed_dates(self,samples):
@@ -402,11 +402,11 @@ class MultiReportView(MRV):
                     all_dates.append(date_analyzed)
         all_dates.sort()
         if len(all_dates) > 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
-            analyzed_to = all_dates[-1].strftime('%d/%m/20%y')
+            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
+            analyzed_to = all_dates[-1].strftime('%d/%m/%Y')
         if len(all_dates) == 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
-            analyzed_to = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
+            analyzed_to = all_dates[0].strftime('%d/%m/%Y')
         return [analyzed_from,analyzed_to]
 
     def within_uncertainty(self,result,min,max):
@@ -469,19 +469,17 @@ class MultiReportView(MRV):
 
     #------------------------GHill begin-------------------------------------
 
-    def get_worksheet_dates(self,samples):
-        earliest_creation_date = "-"
+    def get_received_dates(self, samples):
+        earliest_creation_date = ""
         all_dates = []
         for sample in samples:
-            for analysis in sample.Analyses:
-                worksheet = analysis.getWorksheet()
-                date_worksheet_created_obj = getattr(worksheet,'created','')
-                if date_worksheet_created_obj:
-                    date_worksheet_created = worksheet.created()
-                    all_dates.append(date_worksheet_created)
+            date_received = sample.getDateReceived()
+            all_dates.append(date_received)
         all_dates.sort()
         if len(all_dates) > 0:
-            earliest_creation_date = all_dates[0].strftime('%d/%m/20%y')
+            earliest_creation_date = all_dates[0].strftime('%d/%m/%Y')
+        else:
+            return None
         return earliest_creation_date
 
 
