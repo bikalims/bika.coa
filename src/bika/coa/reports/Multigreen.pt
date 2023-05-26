@@ -283,12 +283,6 @@
         <div>
           <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
         </div>
-        <!-- <div>
-          <h2 class="alncenter" tal:content="python: 'DALRRD number' + ' ' + str(getattr(batch,'DALRRDNumber','-'))"/>
-        </div> -->
-        <!-- <div>
-          <h2 class="alncenter" tal:content="python:view.get_date_string(primarymodel.DatePublished or view.timestamp)"/>
-        </div> -->
       </tal:render>
         <!-- Certificate of Analysis Header end-->
       
@@ -303,7 +297,7 @@
           <tr>
             <td colspan='2' class="label" i18n:translate="">Container</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'ContainerNumber','-')"/>
+              <div tal:content="python: batch.ContainerNumber or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Date Published</td>
             <td class='field'>
@@ -313,36 +307,31 @@
           <tr>
             <td colspan='2' class="label" i18n:translate="">DALRRD number</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'DALRRDNumber','-')"/>
+              <div tal:content="python: batch.DALRRDNumber or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Facility number</td>
             <td class='field'>
-              <tal:has_facility condition="python: getattr(batch, 'Facility', '')">
-                <div tal:content="python: getattr(batch, 'Facility', '-')"/>
-              </tal:has_facility>
-              <tal:has_no_facility condition="python: not getattr(batch,'Facility','')">
-                <div tal:content="python: '-'"/>
-              </tal:has_no_facility>
+              <div tal:content="python: batch.Facility or '-'"/>
             </td>
           </tr>
           <tr>
             <td colspan='2' class="label" i18n:translate="">Removal permit</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'RemovalPermit','-')"/>
+              <div tal:content="python: batch.RemovalPermit or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Country of origin</td>
             <td colspan='2' class='field'>
-              <div tal:content="python:view.get_country_name(getattr(batch,'CountryOfOrigin',''))"/>
+              <div tal:content="python:view.get_country_name(batch.CountryOfOrigin or '')"/>
             </td>
           </tr>
           <tr>
             <td colspan='2' class="label" i18n:translate="">Seal number</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'SealNumber','-')"/>
+              <div tal:content="python: batch.SealNumber or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Seal intact</td>
             <td class='field'>
-              <div tal:content="python: getattr(batch,'SealIntact','-')"/>
+              <div tal:content="python: batch.SealIntact or '-'"/>
             </td>
           </tr>
             <!-- Second Row  -->
@@ -426,8 +415,14 @@
                             tal:content="python:model.ClientSampleID or '-'"/>
                         <div class="text-center"
                             tal:content="python:model.SampleTypeTitle or '-'"/>
-                        <div class="text-center"
-                            tal:content="python:getattr(model.SampleCondition,'title','-')"/>
+                        <tal:sample_condition condition='python: model.SampleCondition'>
+                          <div class="text-center"
+                              tal:content="python: model.SampleCondition.title"/>
+                        </tal:sample_condition>
+                        <tal:not_sample_condition condition='not: model/SampleCondition'>
+                          <div class="text-center"
+                              tal:content="python: '-'"/>
+                        </tal:not_sample_condition>
                         <div class="text-center"
                             tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                         <div class="text-center"
