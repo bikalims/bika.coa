@@ -344,18 +344,12 @@
             <td class='field'>
               <div tal:content="python:primarymodel.DateSampled and view.to_localized_date(primarymodel.DateSampled) or '-'"/>
             </td>
-            <td></td>
           </tr>
             <!-- Third Row  -->
           <tr>
-            <td colspan='2' class="label" i18n:translate="">Analyzed</td>
-            <td class='alncenter' i18n:translate="">From</td>
-            <td class='alncenter' i18n:translate="">
-              <div tal:content="python:received_date"/>
-            </td>
-            <td class='alncenter' i18n:translate="">To</td>
-            <td class='alncenter' i18n:translate="">
-              <div tal:content="python:verified_dates[-1]"/>
+            <td colspan="2" class="label" i18n:translate="">Analyzed</td>
+            <td colspan="4" class='field text-left' i18n:translate=""><div>From <span tal:content="python:received_date"/>
+            to <span tal:content="python:verified_dates[-1]"/></div>
             </td>
           </tr>
           <!-- Fourth row -->
@@ -538,12 +532,6 @@
                 </td>
                 <td colspan='3'>
                   <h3 tal:content="publish/publisher"/>
-                </td>
-                <td colspan='2' class='label'>
-                  <h2>Date Published</h2>
-                </td>
-                <td colspan='3'>
-                  <h3 tal:content="python:view.get_datetime_string(primarymodel.DatePublished or view.timestamp)"/>
                 </td>
               </tr>
               <tr>
