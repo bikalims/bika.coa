@@ -463,7 +463,7 @@
                       <tal:results repeat="model page">
                         <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0][1]);">
                           <tal:analysis tal:repeat="analysis analyses">
-                            <td class="text-right"
+                            <td class="text-center"
                                 tal:define="result python:model.get_formatted_result(analysis);
                                             verified python:analysis.review_state in ['published', 'verified']">
                               <span class="font-weight-normal"
