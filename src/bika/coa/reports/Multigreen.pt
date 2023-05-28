@@ -557,6 +557,7 @@
               <li>Where customer-provided details will affect the validity of the results, <span tal:replace="laboratory/title|nothing"/> cannot be held liable if this information is not received, or supplied incorrectly.</li>
               <li>This test report shall not be reproduced except in full, and not without written approval of <span tal:replace="laboratory/title|nothing"/>.</li>
               <li>Our interpretation of the results is for your benefit as guidance, for which we cannot be held liable if misinterpreted or misapplied.</li>
+              <li>D = Detected / ND = Not Detected</li>
             </ol>
           </div>
         </div>
