@@ -428,7 +428,6 @@
                                 tal:condition="python:result and not verified">-</span>
                           <span class="font-weight-normal"
                                 tal:condition="not:result"></span>
-                        </td>
                           <span tal:condition="python:model.is_out_of_range(analysis)"
                                 class="font-weight-normal">
                             <span class="outofrange text-danger">
