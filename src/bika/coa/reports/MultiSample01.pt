@@ -418,7 +418,7 @@
                   <tal:results repeat="model page">
                     <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
                       <tal:analysis tal:repeat="analysis analyses">
-                        <td class="text-right"
+                        <td colspan="2" class="text-center"
                             tal:define="result python:model.get_formatted_result(analysis);
                                         verified python:analysis.review_state in ['published', 'verified']">
                           <span class="font-weight-normal"
@@ -429,7 +429,6 @@
                           <span class="font-weight-normal"
                                 tal:condition="not:result"></span>
                         </td>
-                        <td class="text-left">
                           <span tal:condition="python:model.is_out_of_range(analysis)"
                                 class="font-weight-normal">
                             <span class="outofrange text-danger">
