@@ -12,13 +12,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="published_results"
-      class="bika.coa.browser.analysisrequest.published_results.AnalysisRequestPublishedResults"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
 
   <!-- Ajax Publish View : ajax_publish -->
   <browser:page

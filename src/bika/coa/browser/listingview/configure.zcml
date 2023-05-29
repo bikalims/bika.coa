@@ -1,0 +1,11 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:browser="http://namespaces.zope.org/browser">
+
+    <!-- main and batch samples lists -->
+    <subscriber
+            for="bika.lims.interfaces.IAnalysisRequest
+                 zope.interface.Interface"
+            provides="senaite.app.listing.interfaces.IListingViewAdapter"
+            factory=".published_results.AnalysisRequestPublishedResults"/>
+
+</configure>

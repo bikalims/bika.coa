@@ -1,15 +1,21 @@
-from bika.lims import api
-from bika.lims.browser.analysisrequest.published_results import \
-    AnalysisRequestPublishedResults as ARPR
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.bika_listing import BikaListingView
+# -*- coding: utf-8 -*-
+
 from ZODB.POSException import POSKeyError
+from zope.component import adapts
+from zope.interface import implements
+
+from bika.lims import api
+from bika.lims import bikaMessageFactory as _
+from senaite.app.listing.interfaces import IListingView
+from senaite.app.listing.interfaces import IListingViewAdapter
 
 
-class AnalysisRequestPublishedResults(ARPR):
+class AnalysisRequestPublishedResults(object):
+    adapts(IListingView)
+    implements(IListingViewAdapter)
 
     def __init__(self, context, request):
-        BikaListingView.__init__(self, context, request)
+        AnalysisRequestPublishedResults.__init__(self, context, request)
         self.context = context
         self.request = request
 
