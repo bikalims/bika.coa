@@ -159,7 +159,7 @@ class SingleReportView(SRV):
         kwargs = {'portal_type': 'ARReport', "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
         increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
-        num = "{:02d}".format(int(coa_num.split('-')[-1]) + increment)
+        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split('-')[-1], num)
         return dry_run
 
@@ -849,7 +849,7 @@ class MultiReportView(MRV):
         kwargs = {'portal_type': 'ARReport', "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
         increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
-        num = "{:02d}".format(int(coa_num.split('-')[-1]) + increment)
+        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split('-')[-1], num)
         return dry_run
 
