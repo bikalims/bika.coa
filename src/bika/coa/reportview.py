@@ -5,20 +5,24 @@ from zope.component import getUtility
 from zope.component._api import getAdapters
 
 from bika.coa import logger
+from bika.coa.ajax import AjaxPublishView as AP
+
 from bika.lims import api
 from bika.lims.api import _marker
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
-    IResultOutOfRange
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
+
 from senaite.app.supermodel import SuperModel
+from senaite.core.api import geo
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
-from bika.coa.ajax import AjaxPublishView as AP
-from senaite.core.api import geo
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
@@ -152,22 +156,12 @@ class SingleReportView(SRV):
     """
 
     def get_coa_number(self, model):
-        today = DateTime()
-        query = {
-            "portal_type": "ARReport",
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
-        return coa_num
+        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
+        num = "{:02d}".format(int(coa_num.split('-')[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        return dry_run
 
     def get_sampler_fullname(self, model):
         obj = model.instance
@@ -852,22 +846,13 @@ class MultiReportView(MRV):
         return self.to_localized_time(date)[:10]
 
     def get_coa_number(self):
-        today = DateTime()
-        query = {
-            "portal_type": "ARReport",
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
-        return coa_num
+        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
+        num = "{:02d}".format(int(coa_num.split('-')[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        import pdb; pdb.set_trace()
+        return dry_run
 
     def get_coa_styles(self):
         registry = getUtility(IRegistry)
