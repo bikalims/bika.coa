@@ -851,7 +851,6 @@ class MultiReportView(MRV):
         increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
         num = "{:02d}".format(int(coa_num.split('-')[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split('-')[-1], num)
-        import pdb; pdb.set_trace()
         return dry_run
 
     def get_coa_styles(self):
