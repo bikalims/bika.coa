@@ -301,7 +301,7 @@
             </td>
             <td colspan='2' class="label" i18n:translate="">Date Published</td>
             <td class='field'>
-              <div tal:content="python: primarymodel.DatePublished or '-'"/>
+              <div tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp) or '-'"/>
             </td>
           </tr>
           <tr>
