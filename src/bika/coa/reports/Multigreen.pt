@@ -320,7 +320,7 @@
               <div tal:content="python: batch.RemovalPermit or '-'"/>
             </td>
             <td colspan='2' class="label" i18n:translate="">Country of origin</td>
-            <td colspan='2' class='field'>
+            <td class='field'>
               <div tal:content="python:view.get_country_name(batch.CountryOfOrigin or '')"/>
             </td>
           </tr>
@@ -355,7 +355,7 @@
           <!-- Fourth row -->
           <tr>
             <td colspan='2' class='label'>Batch Remarks</td>
-            <td colspan='5' rowspan='2'>
+            <td colspan='4' rowspan='2'>
               <div tal:content="batch/COARemarks"/>
             </td>
           </tr>
