@@ -497,14 +497,7 @@ class MultiReportView(MRV):
                         instr_list.append(title)
                     datum[3] = " ".join(instr_list)
                 first_datum = datum[0]
-                images = []
-                if analysis.Accredited:
-                    images.append("Accredited")
-                if self.is_analysis_method_subcontracted(analysis):
-                    images.append("Subcontracted")
-                if self.is_analysis_method_savcregistered(analysis):
-                    images.append("SAVCregistered")
-                datum[0] = [images,first_datum]
+                datum[0] = [analysis,first_datum]
                 common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
@@ -664,6 +657,11 @@ class MultiReportView(MRV):
         if analysis.Method:
             if analysis.Method.Supplier:
                 return True
+        return False
+    
+    def is_analysis_accredited(self,analysis):
+        if analysis.Accredited:
+            return True
         return False
     
     def is_analysis_method_savcregistered(self, analysis):

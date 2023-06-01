@@ -443,16 +443,16 @@
                     <tr tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                         tal:repeat="row_data python:common_row_data">
                       <td class="text-secondary">
-                         <tal:is_accredited tal:condition="python:'Accredited' in row_data[0][0]">
-                          <span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span>
-                         </tal:is_accredited>
-                         <tal:is_subcontracted tal:condition="python:'Subcontracted' in row_data[0][0]">
-                          <span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>
-                         </tal:is_subcontracted>
-                         <tal:is_savcregistered tal:condition="python:'SAVCregistered' in row_data[0][0]">
-                          <span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>
-                         </tal:is_savcregistered>
-                         <span tal:content="python: row_data[0][1]"/>
+                        <span tal:condition="python: view.is_analysis_accredited(row_data[0][0])">
+                          <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                        </span>
+                        <span tal:condition="python: view.is_analysis_method_subcontracted(row_data[0][0])">
+                          <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+                        </span>
+                        <span tal:condition="python: view.is_analysis_method_savcregistered(row_data[0][0])">
+                          <img tal:attributes="src python:report_images['savcregistered_symbol_url']"/>
+                        </span>
+                        <span tal:content="python: row_data[0][1]"/>
                       </td>
                       <td class="text-secondary">
                         <span tal:content="python: row_data[1]"/>
