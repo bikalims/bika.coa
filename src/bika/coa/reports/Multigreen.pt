@@ -478,16 +478,16 @@
                     <tr tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                         tal:repeat="row_data python:common_row_data">
                       <td class="text-secondary">
-                            <span tal:condition="python: view.is_analysis_accredited(row_data[0][0])">
+                            <span tal:condition="python: row_data[4]">
                               <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                             </span>
-                            <span tal:condition="python: view.is_analysis_method_subcontracted(row_data[0][0])">
+                            <span tal:condition="python: row_data[5]">
                               <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
                             </span>
-                            <span tal:condition="python: view.is_analysis_method_savcregistered(row_data[0][0])">
+                            <span tal:condition="python: row_data[6]">
                               <img tal:attributes="src python:report_images['savcregistered_symbol_url']"/>
                             </span>
-                            <span tal:content="python: row_data[0][1]"/>
+                            <span tal:content="python: row_data[0]"/>
                       </td>
                       <td class="text-secondary">
                         <span tal:content="python: row_data[1]"/>
@@ -496,7 +496,7 @@
                         <span tal:content="python: row_data[2]"/>
                       </td>
                       <tal:results repeat="model page">
-                        <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0][1]);">
+                        <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
                           <tal:analysis tal:repeat="analysis analyses">
                             <td colspan="2" class="text-center"
                                 tal:define="result python:model.get_formatted_result(analysis);

@@ -483,9 +483,14 @@ class MultiReportView(MRV):
         common_data = []
         for analysis in analyses:
             if analysis.getSortKey():
-                datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+                datum = [analysis.Title(), "-",
+                         model.get_formatted_unit(analysis), "-",
+                         False, False, False]
                 if analysis.Method:
                     datum[1] = analysis.Method.Title()
+                datum[4] = self.is_analysis_accredited(analysis)
+                datum[5] = self.is_analysis_method_subcontracted(analysis)
+                datum[6] = self.is_analysis_method_savcregistered(analysis)
                 instruments = analysis.getAnalysisService().getInstruments()
                 # TODO: Use getInstruments
                 instr_list = []
@@ -496,8 +501,6 @@ class MultiReportView(MRV):
                             continue
                         instr_list.append(title)
                     datum[3] = " ".join(instr_list)
-                first_datum = datum[0]
-                datum[0] = [analysis,first_datum]
                 common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
