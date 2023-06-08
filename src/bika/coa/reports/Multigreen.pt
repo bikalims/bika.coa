@@ -278,7 +278,7 @@
       <tal:render define="primarymodel python:collection[0];
                           batch primarymodel/Batch;">
         <div>
-          <h1 class="alncenter" name="coa_num" tal:content="python:'Certificate of Analysis '+ str(coa_num)"/>
+          <h1 class="alncenter">Certificate of Analysis <span name="coa_num" tal:content="coa_num"/></h1>
         </div>
         <div>
           <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
