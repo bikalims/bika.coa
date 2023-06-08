@@ -46,6 +46,37 @@ class EmailView(EV):
         return enabled
 
     @property
+    def get_batch(self):
+        reports = self.reports
+        batch_id = None
+        for num, report in enumerate(reports):
+            samples = report.getContainedAnalysisRequests()
+            if all([getattr(i.getBatch(), "id", '') for i in samples]):
+                batch_id = samples[0].getBatch().id
+            break
+        return batch_id
+
+    @property
+    def email_body(self):
+        """Email body text to be used in the template
+        """
+        # request parameter has precedence
+        body = self.request.get("body", None)
+        if body is not None:
+            return body
+        setup = api.get_setup()
+        body = setup.getEmailBodySamplePublication()
+        template_context = {
+            "client_name": self.client_name,
+            "lab_name": self.lab_name,
+            "lab_address": self.lab_address,
+            "batch_id": self.get_batch,
+        }
+        rendered_body = self.render_email_template(
+            body, template_context=template_context)
+        return rendered_body
+
+    @property
     def email_attachments(self):
         logger.info("email_attachments bika.coa: entered")
         attachments = []

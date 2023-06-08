@@ -73,6 +73,7 @@ class AjaxPublishView(AP):
             samples.append(sample)
 
         
+        csv_reports = []
         is_multi_template = self.is_multi_template(template)
         if template == "bika.coa:MultiGeochemistryBatch.pt":
             csv_report = self.create_geochemistry_csv_report(samples,coa_num)
