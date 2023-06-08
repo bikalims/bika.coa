@@ -219,6 +219,32 @@ class SingleReportView(SRV):
         styles["logo_styles"] = " ".join(css)
         return styles
 
+    def get_verifier_by_analysis(self, analysis):
+        actor = getTransitionUsers(analysis, "verify")
+        if not actor:
+            return {"verifier": 'admin', "email": ""}
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        roles = ploneapi.user.get_roles(username=user_name)
+        date_verified = self.to_localized_time(model.getDateVerified())
+        contact = api.get_user_contact(user_obj)
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": ""}
+        if not contact:
+            return verifier
+
+        verifier["fullname"] =  contact.getFullname()
+        verifier["role"] =  roles[0]
+        verifier["date_verified"] =  date_verified
+        verifier["email"] =  contact.getEmailAddress()
+
+        if contact.getSalutation():
+            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+        else:
+            verifier["verifier"] = "{}".format(contact.getFullname())
+
+        return verifier
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
@@ -264,7 +290,9 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = verifier.get("verifier", "-")
             if analysis.Method:
                 datum[1] = analysis.Method.Title()
             instruments = analysis.getAnalysisService().getInstruments()
@@ -485,12 +513,14 @@ class MultiReportView(MRV):
             if analysis.getSortKey():
                 datum = [analysis.Title(), "-",
                          model.get_formatted_unit(analysis), "-",
-                         False, False, False]
+                         False, False, False, "-"]
                 if analysis.Method:
                     datum[1] = analysis.Method.Title()
                 datum[4] = self.is_analysis_accredited(analysis)
                 datum[5] = self.is_analysis_method_subcontracted(analysis)
                 datum[6] = self.is_analysis_method_savcregistered(analysis)
+                verifier = self.get_verifier_by_analysis(analysis)
+                datum[7] = verifier.get("verifier", "-")
                 instruments = analysis.getAnalysisService().getInstruments()
                 # TODO: Use getInstruments
                 instr_list = []
@@ -745,6 +775,32 @@ class MultiReportView(MRV):
         if not actor:
             return {"verifier": 'admin', "email": ""}
             
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        roles = ploneapi.user.get_roles(username=user_name)
+        date_verified = self.to_localized_time(model.getDateVerified())
+        contact = api.get_user_contact(user_obj)
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": ""}
+        if not contact:
+            return verifier
+
+        verifier["fullname"] =  contact.getFullname()
+        verifier["role"] =  roles[0]
+        verifier["date_verified"] =  date_verified
+        verifier["email"] =  contact.getEmailAddress()
+
+        if contact.getSalutation():
+            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+        else:
+            verifier["verifier"] = "{}".format(contact.getFullname())
+
+        return verifier
+
+    def get_verifier_by_analysis(self, analysis):
+        actor = getTransitionUsers(analysis, "verify")
+        if not actor:
+            return {"verifier": 'admin', "email": ""}
+
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)

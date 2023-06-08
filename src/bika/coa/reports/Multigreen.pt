@@ -379,9 +379,7 @@
               <table class="table table-sm table-condensed small">
                 <thead>
                   <tr>
-                    <th>Sample ID</th>
-                    <th></th>
-                    <th></th>
+                    <th colspan="4">Sample ID</th>
                     <tal:ar repeat="model page">
                       <th colspan="2" class="font-weight-normal">
                         <div class="text-primary text-center"
@@ -391,7 +389,7 @@
                   </tr>
                   <tr class="noborder" style="border:none !important">
                     <tal:ar repeat="model page">
-                      <th colspan="3" tal:condition="python: repeat['model'].start" class="noborder">
+                      <th colspan="4" tal:condition="python: repeat['model'].start" class="noborder">
                             Client Sample ID
                       </th>
                       <th colspan="2" class="font-weight-normal text-center noborder">
@@ -401,7 +399,7 @@
                   </tr>
                   <tr class="noborder">
                     <tal:ar repeat="model page">
-                      <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                      <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                             <div class="text-left">Sample Type</div>
                       </th>
                       <th colspan="2" class="font-weight-normal text-center noborder">
@@ -412,7 +410,7 @@
                   </tr>
                   <tr class="noborder">
                     <tal:ar repeat="model page">
-                    <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                         <div class="text-left">Sample Condition</div>
                     </th>
                      <th colspan="2" class="font-weight-normal text-center noborder">
@@ -429,7 +427,7 @@
                   </tr>
                   <tr class="noborder">
                     <tal:ar repeat="model page">
-                    <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                         <div class="text-left">Date Sampled</div>
                     </th>
                      <th colspan="2" class="font-weight-normal text-center noborder">
@@ -440,7 +438,7 @@
                   </tr>
                   <tr class="noborder">
                     <tal:ar repeat="model page">
-                    <th class="noborder" colspan="3" tal:condition="python: repeat['model'].start">
+                    <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                         <div class="text-left">Date Received</div>
                     </th>
                      <th colspan="2" class="font-weight-normal text-center noborder">
@@ -451,7 +449,7 @@
                   </tr>
                   <tr>
                     <tal:ar repeat="model page">
-                    <th colspan="3" tal:condition="python: repeat['model'].start" style="border-top: none">
+                    <th colspan="4" tal:condition="python: repeat['model'].start" style="border-top: none">
                         <div class="text-left">Date Verified</div>
                     </th>
                      <th colspan="2" class="font-weight-normal text-center" style="border-top: none">
@@ -469,6 +467,7 @@
                            <span tal:content="category/Title"/>
                        </td>
                        <td class="font-weight-bold">Method</td>
+                       <td class="font-weight-bold">Verifier</td>
                        <td class="font-weight-bold">Unit</td>
                        <tal:results repeat="model page">
                            <td class="font-weight-bold text-center" colspan="2">Result</td>
@@ -491,6 +490,9 @@
                       </td>
                       <td class="text-secondary">
                         <span tal:content="python: row_data[1]"/>
+                      </td>
+                      <td class="text-secondary">
+                        <span tal:content="python: row_data[7]"/>
                       </td>
                       <td class="text-secondary">
                         <span tal:content="python: row_data[2]"/>
