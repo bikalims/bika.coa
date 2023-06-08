@@ -19,7 +19,7 @@
       name="ajax_publish"
       class="bika.coa.ajax.AjaxPublishView"
       permission="zope.Public"
-      layer="senaite.impress.interfaces.ILayer"
+      layer="senaite.impress.interfaces.ISenaiteImpressLayer"
       />
 
   <!-- Ajax Publish View : ajax_templates -->
