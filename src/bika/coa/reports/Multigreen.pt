@@ -14,7 +14,7 @@
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
-          pages python:view.get_pages(options);
+          pages python:view.get_pages_green(options);
           report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
       ">
