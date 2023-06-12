@@ -230,7 +230,8 @@ class SingleReportView(SRV):
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": ""}
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtile": "", "default_department": "",}
         if not contact:
             return verifier
 
@@ -238,11 +239,16 @@ class SingleReportView(SRV):
         verifier["role"] =  roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
-
+        verifier["jobtile"] =  contact.getJobTitle()
+        if contact.getDefaultDepartment():
+            default_department = contact.getDefaultDepartment().Title()
+            verifier["default_department"] = default_department
         if contact.getSalutation():
             verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
 
         return verifier
 
@@ -815,7 +821,7 @@ class MultiReportView(MRV):
             return verifier
 
         verifier["fullname"] =  contact.getFullname()
-        verifier["role"] =  roles[0]
+        verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
 
@@ -837,7 +843,8 @@ class MultiReportView(MRV):
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": ""}
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtile": "", "default_department": "",}
         if not contact:
             return verifier
 
@@ -845,13 +852,19 @@ class MultiReportView(MRV):
         verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
-
+        verifier["jobtile"] =  contact.getJobTitle()
+        if contact.getDefaultDepartment():
+            default_department = contact.getDefaultDepartment().Title()
+            verifier["default_department"] = default_department
         if contact.getSalutation():
             verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
 
         return verifier
+
 
     def get_publisher(self):
         publisher = {
@@ -959,3 +972,13 @@ class MultiReportView(MRV):
         css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
         styles["logo_styles"] = " ".join(css)
         return styles
+
+    def get_verifiers(self, collection):
+        analyses = self.get_analyses_by(collection)
+        verifiers = []
+        for analysis in analyses:
+            verifier = self.get_verifier_by_analysis(analysis)
+            if verifier in verifiers:
+                continue
+            verifiers.append(verifier)
+        return verifiers
