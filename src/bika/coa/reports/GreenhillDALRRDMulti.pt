@@ -560,7 +560,7 @@
                           primarymodel python:collection[0];
                           Verifier python:view.get_verifier(collection)">
         <div>
-          <table class="table table-condensed">
+          <table class="table table-condensed" tal:define="verifiers python:view.get_verifiers(collection)">
               <tr>
                 <td colspan='2' class='label'>
                   <h2>Publisher</h2>
@@ -570,14 +570,30 @@
                 </td>
               </tr>
               <tr>
-                <td colspan='2' class='label'>
+                <td colspan='5' class='label'>
                   <h2>Authorised by</h2>
                 </td>
-                <td colspan='3'>
-                  <h3 tal:content="Verifier/verifier"/>
+              </tr>
+              <tal:verifiers tal:repeat="verifier verifiers">
+              <tr>
+                <td style="border:none">
+                  <div>
+                    <img tal:condition="verifier/signature"
+                         tal:attributes="src string:${verifier/signature}" style="height:75px"/>
+                  </div>
+                  <div class="font-weight-bold">
+                    <span tal:content="verifier/verifier"></span>
+                  </div>
+                  <div>
+                    <span tal:content="verifier/jobtile"></span>
+                  </div>
+                  <div>
+                    <span tal:content="verifier/default_department|nothing"></span>
+                  </div>
                 </td>
               </tr>
-            </table>
+            </tal:verifiers>
+          </table>
         <div>
       </tal:render>
       <!-- Publisher end -->
