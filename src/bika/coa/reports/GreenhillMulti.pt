@@ -550,48 +550,51 @@
       </tal:model>
     </div>
   </tal:render>
-
-  <!--  SIGNATURES -->
-  <tal:render condition="python:True">
-    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
-      <div class="row section-signatures no-gutters">
-        <div class="w-100">
-          <h1 i18n:translate="">Managers Responsible</h1>
-          <table class="table table-sm table-condensed">
-            <tr>
-              <tal:manager repeat="manager managers">
-                <td style="border:none">
-                  <div>
-                    <img tal:condition="manager/Signature"
-                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
-                  </div>
-                  <div class="font-weight-bold">
-                    <span tal:content="manager/Salutation"></span>
-                    <span tal:condition="manager/Salutation">&nbsp;</span>
-                    <span tal:content="manager/Fullname"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/JobTitle"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
-                  </div>
-                </td>
-              </tal:manager>
-              <tal:reporter define="reporter python:view.current_user" condition="reporter">
-                <td style="border:none">
-                  <div class="label" i18n:translate="">Published by</div>
-                  <div>
-                    <span tal:content="reporter/fullname|reporter/username"></span>
-                  </div>
-                </td>
-              </tal:reporter>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </tal:responsibles>
+  <!-- Publisher start -->
+  <tal:render define="publish python:view.get_publisher();
+                      primarymodel python:collection[0];
+                      Verifier python:view.get_verifier(collection)">
+    <div>
+      <table class="table table-condensed" tal:define="verifiers python:view.get_verifiers(collection)">
+          <tr>
+            <td colspan='2' class='label'>
+              <h2>Publisher</h2>
+            </td>
+            <td colspan='2'>
+              <h3 tal:content="publish/publisher"/>
+            </td>
+            <td colspan='1'>
+              <h3 tal:content="publish/jobtile"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='5' class='label'>
+              <h2>Authorised by</h2>
+            </td>
+          </tr>
+          <tal:verifiers tal:repeat="verifier verifiers">
+          <tr>
+            <td style="border:none">
+              <div>
+                <img tal:condition="verifier/signature"
+                     tal:attributes="src string:${verifier/signature}" style="height:75px"/>
+              </div>
+              <div class="font-weight-bold">
+                <span tal:content="verifier/verifier"></span>
+              </div>
+              <div>
+                <span tal:content="verifier/jobtile"></span>
+              </div>
+              <div>
+                <span tal:content="verifier/default_department|nothing"></span>
+              </div>
+            </td>
+          </tr>
+        </tal:verifiers>
+      </table>
+    <div>
   </tal:render>
+  <!-- Publisher end -->
 
   <!-- DISCREETER -->
   <tal:render condition="python:True"

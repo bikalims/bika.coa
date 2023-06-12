@@ -869,7 +869,7 @@ class MultiReportView(MRV):
     def get_publisher(self):
         publisher = {
                 "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "",}
+                "email": "", "jobtile": ""}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
@@ -878,12 +878,14 @@ class MultiReportView(MRV):
             return publisher
 
         publisher["email"] = '{}'.format(user.getEmailAddress())
+        publisher["jobtile"] =  contact.getJobTitle()
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
             publisher["publisher"] = '{}'.format(user.getFullname())
         if user.Signature:
             publisher["user_url"] = user.absolute_url()
+
         return publisher
 
     def has_results_intepretation(self, collection):
