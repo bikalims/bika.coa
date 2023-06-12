@@ -413,11 +413,11 @@ class MultiReportView(MRV):
                 all_dates.append(date_verified)
         all_dates.sort()
         if len(all_dates) > 1:
-            verified_from = all_dates[0].strftime('%d-%m-%Y')
-            verified_to = all_dates[-1].strftime('%d-%m-%Y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[-1])
         if len(all_dates) == 1:
-            verified_from = all_dates[0].strftime('%d-%m-%Y')
-            verified_to = all_dates[0].strftime('%d-%m-%Y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[0])
         return [verified_from,verified_to]
 
     def get_analyzed_dates(self,samples):
@@ -506,7 +506,7 @@ class MultiReportView(MRV):
             all_dates.append(date_received)
         all_dates.sort()
         if len(all_dates) > 0:
-            earliest_creation_date = all_dates[0].strftime('%d-%m-%Y')
+            earliest_creation_date = self.to_localized_date(all_dates[0])
         else:
             return None
         return earliest_creation_date
