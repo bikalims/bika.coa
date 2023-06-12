@@ -850,13 +850,13 @@ class MultiReportView(MRV):
 
         publisher["email"] = '{}'.format(user.getEmailAddress())
         publisher["jobtitle"] =  user.getJobTitle()
-        jobtitle = publisher["jobtitle"]
-        fullname = publisher["publisher"]
-        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
             publisher["publisher"] = '{}'.format(user.getFullname())
+        fullname = publisher["publisher"]
+        jobtitle = publisher["jobtitle"]
+        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
         if user.getSignature():
             publisher["user_url"] = user.absolute_url()
 
