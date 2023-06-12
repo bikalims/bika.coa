@@ -219,10 +219,11 @@ class SingleReportView(SRV):
         styles["logo_styles"] = " ".join(css)
         return styles
 
-    def get_verifier_by_analysis(self, analysis):
+    def get_verifier_by_analysis(self, model):
+        analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
         if not actor:
-            return {"verifier": 'admin', "email": ""}
+            return {"verifier": '', "email": ""}
 
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
@@ -773,7 +774,7 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by([model])
         actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
-            return {"verifier": 'admin', "email": ""}
+            return {"verifier": '', "email": ""}
             
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
@@ -796,10 +797,11 @@ class MultiReportView(MRV):
 
         return verifier
 
-    def get_verifier_by_analysis(self, analysis):
+    def get_verifier_by_analysis(self, model):
+        analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
         if not actor:
-            return {"verifier": 'admin', "email": ""}
+            return {"verifier": '', "email": ""}
 
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
@@ -811,7 +813,7 @@ class MultiReportView(MRV):
             return verifier
 
         verifier["fullname"] =  contact.getFullname()
-        verifier["role"] =  roles[0]
+        verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
 
