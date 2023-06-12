@@ -849,7 +849,7 @@ class MultiReportView(MRV):
             return publisher
 
         publisher["email"] = '{}'.format(user.getEmailAddress())
-        publisher["jobtile"] =  contact.getJobTitle()
+        publisher["jobtile"] =  user.getJobTitle()
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
