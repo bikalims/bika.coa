@@ -49,5 +49,9 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Template Finder Utility -->
+  <utility
+      provides="senaite.impress.interfaces.ITemplateFinder"
+      factory=".utils.TemplateFinder"/>
 
 </configure>
