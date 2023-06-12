@@ -578,7 +578,7 @@
               <tr>
                 <td style="border:none">
                   <div>
-                    <img tal:conditiona"verifier/signature"
+                    <img tal:condition="verifier/signature"
                          tal:attributes="src string:${verifier/signature}" style="height:75px"/>
                   </div>
                   <div class="font-weight-bold">
