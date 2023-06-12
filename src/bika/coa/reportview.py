@@ -231,7 +231,7 @@ class SingleReportView(SRV):
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
         verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtile": "", "default_department": "",}
+                    "signature": "", "jobtitle": "", "default_department": "",}
         if not contact:
             return verifier
 
@@ -239,7 +239,7 @@ class SingleReportView(SRV):
         verifier["role"] =  roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
-        verifier["jobtile"] =  contact.getJobTitle()
+        verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
             default_department = contact.getDefaultDepartment().Title()
             verifier["default_department"] = default_department
@@ -844,7 +844,7 @@ class MultiReportView(MRV):
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
         verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtile": "", "default_department": "",}
+                    "signature": "", "jobtitle": "", "default_department": "",}
         if not contact:
             return verifier
 
@@ -852,7 +852,7 @@ class MultiReportView(MRV):
         verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
-        verifier["jobtile"] =  contact.getJobTitle()
+        verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
             default_department = contact.getDefaultDepartment().Title()
             verifier["default_department"] = default_department
@@ -869,7 +869,7 @@ class MultiReportView(MRV):
     def get_publisher(self):
         publisher = {
                 "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "", "jobtile": ""}
+                "email": "", "jobtitle": ""}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
@@ -878,13 +878,16 @@ class MultiReportView(MRV):
             return publisher
 
         publisher["email"] = '{}'.format(user.getEmailAddress())
-        publisher["jobtile"] =  contact.getJobTitle()
+        publisher["jobtitle"] =  user.getJobTitle()
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
             publisher["publisher"] = '{}'.format(user.getFullname())
-        if user.Signature:
+        if user.getSignature():
             publisher["user_url"] = user.absolute_url()
+        jobtitle = publisher["jobtitle"]
+        fullname = publisher["publisher"]
+        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
 
         return publisher
 

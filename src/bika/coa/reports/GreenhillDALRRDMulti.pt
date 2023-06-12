@@ -565,11 +565,8 @@
                 <td colspan='2' class='label'>
                   <h2>Publisher</h2>
                 </td>
-                <td colspan='2'>
-                  <h3 tal:content="publish/publisher"/>
-                </td>
-                <td colspan='1'>
-                  <h3 tal:content="publish/jobtile"/>
+                <td colspan='3'>
+                  <h3 tal:content="publish/publisher_job"/>
                 </td>
               </tr>
               <tr>
@@ -588,7 +585,7 @@
                     <span tal:content="verifier/verifier"></span>
                   </div>
                   <div>
-                    <span tal:content="verifier/jobtile"></span>
+                    <span tal:content="verifier/jobtitle"></span>
                   </div>
                   <div>
                     <span tal:content="verifier/default_department|nothing"></span>
