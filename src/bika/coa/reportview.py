@@ -821,7 +821,7 @@ class MultiReportView(MRV):
 
         verifier["fullname"] =  contact.getFullname()
         verifier["role"] = roles[0]
-        verifier["date_verified"] =  date_verified
+        # verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
         verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
