@@ -413,11 +413,11 @@ class MultiReportView(MRV):
                 all_dates.append(date_verified)
         all_dates.sort()
         if len(all_dates) > 1:
-            verified_from = all_dates[0].strftime('%d/%m/%Y')
-            verified_to = all_dates[-1].strftime('%d/%m/%Y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[-1])
         if len(all_dates) == 1:
-            verified_from = all_dates[0].strftime('%d/%m/%Y')
-            verified_to = all_dates[0].strftime('%d/%m/%Y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[0])
         return [verified_from,verified_to]
 
     def get_analyzed_dates(self,samples):
@@ -535,7 +535,7 @@ class MultiReportView(MRV):
             all_dates.append(date_received)
         all_dates.sort()
         if len(all_dates) > 0:
-            earliest_creation_date = all_dates[0].strftime('%d/%m/%Y')
+            earliest_creation_date = self.to_localized_date(all_dates[0])
         else:
             return None
         return earliest_creation_date
@@ -850,7 +850,7 @@ class MultiReportView(MRV):
 
         verifier["fullname"] =  contact.getFullname()
         verifier["role"] = roles[0]
-        verifier["date_verified"] =  date_verified
+        # verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
         verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
@@ -869,7 +869,7 @@ class MultiReportView(MRV):
     def get_publisher(self):
         publisher = {
                 "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "", "jobtitle": ""}
+                "email": "", "jobtitle": "", "publisher_job": "",}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
@@ -883,11 +883,11 @@ class MultiReportView(MRV):
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
             publisher["publisher"] = '{}'.format(user.getFullname())
+        fullname = publisher["publisher"]
+        jobtitle = publisher["jobtitle"]
+        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
         if user.getSignature():
             publisher["user_url"] = user.absolute_url()
-        jobtitle = publisher["jobtitle"]
-        fullname = publisher["publisher"]
-        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
 
         return publisher
 
