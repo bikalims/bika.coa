@@ -14,7 +14,7 @@
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
-          pages python:view.get_pages(options);
+          pages python:view.get_pages_long_names(options);
           report_images python:view.get_report_images();
           styles python:view.get_coa_styles();
       ">
@@ -322,7 +322,7 @@
               <tr>
                 <th colspan="4">Sample ID</th>
                 <tal:ar repeat="model page">
-                  <th colspan="2" class="font-weight-normal">
+                  <th colspan="1" class="font-weight-normal">
                     <div class="text-primary text-center"
                          tal:content="model/Title"/>
                   </th>
@@ -333,7 +333,7 @@
                   <th colspan="4" tal:condition="python: repeat['model'].start" class="noborder">
                         Client Sample ID
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  <th colspan="1" class="font-weight-normal text-center noborder">
                       <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                   </th>
                 </tal:ar>
@@ -343,7 +343,7 @@
                   <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                         <div class="text-left">Sample Type</div>
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  <th colspan="1" class="font-weight-normal text-center noborder">
                       <div class="text-center"
                            tal:content="python:model.SampleTypeTitle or '-'"/>
                   </th>
@@ -354,7 +354,7 @@
                 <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                     <div class="text-left">Sample Point</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="1" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                 </th>
@@ -365,7 +365,7 @@
                 <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                     <div class="text-left">Date Sampled</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="1" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                 </th>
@@ -376,7 +376,7 @@
                 <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
                     <div class="text-left">Date Received</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="1" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                 </th>
@@ -387,7 +387,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start" style="border-top: none">
                     <div class="text-left">Date Verified</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none">
+                 <th colspan="1" class="font-weight-normal text-center" style="border-top: none">
                     <div class="text-center"
                          tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                 </th>
@@ -405,7 +405,7 @@
                    <td class="font-weight-bold">Verifier</td>
                    <td class="font-weight-bold">Unit</td> 
                    <tal:results repeat="model page">
-                       <td class="font-weight-bold text-center" colspan="2">Result</td> 
+                       <td class="font-weight-bold text-center" colspan="1">Result</td> 
                    </tal:results>
                 </tr> 
 
@@ -426,7 +426,7 @@
                   <tal:results repeat="model page">
                     <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
                       <tal:analysis tal:repeat="analysis analyses">
-                        <td colspan="2" class="text-center"
+                        <td colspan="1" class="text-center"
                             tal:define="result python:model.get_formatted_result(analysis);
                                         verified python:analysis.review_state in ['published', 'verified']">
                           <span class="font-weight-normal"
