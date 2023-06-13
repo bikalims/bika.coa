@@ -638,6 +638,43 @@
       </div>
     </div>
   </tal:render>
+  <!-- Disclaimers start -->
+  <tal:render>
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+        <h1 class='padtop' i18n:translate="">Disclaimers</h1>
+        <ol type='1'>
+          <li>
+            The results apply only to the samples / items as received, tested, and described above.
+          </li>
+          <li>Where customer-provided details will affect the validity of the results,
+              <span tal:replace="laboratory/title|nothing"/> cannot be held
+              liable if this information is not received, or supplied incorrectly.
+          </li>
+          <li>
+                Where a deviation has been noted, the validity of the results
+                may be affected - results should be used with this
+                consideration in mind.
+          </li>
+          <li>
+            This test report shall not be reproduced except in full,
+            and not without written approval of GreenHill Laboratories.
+          </li>
+          <li>
+            Our interpretation of the results is for your benefit as
+            guidance, for which we cannot be held liable if
+            misinterpreted or misapplied.
+          </li>
+          <li>
+            Any opinions and interpretations expressed herein are outside
+            the scope of <span tal:content="laboratory/AccreditationBody"> accreditation.
+          </li>
+        </ol>
+      </div>
+    </div>
+      <div class="clearfix"></div>
+  </tal:render>
+    <!-- Disclaimers end -->
 
   <!-- CUSTOM FOOTER -->
   <tal:render condition="python:footer">
