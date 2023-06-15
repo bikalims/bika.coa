@@ -376,6 +376,7 @@
             <tal:poc tal:repeat="poc analyses_by_poc">
 
               <!-- Results table per PoC -->
+              <div class="clearfix"></div> 
               <table class="table table-sm table-condensed small">
                 <thead>
                   <tr>
@@ -528,6 +529,7 @@
                   </tal:categories_in_poc>
                 </tbody>
               </table>
+              <div class="clearfix"></div> 
             </tal:poc>
             </tal:page>
           </div>
