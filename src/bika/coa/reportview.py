@@ -513,7 +513,9 @@ class MultiReportView(MRV):
         )
         pages = []
         new_page = []
-        for idx, col in enumerate(self.collection):
+        reversed_collection = self.collection[:]
+        reversed_collection.reverse()
+        for idx, col in enumerate(reversed_collection):
             if idx % num_per_page == 0:
                 if len(new_page):
                     pages.append(new_page)
