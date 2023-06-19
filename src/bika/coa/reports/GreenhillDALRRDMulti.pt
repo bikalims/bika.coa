@@ -475,7 +475,7 @@
                        </tal:results>
                     </tr> 
 
-                    <tr tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
+                    <tr tal:define="common_row_data python:view.get_common_row_data_green_dalrrd(page, poc=poc, category=category)"
                         tal:repeat="row_data python:common_row_data">
                       <td class="text-secondary">
                             <span tal:condition="python: row_data[4]">
