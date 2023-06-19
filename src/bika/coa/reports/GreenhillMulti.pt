@@ -15,7 +15,7 @@
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
           pages python:view.get_pages_long_names(options);
-          report_images python:view.get_report_images();
+          report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
       ">
 
@@ -51,11 +51,14 @@
 
   <tal:css>
     <style type="text/css">
-     .noborder { border: none !important}
      .report * { font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
+     .report .alnright { text-align: right; }
+     .report .alnleft { text-align: left; }
+     .report .alncenter { text-align: center; }
+     .report .padtop { padding-top:1em; }
      .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
@@ -65,6 +68,7 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report table td.paddedlabel { padding-left: 1.2rem;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
@@ -81,11 +85,34 @@
        text-align: left;
        font-size: 9pt;
      }
+
+    .footerContainer {
+        position:relative;
+        width:100%;
+        height:100px;
+    }
+
+    .bgbehind {
+        background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
+        z-index:100;
+        background-position: top right;
+        background-size: 938px 162px;
+        opacity:0.1 !important;
+        background-repeat: no-repeat;
+        position: absolute;
+        top: -750%;
+        left: 55%;
+        transform: rotate(305deg);
+        width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
+        height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
+    }
+
      .report .section-footer #footer-line {
        width: 100%;
        height: 2mm;
        border-top: 1px solid black;
      }
+
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -106,11 +133,12 @@
          vertical-align: top;
          margin-top: 2mm;
          font-size: 9pt;
-         content: "<tal:t i18n:translate=''>Page</tal:t> " counter(page) " <tal:t i18n:translate=''>of</tal:t> " counter(pages);
+         content: ""counter(page) " <tal:t i18n:translate=''> of </tal:t> " counter(pages);
        }
      }
     </style>
   </tal:css>
+
 
   <!-- HEADER -->
   <tal:render condition="python:True">
@@ -133,7 +161,6 @@
   <!-- INFO -->
   <tal:render condition="python:len(collection)>0"
               define="primarymodel python:collection[0];">
-
     <div class="row section-info no-gutters">
       <div class="w-100">
         <!-- Client Info -->
@@ -274,7 +301,6 @@
       <!-- Clear Floats
            https://github.com/Kozea/WeasyPrint/issues/36
       -->
-      <div class="clearfix"></div>
     </div>
   </tal:render>
 
@@ -303,7 +329,8 @@
     </div>
   </tal:render>
 
-  <!-- RESULTS -->
+  <div class="clearfix"></div>
+  <!-- Results start -->
   <tal:render condition="python:True"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
@@ -317,6 +344,7 @@
           <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
 
           <!-- Results table per PoC -->
+          <div class="clearfix"></div>
           <table class="table table-sm table-condensed small">
             <thead>
               <tr>
@@ -352,11 +380,17 @@
               <tr class="noborder">
                 <tal:ar repeat="model page">
                 <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
-                    <div class="text-left">Sample Point</div>
+                    <div class="text-left">Sample Condition</div>
                 </th>
                  <th colspan="1" class="font-weight-normal text-center noborder">
-                    <div class="text-center"
-                         tal:content="python:model.SamplePointTitle or '-'"/>
+                    <tal:sample_condition condition='python: model.SampleCondition'>
+                      <div class="text-center"
+                          tal:content="python: model.SampleCondition.title"/>
+                    </tal:sample_condition>
+                    <tal:not_sample_condition condition='not: model/SampleCondition'>
+                      <div class="text-center"
+                          tal:content="python: '-'"/>
+                    </tal:not_sample_condition>
                 </th>
                 </tal:ar>
               </tr>
@@ -399,26 +433,35 @@
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
                 <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
                    <td class="font-weight-bold table-warning">
-                       <span tal:content="category/Title"/> 
-                   </td> 
-                   <td class="font-weight-bold">Method</td> 
+                       <span tal:content="category/Title"/>
+                   </td>
+                   <td class="font-weight-bold">Method</td>
                    <td class="font-weight-bold">Verifier</td>
-                   <td class="font-weight-bold">Unit</td> 
+                   <td class="font-weight-bold">Unit</td>
                    <tal:results repeat="model page">
-                       <td class="font-weight-bold text-center" colspan="1">Result</td> 
+                       <td class="font-weight-bold text-center" colspan="1">Result</td>
                    </tal:results>
                 </tr> 
 
-                <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
+                <tr tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                     tal:repeat="row_data python:common_row_data">
                   <td class="text-secondary">
-                    <span tal:content="python: row_data[0]"/>
+                        <span tal:condition="python: row_data[4]">
+                          <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                        </span>
+                        <span tal:condition="python: row_data[5]">
+                          <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
+                        </span>
+                        <span tal:condition="python: row_data[6]">
+                          <img tal:attributes="src python:report_images['savcregistered_symbol_url']"/>
+                        </span>
+                        <span tal:content="python: row_data[0]"/>
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[1]"/>
                   </td>
                   <td class="text-secondary">
-                    <span tal:content="python: row_data[4]">
+                    <span tal:content="python: row_data[7]"/>
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
@@ -454,11 +497,14 @@
               </tal:categories_in_poc>
             </tbody>
           </table>
+          <div class="clearfix"></div>
         </tal:poc>
         </tal:page>
       </div>
     </div>
   </tal:render>
+  <!-- Results end -->
+  <div class="clearfix"></div>
 
   <!--  RESULTS INTERPRETATIONS -->
   <tal:render condition="python:True">
@@ -593,51 +639,23 @@
   </tal:render>
   <!-- Publisher end -->
 
-  <!-- DISCREETER -->
-  <tal:render condition="python:True"
-              define="laboratory python:view.laboratory;">
-    <div class="row section-discreeter no-gutters">
-      <div class="w-100 text-muted font-weight-normal small">
-        <div class="discreeter-outofrange">
-          <span class="outofrange text-danger">
-              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-          </span>
-          <span i18n:translate="">Result out of client specified range.</span>
+
+      <!-- Legend start -->
+      <div>
+          <div>
+            <h2 i18n:translate="">Legend</h2>
+          </div>
+          <div>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
+          </div>
+          <div>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>  South African Veterinary Council registered</h3>
+          </div>
+          <div>
+            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
+          </div>
         </div>
-        <div class="discreeter-not-invoiced"
-             tal:condition="python:all(map(lambda m: m.InvoiceExclude, collection))"
-             i18n:translate="">
-          Not invoiced
-        </div>
-        <div class="discreeter-methods"
-             tal:condition="laboratory/LaboratoryAccredited">
-          <span class="accredited-symbol text-success"
-                style="font-family:Lucida Console, Courier, monospace;"
-                tal:content="accredited_symbol">
-          </span>
-          <span class="" i18n:translate="">
-            Methods included in the
-            <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory. Analysis remarks are not
-            accredited
-          </span>
-        </div>
-        <div class="discreeter-disclaimer"
-             i18n:translate="">
-          Analysis results relate only to the samples tested.
-        </div>
-        <div class="discreeter-copyright"
-             i18n:translate="">
-          This document shall not be reproduced except in full, without the written approval of
-          <tal:block replace="laboratory/title" i18n:name="name_lab"/>
-        </div>
-        <div tal:define="confidence_level laboratory/Confidence"
-             tal:condition="confidence_level" i18n:translate="">
-          Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level
-        </div>
-      </div>
-    </div>
-  </tal:render>
+      <!-- Legend end -->
   <!-- Disclaimers start -->
   <tal:render>
     <div class="row section-results no-gutters">
