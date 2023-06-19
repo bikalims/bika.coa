@@ -222,21 +222,22 @@ class SingleReportView(SRV):
     def get_verifier_by_analysis(self, model):
         analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtitle": "", "default_department": "",
+                    }
         if not actor:
-            return {"verifier": '', "email": ""}
+            return verifier
 
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtitle": "", "default_department": "",}
         if not contact:
             return verifier
 
         verifier["fullname"] =  contact.getFullname()
-        verifier["role"] =  roles[0]
+        verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
         verifier["jobtitle"] = contact.getJobTitle()
@@ -863,16 +864,17 @@ class MultiReportView(MRV):
     def get_verifier_by_analysis(self, model):
         analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtitle": "", "default_department": "",
+                    }
         if not actor:
-            return {"verifier": '', "email": ""}
+            return verifier
 
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
         date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtitle": "", "default_department": "",}
         if not contact:
             return verifier
 
