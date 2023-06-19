@@ -489,7 +489,6 @@
                       </tal:analysis>
                       <tal:analysis condition="not:analyses">
                         <td></td>
-                        <td></td>
                       </tal:analysis>
                     </tal:analyses>
                   </tal:results>
