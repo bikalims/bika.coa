@@ -267,7 +267,7 @@ class MultiReportView(MRV):
         if options.get("orientation", "") == "portrait":
             num_per_page = 4
         elif options.get("orientation", "") == "landscape":
-            num_per_page = 6
+            num_per_page = 7
         else:
             logger.error("get_pages: orientation unknown")
             num_per_page = 5
