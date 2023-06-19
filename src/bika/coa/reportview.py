@@ -540,8 +540,36 @@ class MultiReportView(MRV):
             return None
         return earliest_creation_date
 
-
     def get_common_row_data_green(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-",
+                        model.get_formatted_unit(analysis), "-",
+                        False, False, False, "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = self.is_analysis_method_subcontracted(analysis)
+            datum[6] = self.is_analysis_method_savcregistered(analysis)
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[7] = verifier.get("verifier", "-")
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    def get_common_row_data_green_dalrrd(self, collection, poc, category):
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
