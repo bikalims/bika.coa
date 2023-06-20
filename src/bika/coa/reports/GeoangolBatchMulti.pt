@@ -478,9 +478,12 @@
                 </tr> 
 
                 <tal:exclude_preparation tal:condition="python:category.title !='Preparation'">
-                    <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
+                    <tr tal:define="common_row_data python:view.get_common_row_data_updated(page, poc=poc, category=category)"
                         tal:repeat="row_data python:common_row_data">
                       <td class="text-secondary">
+                        <span tal:condition="python: row_data[4]">
+                          <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                        </span>
                         <span tal:content="python: row_data[0]"/>
                       </td>
                       <td class="text-secondary">

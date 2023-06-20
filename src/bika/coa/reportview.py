@@ -252,6 +252,11 @@ class SingleReportView(SRV):
             verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
 
         return verifier
+    
+    def is_analysis_accredited(self,analysis):
+        if analysis.Accredited:
+            return True
+        return False
 
 
 class MultiReportView(MRV):
@@ -317,6 +322,33 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
+    def get_common_row_data_updated(self, collection, poc, category):
+        """ A version of get_common_row_data that includes
+            the accreditation icon and verifier column """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False, ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = verifier.get("verifier", "-")
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
     #---------------------------------- Z labs start ------------------------------------------
     def get_methods_data(self,collection):
         analyses = self.get_analyses_by(collection)
@@ -350,12 +382,21 @@ class MultiReportView(MRV):
                 methods_list.append(analysis_service.getMethod().Title())
             else:
                 methods_list.append("")
-            analysis_Ids_list.append(analysis_service.Title())
+            if self.is_analysis_accredited(analysis_service):
+                analysis_Ids_list.append(analysis_service.Title()+"accredited")
+            else:
+                analysis_Ids_list.append(analysis_service.Title())
             unit_list.append(analysis_service.getUnit())
         
         final_body_rows = [
             analysis_Ids_list,methods_list,unit_list,]
         return eligible_analysis_services,final_body_rows
+
+    def zlabs_is_accredited(self,service_title):
+        if "accredited" in service_title:
+            return [True,service_title.replace("accredited","")]
+        return [False,service_title]
+
     
     def get_zlabs_analysis_request(self,samples,analysis_services,extra_column):
         sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
