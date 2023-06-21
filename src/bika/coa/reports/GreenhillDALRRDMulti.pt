@@ -423,7 +423,7 @@
                       </th>
                       <th colspan="1" class="font-weight-normal text-center noborder">
                           <div class="text-center"
-                               tal:content="python:model.getSamplePoint() or '-'"/>
+                               tal:content="python:model.getSamplePoint().title or '-'"/>
                       </th>
                     </tal:ar>
                   </tr>
