@@ -280,9 +280,6 @@
         <div>
           <h1 class="alncenter">Certificate of Analysis <span name="coa_num" tal:content="coa_num"/></h1>
         </div>
-        <div>
-          <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
-        </div>
       </tal:render>
         <!-- Certificate of Analysis Header end-->
       
@@ -426,7 +423,7 @@
                       </th>
                       <th colspan="1" class="font-weight-normal text-center noborder">
                           <div class="text-center"
-                               tal:content="python:model.SamplePoint or '-'"/>
+                               tal:content="python:model.getSamplePoint() or '-'"/>
                       </th>
                     </tal:ar>
                   </tr>
