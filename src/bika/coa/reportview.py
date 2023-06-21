@@ -186,7 +186,11 @@ class SingleReportView(SRV):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url}
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                 "accredited_symbol_url": accredited_symbol_url,}
         return datum
 
     def get_toolbar_logo(self):

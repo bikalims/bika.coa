@@ -6,7 +6,6 @@
           contact model/Contact;
           report_images python:view.get_report_images();
           styles python:view.get_coa_styles();
-          accredited_symbol string:★;
           coa_num python:view.get_coa_number(model);
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
@@ -420,13 +419,10 @@
                   <tr>
                     <td class="analysis">
                       <span class="text-success"
-                            tal:content="accredited_symbol"
                             tal:condition="analysis/Accredited">
+                        <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                       </span>
                       <span tal:condition="not:analysis/ScientificName">
-                        <span tal:condition="python: view.is_analysis_accredited(analysis)">
-                          <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
-                        </span>
                         <span class="font-weight-normal" tal:content="analysis/title"></span>
                       </span>
                       <span tal:condition="analysis/ScientificName">
@@ -648,8 +644,8 @@
         </div>
         <div class="discreeter-methods"
              tal:condition="laboratory/LaboratoryAccredited">
-          <span class="accredited-symbol text-success"
-                tal:content="accredited_symbol">
+          <span class="accredited-symbol text-success">
+            <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
           </span>
           <span class="" i18n:translate="">
             Methods included in the
