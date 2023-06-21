@@ -154,6 +154,17 @@
             <img class="logo image-fluid" style="object-fit:contain"
                  tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
       </div>
+      <div class="accreditation-logo text-right"
+          tal:define="accredited laboratory/LaboratoryAccredited;
+                      accreditation_logo laboratory/AccreditationBodyLogo;"
+          tal:condition="accredited">
+        <img class="img-fluid"
+            tal:condition="accreditation_logo"
+            tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
+        <img class="img-fluid"
+            tal:condition="not:accreditation_logo"
+            tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
+      </div>
     </div>
   </tal:render>
   <!-- /HEADER -->
@@ -276,25 +287,6 @@
                 </tr>
               </table>
             </td>
-            <td style="border:none;" class="align-top pl-2">
-              <table class="table table-sm table-condensed ml-1">
-                <tr>
-                  <td>
-            <div class="accreditation-logo text-left"
-                 tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo;"
-                 tal:condition="accredited">
-              <img class="img-fluid"
-                   tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
-              <img class="img-fluid"
-                   tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
-            </div>
-                  </td>
-                </tr>
-              </table>
-          </td>
           </tr>
         </table>
       </div>
