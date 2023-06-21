@@ -423,7 +423,11 @@
                       </th>
                       <th colspan="1" class="font-weight-normal text-center noborder">
                           <div class="text-center"
-                               tal:content="python:model.getSamplePoint().title or '-'"/>
+                               tal:condition="python: model.getSamplePoint()"
+                               tal:content="python:model.getSamplePoint().Title() or '-'"/>
+                          <div class="text-center"
+                               tal:condition="python: not model.getSamplePoint()"
+                               tal:content="python:'-'"/>
                       </th>
                     </tal:ar>
                   </tr>
