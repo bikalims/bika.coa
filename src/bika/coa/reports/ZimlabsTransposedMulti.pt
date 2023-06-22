@@ -533,8 +533,15 @@
                     <tal:header_list repeat="header headers">
                     <tr>
                       <tal:header_element repeat="element header">
-                        <td class="field">
-                          <div tal:content="python:element"/>
+                        <td tal:define= "element_list python: view.zlabs_is_accredited(element)" 
+                            class="field">
+                          <span tal:condition="python: element_list[0]">
+                            <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                            <span tal:content="python: element_list[1]"/>
+                          </span>
+                          <span tal:condition="python: not element_list[0]">
+                            <span tal:content="python:element_list[1]"/>
+                          </span>
                         </td>
                       </tal:header_element>
                     </tr>
@@ -560,123 +567,6 @@
         <div class="clearfix"></div>
       </tal:render>
       <!-- Results end -->
-
-      <!-- ALERTS i.e Prepublishing and invalid samples start -->
-      <!-- <tal:render>
-        <div class="row section-alerts no-gutters">
-          <div class="w-100">
-            <tal:model repeat="model collection">
-              <div class="alert alert-danger" tal:condition="model/is_invalid">
-                <h2 class="alert-heading"><span tal:replace="model/getId"/></h2>
-                <div i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</div>
-                <tal:invalidreport tal:define="child model/Retest"
-                                  tal:condition="child">
-                  <span i18n:translate="">This Analysis request has been replaced by</span>
-                  <a tal:attributes="href child/absolute_url"
-                    tal:content="child/getId"></a>
-                </tal:invalidreport>
-              </div>
-
-              <div class="alert alert-info" tal:condition="model/is_provisional">
-                <h2 class="alert-heading"><span tal:replace="model/getId"/></h2>
-                <div i18n:translate="">Provisional report</div>
-              </div>
-            </tal:model>
-          </div>
-        </div>
-      </tal:render> -->
-        <!-- ALERTS end -->
-
-      <!--  RESULTS INTERPRETATIONS -->
-      <!-- <tal:render>
-        <tal:model repeat="model collection">
-          <div class="row section-resultsinterpretation no-gutters"
-              tal:define="ris python:model.get_resultsinterpretation();
-                          has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-            <div class="" tal:condition="has_ri">
-              <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
-              <tal:ri repeat="ri ris">
-                <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-                <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-              </tal:ri>
-            </div>
-          </div>
-        </tal:model>
-      </tal:render> -->
-
-      <!-- QC RESULTS -->
-      <!--<tal:render condition="python:True">
-        <tal:model repeat="model collection">
-          <tal:qc define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
-            <div class="row section-results no-gutters" tal:condition="qcanalyses">
-              <div class="">
-                <h2 i18n:translate>QC Results for <span tal:replace="model/getId"/></h2>
-                <div>
-                  <h1 i18n:translate="">QC Results</h1>
-                </div>
-              </div>
-            </div>
-          </tal:qc>
-        </tal:model>
-      </tal:render> -->
-
-      <!-- REMARKS -->
-      <!-- <tal:render>
-        <tal:model repeat="model collection">
-          <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
-            <div class="">
-              <h2 i18n:translate>Remarks for <span tal:replace="model/getId"/></h2>
-              <div class="text-info" tal:repeat="remark model/Remarks">
-                  <div class="text-info" tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])"></div>
-              </div>
-            </div>
-            <br />
-          </div>
-        </tal:model>
-      </tal:render> -->
-
-      <!-- ATTACHMENTS -->
-      <!-- <tal:render>
-        <div class="row section-attachments no-gutters">
-          <tal:model repeat="model collection">
-            <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
-              <h2 i18n:translate=""
-                  tal:condition="attachments">
-                Attachments for <span tal:replace="model/getId"/>
-              </h2>
-              <table class="table w-100" tal:condition="attachments">
-                <colgroup tal:condition="python:len(attachments) > 1">
-                  <col tal:repeat="col python:range(attachments_per_row)"
-                      tal:attributes="style python:'width:{}%'.format(100/attachments_per_row)">
-                </colgroup>
-                <tr tal:repeat="chunk python:view.group_into_chunks(attachments, attachments_per_row)">
-                  <td class="align-bottom"
-                      style="border:none;padding-left:0;"
-                      tal:repeat="attachment chunk">
-                    <figure class="figure">
-                      <img class="figure-img img-fluid"
-                          tal:attributes="src string:${attachment/absolute_url}/AttachmentFile;"/>
-                      <figcaption class="figure-caption pt-2">
-                        <div class="att_for">
-                          <span i18n:translate="">Attachment for</span>
-                          <span tal:content="attachment/getTextTitle|model/getId"/>
-                        </div>
-                        <div class="att_keys">
-                          <span tal:content="attachment/AttachmentKeys"/>
-                        </div>
-                        <div class="att_filename">
-                          <span i18n:translate="">Filename:</span>
-                          <span tal:content="attachment/AttachmentFile/filename"/>
-                        </div>
-                      </figcaption>
-                    </figure>
-                  </td>
-                </tr>
-              </table>
-            </tal:attachment>
-          </tal:model>
-        </div>
-      </tal:render> -->
 
       <!-- CUSTOM FOOTER -->
       <tal:render condition="python:footer">

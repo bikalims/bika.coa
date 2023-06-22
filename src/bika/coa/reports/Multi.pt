@@ -409,16 +409,19 @@
                    </tal:results>
                 </tr> 
 
-                <tr tal:define="common_row_data python:view.get_common_row_data(page, poc=poc, category=category)"
+                <tr tal:define="common_row_data python:view.get_common_row_data_updated(page, poc=poc, category=category)"
                     tal:repeat="row_data python:common_row_data">
                   <td class="text-secondary">
+                    <span tal:condition="python: row_data[4]">
+                      <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                    </span>
                     <span tal:content="python: row_data[0]"/>
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[1]"/>
                   </td>
                   <td class="text-secondary">
-                    <span tal:content="python: row_data[4]">
+                    <span tal:content="python: row_data[5]">
                   </td>
                   <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
@@ -476,22 +479,6 @@
       </div>
     </tal:model>
   </tal:render>
-
-  <!-- QC RESULTS -->
-  <!--<tal:render condition="python:True">
-    <tal:model repeat="model collection">
-      <tal:qc define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
-        <div class="row section-results no-gutters" tal:condition="qcanalyses">
-          <div class="">
-            <h2 i18n:translate>QC Results for <span tal:replace="model/getId"/></h2>
-            <div>
-              <h1 i18n:translate="">QC Results</h1>
-            </div>
-          </div>
-        </div>
-      </tal:qc>
-    </tal:model>
-  </tal:render> -->
 
   <!-- REMARKS -->
   <tal:render condition="python:True">
