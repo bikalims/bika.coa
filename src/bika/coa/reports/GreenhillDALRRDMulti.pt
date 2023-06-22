@@ -280,9 +280,6 @@
         <div>
           <h1 class="alncenter">Certificate of Analysis <span name="coa_num" tal:content="coa_num"/></h1>
         </div>
-        <div>
-          <h2 class="alncenter" tal:content="python: 'Batch ' + str(batch.getId()) +', ' + str(batch.Title())"/>
-        </div>
       </tal:render>
         <!-- Certificate of Analysis Header end-->
       
@@ -294,6 +291,16 @@
                           received_date python: view.get_received_dates(collection);">
         <table class="table table-sm table-condensed ml-1">
         <!-- First Row -->
+          <tr>
+            <td colspan='2' class="label" i18n:translate="">Batch</td>
+            <td class='field'>
+              <div tal:content="python: batch.id or '-'"/>
+            </td>
+            <td colspan='2' class="label" i18n:translate="">Client Order Number</td>
+            <td class='field'>
+              <div tal:content="python: batch.ClientBatchID or '-'"/>
+            </td>
+          </tr>
           <tr>
             <td colspan='2' class="label" i18n:translate="">Container</td>
             <td class='field'>
@@ -406,6 +413,21 @@
                       <th colspan="1" class="font-weight-normal text-center noborder">
                           <div class="text-center"
                                tal:content="python:model.SampleTypeTitle or '-'"/>
+                      </th>
+                    </tal:ar>
+                  </tr>
+                  <tr class="noborder">
+                    <tal:ar repeat="model page">
+                      <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
+                            <div class="text-left">Sample Point</div>
+                      </th>
+                      <th colspan="1" class="font-weight-normal text-center noborder">
+                          <div class="text-center"
+                               tal:condition="python: model.getSamplePoint()"
+                               tal:content="python:model.getSamplePoint().Title() or '-'"/>
+                          <div class="text-center"
+                               tal:condition="python: not model.getSamplePoint()"
+                               tal:content="python:'-'"/>
                       </th>
                     </tal:ar>
                   </tr>
