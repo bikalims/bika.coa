@@ -423,11 +423,7 @@
                       </th>
                       <th colspan="1" class="font-weight-normal text-center noborder">
                           <div class="text-center"
-                               tal:condition="python: model.getSamplePoint()"
-                               tal:content="python:model.getSamplePoint().Title() or '-'"/>
-                          <div class="text-center"
-                               tal:condition="python: not model.getSamplePoint()"
-                               tal:content="python:'-'"/>
+                               tal:content="python:model.getSamplePointTitle() or '-'"/>
                       </th>
                     </tal:ar>
                   </tr>
@@ -437,15 +433,8 @@
                         <div class="text-left">Sample Condition</div>
                     </th>
                      <th colspan="1" class="font-weight-normal text-center noborder">
-                        <tal:sample_condition condition='python: model.SampleCondition'>
-                          <div class="text-center"
-                              tal:content="python: model.SampleCondition.title"/>
-                        </tal:sample_condition>
-                        <tal:not_sample_condition condition='not: model/SampleCondition'>
-                          <div class="text-center"
-                              tal:content="python: '-'"/>
-                        </tal:not_sample_condition>
-                    </th>
+                        <div class="text-center"
+                            tal:content="python: model.getSampleConditionTitle() or '-' "/>
                     </tal:ar>
                   </tr>
                   <tr class="noborder">
