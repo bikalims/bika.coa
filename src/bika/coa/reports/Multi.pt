@@ -318,7 +318,6 @@
 
           <!-- Results table per PoC -->
           <table class="table table-sm table-condensed small">
-            <thead>
               <tr>
                 <th colspan="4">Sample ID</th>
                 <tal:ar repeat="model page">
@@ -330,7 +329,7 @@
               </tr>
               <tr class="noborder" style="border:none !important">
                 <tal:ar repeat="model page">
-                  <th colspan="4" tal:condition="python: repeat['model'].start" class="noborder">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         Client Sample ID
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
@@ -340,7 +339,7 @@
               </tr>
               <tr class="noborder">
                 <tal:ar repeat="model page">
-                  <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         <div class="text-left">Sample Type</div>
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
@@ -351,7 +350,7 @@
               </tr>
               <tr class="noborder">
                 <tal:ar repeat="model page">
-                <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
+                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Sample Point</div>
                 </th>
                  <th colspan="2" class="font-weight-normal text-center noborder">
@@ -362,7 +361,7 @@
               </tr>
               <tr class="noborder">
                 <tal:ar repeat="model page">
-                <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
+                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Sampled</div>
                 </th>
                  <th colspan="2" class="font-weight-normal text-center noborder">
@@ -373,7 +372,7 @@
               </tr>
               <tr class="noborder">
                 <tal:ar repeat="model page">
-                <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start">
+                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Received</div>
                 </th>
                  <th colspan="2" class="font-weight-normal text-center noborder">
@@ -384,7 +383,7 @@
               </tr>
               <tr>
                 <tal:ar repeat="model page">
-                <th colspan="4" tal:condition="python: repeat['model'].start" style="border-top: none">
+                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Verified</div>
                 </th>
                  <th colspan="2" class="font-weight-normal text-center" style="border-top: none">
@@ -393,11 +392,9 @@
                 </th>
                 </tal:ar>
                </tr>
-            </thead>
-            <tbody>
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
+                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
                    <td class="font-weight-bold table-warning">
                        <span tal:content="category/Title"/> 
                    </td> 
@@ -455,8 +452,8 @@
                   </tal:results>
                 </tr>
               </tal:categories_in_poc>
-            </tbody>
           </table>
+          <div class="clearfix"></div>
         </tal:poc>
         </tal:page>
       </div>
