@@ -486,7 +486,7 @@
             </div>
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="table-cell font-weight-bold table-warning">
+                <div class="table-cell font-weight-bold">
                   <span tal:content="category/Title"/>
                 </div>
                 <div class="table-cell font-weight-bold">Method</div>
