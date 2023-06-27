@@ -474,7 +474,7 @@
                 <tbody>
                   <!-- Categories in PoC -->
                   <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                    <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)">
+                    <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data_green_dalrrd(page, poc=poc, category=category)">
                        <td class="font-weight-bold table-warning">
                            <span tal:content="category/Title"/>
                        </td>
