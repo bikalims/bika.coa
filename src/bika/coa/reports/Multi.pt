@@ -321,7 +321,7 @@
               <tr>
                 <th colspan="4">Sample ID</th>
                 <tal:ar repeat="model page">
-                  <th colspan="2" class="font-weight-normal">
+                  <th colspan="2" class="font-weight-normal" style="width:14%">
                     <div class="text-primary text-center"
                          tal:content="model/Title"/>
                   </th>
@@ -332,7 +332,7 @@
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         Client Sample ID
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
                       <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                   </th>
                 </tal:ar>
@@ -342,7 +342,7 @@
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         <div class="text-left">Sample Type</div>
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
                       <div class="text-center"
                            tal:content="python:model.SampleTypeTitle or '-'"/>
                   </th>
@@ -353,7 +353,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Sample Point</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                 </th>
@@ -364,7 +364,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Sampled</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
                     <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                 </th>
@@ -375,7 +375,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Received</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                 </th>
@@ -386,7 +386,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Verified</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none">
+                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none; width:14%">
                     <div class="text-center"
                          tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                 </th>
