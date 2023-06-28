@@ -387,7 +387,7 @@
       <!-- Point of Captures -->
         <tal:poc tal:repeat="poc analyses_by_poc">
           <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
-          <div class="table table-sm table-condensed small">
+          <div class="table small">
             <div class="table-row">
               <div class="table-header">Sample ID</div>
               <div class="table-cell"></div>
@@ -570,22 +570,6 @@
       </tal:model>
     </tal:render>
 
-    <!-- QC RESULTS -->
-    <!--<tal:render condition="python:True">
-      <tal:model repeat="model collection">
-        <tal:qc define="qcanalyses python:model.getQCAnalyses(['verified', 'published']);">
-          <div class="row section-results no-gutters" tal:condition="qcanalyses">
-            <div class="">
-              <h2 i18n:translate>QC Results for <span tal:replace="model/getId"/></h2>
-              <div>
-                <h1 i18n:translate="">QC Results</h1>
-              </div>
-            </div>
-          </div>
-        </tal:qc>
-      </tal:model>
-    </tal:render> -->
-
     <!-- REMARKS -->
     <tal:render condition="python:True">
       <tal:model repeat="model collection">
@@ -643,6 +627,7 @@
         </tal:model>
       </div>
     </tal:render>
+
     <!-- Publisher start -->
     <tal:render define="publish python:view.get_publisher();
                         primarymodel python:collection[0];
@@ -686,23 +671,23 @@
     </tal:render>
     <!-- Publisher end -->
 
-
-        <!-- Legend start -->
+    <!-- Legend start -->
+    <div>
         <div>
-            <div>
-              <h2 i18n:translate="">Legend</h2>
-            </div>
-            <div>
-              <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
-            </div>
-            <div>
-              <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>  South African Veterinary Council registered</h3>
-            </div>
-            <div>
-              <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
-            </div>
-          </div>
-        <!-- Legend end -->
+          <h2 i18n:translate="">Legend</h2>
+        </div>
+        <div>
+          <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
+        </div>
+        <div>
+          <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>  South African Veterinary Council registered</h3>
+        </div>
+        <div>
+          <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
+        </div>
+      </div>
+    <!-- Legend end -->
+
     <!-- Disclaimers start -->
     <tal:render>
       <div class="row section-results no-gutters">
