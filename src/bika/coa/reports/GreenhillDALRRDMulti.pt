@@ -125,6 +125,7 @@
     .table-header {
       display: table-cell;
       padding: 4px;
+      font-weight: bold;
       border-top: 1px solid #ccc;
     }
 
@@ -132,10 +133,6 @@
       display: table-cell;
       padding: 2px;
       border-top: 1px solid #ccc;
-    }
-
-    .table-header {
-      font-weight: bold;
     }
 
      <tal:block condition="python:content_width and content_height">
