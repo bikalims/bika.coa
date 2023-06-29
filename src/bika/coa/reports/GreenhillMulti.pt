@@ -138,10 +138,6 @@
       font-weight: bold;
     }
 
-    .colspan-4 {
-      grid-column: span 4;
-    }
-
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
