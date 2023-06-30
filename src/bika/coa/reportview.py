@@ -685,6 +685,8 @@ class MultiReportView(MRV):
         all_analyses = self.get_analyses_by_poc(collection)
         analyses = all_analyses.get(poc)
         common_data = []
+        if not analyses:
+            return
         for analysis in analyses:
             datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
             if analysis.Method:

@@ -87,6 +87,24 @@
        height: 2mm;
        border-top: 1px solid black;
      }
+    .table {
+      display: table;
+      width: 100%;
+    }
+    .table-row {
+      display: table-row;
+    }
+    .table-header {
+      display: table-cell;
+      padding: 4px;
+      font-weight: bold;
+      border-top: 1px solid #ccc;
+    }
+    .table-cell {
+      display: table-cell;
+      padding: 2px;
+      border-top: 1px solid #ccc;
+    }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -113,8 +131,16 @@
     </style>
   </tal:css>
 
+  <!-- Batch error message start -->
+  <tal:render condition="python:not view.is_batch_unique(collection)">
+    <div>
+      <h1> Please make sure all Samples are on the same batch</h1>
+    </div>
+  </tal:render>
+  <!-- Batch error message end -->
+
   <!-- HEADER -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
         <div class="col-6 text-left">
@@ -132,7 +158,7 @@
   <!-- /HEADER -->
 
   <!-- INFO -->
-  <tal:render condition="python:len(collection)>0"
+  <tal:render condition="python:view.is_batch_unique(collection)"
               define="primarymodel python:collection[0];
                       batch primarymodel/Batch;">
 
@@ -287,7 +313,7 @@
   </tal:render>
 
   <!-- ALERTS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <div class="row section-alerts no-gutters">
       <div class="w-100">
         <tal:model repeat="model collection">
@@ -310,6 +336,133 @@
       </div>
     </div>
   </tal:render>
+
+  <tal:render condition="python:view.is_batch_unique(collection)"
+                define="analyses_by_poc python:view.get_analyses_by_poc(collection);
+                        categories_by_poc python:view.get_categories_by_poc(collection)">
+      <h1 i18n:translate="">Results</h1>
+      <tal:page tal:repeat="page pages">
+      <!-- Point of Captures -->
+        <!-- <tal:poc tal:repeat="poc analyses_by_poc">
+          <h2 tal:content="python:view.points_of_capture.get(poc)"></h2> -->
+          <div class="table small">
+            <div class="table-row">
+              <div class="table-header">Sample ID</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-primary text-center"
+                      tal:content="model/Title"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Client Sample ID</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.ClientSampleID or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Sample Type</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.SampleTypeTitle or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Sample Point</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.SamplePointTitle or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Date Sampled</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Date Received</div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div style="border-bottom: 1px solid #ccc" class="table-header" class="noborder">Date Verified</div>
+              <div style="border-bottom: 1px solid #ccc" class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div style="border-bottom: 1px solid #ccc" class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <tal:analyses_in_poc tal:repeat="poc analyses_by_poc">
+              <div tal:condition="python:view.get_analyses_by(collection, poc=poc)" class="table-row">
+                <div style="border-top:none" class="table-cell font-weight-bold">
+                  <span tal:content="python:view.points_of_capture.get(poc)"/>
+                </div>
+              </div>
+              <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_by_poc(page, poc=poc)"
+                      tal:repeat="row_data python:common_row_data">
+                <div class="table-cell text-secondary">
+                  <span tal:content="python: row_data[0]"/>
+                </div>
+                <div class="table-cell text-secondary">
+                  <span tal:content="python: row_data[2]"/>
+                </div>
+                <!-- Result values -->
+                <tal:results repeat="model page">
+                  <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
+                    <tal:analysis tal:repeat="analysis analyses">
+                      <div class="table-cell text-center"
+                              tal:define="result python:model.get_formatted_result(analysis);
+                                          verified python:analysis.review_state in ['published', 'verified']">
+                        <span class="font-weight-normal"
+                              tal:condition="python:result and verified"
+                              tal:content="structure result" />
+                        <span class="font-weight-normal"
+                              tal:condition="python:result and not verified">-</span>
+                        <span class="font-weight-normal"
+                              tal:condition="not:result"></span>
+                        <span tal:condition="python:model.is_out_of_range(analysis)"
+                              class="font-weight-normal">
+                          <span class="outofrange text-danger">
+                                <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+                          </span>
+                        </span>
+                      </div>
+                    </tal:analysis>
+                    <tal:analysis condition="not:analyses">
+                      <div class='table-cell'></div>
+                    </tal:analysis>
+                  </tal:analyses>
+                </tal:results>
+              </div>
+            </tal:analyses_in_poc>
+          </div>
+        <!-- </tal:poc> -->
+      </tal:page>
+    </tal:render>
 
   <!-- RESULTS -->
   <tal:render condition="python:view.is_batch_unique(collection)"
@@ -455,12 +608,9 @@
       </div>
     </div>
   </tal:render>
-  <tal:render condition="python:not view.is_batch_unique(collection)">
-  <p> Mutli Batches found</p>
-  </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <tal:model repeat="model collection">
       <div class="row section-resultsinterpretation no-gutters"
            tal:define="ris python:model.get_resultsinterpretation();
@@ -493,7 +643,7 @@
   </tal:render> -->
 
   <!-- REMARKS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <tal:model repeat="model collection">
       <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
         <div class="">
@@ -508,7 +658,7 @@
   </tal:render>
 
   <!-- ATTACHMENTS -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <div class="row section-attachments no-gutters">
       <tal:model repeat="model collection">
         <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
@@ -551,7 +701,7 @@
   </tal:render>
 
   <!--  SIGNATURES -->
-  <tal:render condition="python:True">
+  <tal:render condition="python:view.is_batch_unique(collection)">
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
       <div class="row section-signatures no-gutters">
         <div class="w-100">
@@ -593,7 +743,7 @@
   </tal:render>
 
   <!-- DISCREETER -->
-  <tal:render condition="python:True"
+  <tal:render condition="python:view.is_batch_unique(collection)"
               define="laboratory python:view.laboratory;">
     <div class="row section-discreeter no-gutters">
       <div class="w-100 text-muted font-weight-normal small">
@@ -639,7 +789,7 @@
   </tal:render>
 
   <!-- CUSTOM FOOTER -->
-  <tal:render condition="python:footer">
+  <tal:render condition="python:footer and view.is_batch_unique(collection)">
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
       <div id="footer-line"></div>
@@ -648,7 +798,7 @@
   </tal:render>
 
   <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:not footer"
+  <tal:render condition="python:not footer and view.is_batch_unique(collection)"
               define="laboratory python:view.laboratory;">
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
