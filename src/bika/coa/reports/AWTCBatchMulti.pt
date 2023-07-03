@@ -496,7 +496,7 @@
   </tal:render>
 
   <!-- ATTACHMENTS -->
-  <tal:render condition="python:view.is_batch_unique(collection)">
+  <tal:render condition="python:False">
     <div class="row section-attachments no-gutters">
       <tal:model repeat="model collection">
         <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
