@@ -104,6 +104,7 @@
       display: table-cell;
       padding: 2px;
       border-top: 1px solid #ccc;
+      width: 25mm;
     }
 
      <tal:block condition="python:content_width and content_height">
