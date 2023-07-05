@@ -72,16 +72,15 @@ class AjaxPublishView(AP):
             sample = getAdapter(sample, ISuperModel)
             samples.append(sample)
 
-        
         csv_reports = []
         is_multi_template = self.is_multi_template(template)
-        if template == "bika.coa:MultiGeochemistryBatch.pt":
+        if template == "bika.coa:GeoangolBatchMulti.pt":
             csv_report = self.create_geochemistry_csv_report(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
-        elif template == "bika.coa:MultiBatch.pt":
+        elif template == "bika.coa:AWTCBatchMulti.pt":
             csv_report= self.create_batch_csv_reports(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
-        if template == "bika.coa:MultiSampleTransposed.pt":
+        elif template == "bika.coa:ZimlabsTransposedMulti.pt":
             csv_report = self.create_zlabs_csv_report(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
