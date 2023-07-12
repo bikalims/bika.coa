@@ -590,8 +590,7 @@
 
       <!-- Publisher start -->
       <tal:render define="publish python:view.get_publisher();
-                          primarymodel python:collection[0];
-                          Verifier python:view.get_verifier(collection)">
+                          primarymodel python:collection[0];">
         <div>
           <table class="table table-condensed" tal:define="verifiers python:view.get_verifiers(collection)">
               <tr>
@@ -622,6 +621,19 @@
                   </div>
                   <div>
                     <span tal:content="verifier/default_department|nothing"></span>
+                  </div>
+                </td>
+                <td style="border:none" tal:condition="python: repeat['verifier'].start"
+                      tal:define="supervisor view/get_lab_supervisor">
+                  <div>
+                    <img tal:condition="supervisor/signature"
+                        tal:attributes="src string:${supervisor/signature}" style="height:75px"/>
+                  </div>
+                  <div class="font-weight-bold">
+                    <span tal:content="supervisor/supervisor"></span>
+                  </div>
+                  <div>
+                    <span tal:content="supervisor/jobtitle"></span>
                   </div>
                 </td>
               </tr>

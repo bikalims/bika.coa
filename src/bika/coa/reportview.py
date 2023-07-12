@@ -5,7 +5,6 @@ from zope.component import getUtility
 from zope.component._api import getAdapters
 
 from bika.coa import logger
-from bika.coa.ajax import AjaxPublishView as AP
 
 from bika.lims import api
 from bika.lims.api import _marker
@@ -256,7 +255,7 @@ class SingleReportView(SRV):
             verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
 
         return verifier
-    
+
     def is_analysis_accredited(self,analysis):
         if analysis.Accredited:
             return True
@@ -970,6 +969,28 @@ class MultiReportView(MRV):
             verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
 
         return verifier
+
+    def get_lab_supervisor(self):
+        laboratory = self.laboratory
+        contact = laboratory.getSupervisor()
+        supervisor = {"fullname": "", "supervisor": "",
+                      "signature": "", "jobtitle": "",
+                     }
+        if not contact:
+            return supervisor
+
+        supervisor["fullname"] =  contact.getFullname()
+        supervisor["jobtitle"] = contact.getJobTitle()
+        if contact.getSalutation():
+            salutation = contact.getSalutation()
+            fullname = contact.getFullname()
+            supervisor["supervisor"] = "{}. {}".format(salutation, fullname)
+        else:
+            supervisor["supervisor"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            supervisor["signature"] = '{}/Signature'.format(contact.absolute_url())
+
+        return supervisor
 
 
     def get_publisher(self):
