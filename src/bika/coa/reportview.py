@@ -708,6 +708,64 @@ class MultiReportView(MRV):
 
     #------------------------GHill end---------------------------------------
 
+    #------------------------Hydro begin-------------------------------------
+    def get_common_row_data_hydro(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-",
+                        model.get_formatted_unit(analysis), "-",
+                        False, "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            datum[4] = self.is_analysis_method_subcontracted(analysis)
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[5] = verifier.get("verifier", "-")
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+    
+    def get_formatted_uncertainty(self, analysis):
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        decimalmark = setup.getDecimalMark()
+        uncertainty = format_uncertainty(
+            analysis.instance,
+            decimalmark=decimalmark,
+            sciformat=sciformat,
+        )
+        if uncertainty:
+            return "&plusmn; {}".format(uncertainty)
+        return
+    
+    def dates_sampled_same_day(self, collection=None):
+        datetimes = [i.DateSampled for i in collection]
+        dates = [v.Date() for v in datetimes]
+        return len(set(dates)) == 1
+
+    def dates_received_same_day(self, collection=None):
+        datetimes = [i.DateReceived for i in collection]
+        dates = [v.Date() for v in datetimes]
+        return len(set(dates)) == 1
+    
+    def same_sample_point_location(self,collection=None):
+        sample_point_locations = [i.getSamplePointLocation() for i in collection]
+        return len(set(sample_point_locations))
+
+
+    #------------------------Hydro end--------------------------------------
+
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
         all_analyses = self.get_analyses_by_poc(collection)
