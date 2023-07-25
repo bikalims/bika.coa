@@ -774,6 +774,34 @@ class MultiReportView(MRV):
                 analysis_match = True
         return analysis_match
 
+    def get_pages_hydro(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 3
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 5
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 3
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
     #------------------------Hydro end--------------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
