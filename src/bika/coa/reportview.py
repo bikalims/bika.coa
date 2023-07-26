@@ -802,6 +802,15 @@ class MultiReportView(MRV):
             pages.append(new_page)
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
+    
+    def get_location_address(self,location):
+        address = location.getAddress()[0].get('address')
+        city = location.getAddress()[0].get('city')
+        country = location.getAddress()[0].get('country')
+        if not (address or city or country):
+            return
+        return "{0}, {1}, {2}".format(address,city,country)
+
     #------------------------Hydro end--------------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
