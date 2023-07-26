@@ -570,6 +570,73 @@ class MultiReportView(MRV):
 
     #----------------zlabs end-------------------------------------------------
 
+    #-----------------------Imx begin---------------------------------------
+
+    def get_common_row_data_imex(self, collection, poc, category,spec):
+        """ A version of get_common_row_data that includes
+            the accreditation icon and verifier column """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False,"","","",""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            for result_range in spec.getResultsRange():
+                if result_range.get("keyword") == analysis.Keyword:
+                    min_val = result_range.get("min")
+                    max_val = result_range.get("max")
+                    datum[5] = "{0} - {1}".format(min_val,max_val)
+            datum[6] = analysis.LowerDetectionLimit
+            datum[7] = verifier.get("verifier", "-")
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    def get_pages_imex(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 3
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 5
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 4
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+
+    #-----------------------Imx end-----------------------------------------
+
     #------------------------GHill begin-------------------------------------
 
     def get_pages_long_names(self, options):
