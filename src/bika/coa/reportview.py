@@ -634,6 +634,13 @@ class MultiReportView(MRV):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
+    def is_spec_unique(self, collection=None):
+        specs = []
+        for sample in collection:
+            spec = sample.Specification
+            pub_spec = sample.PublicationSpecification
+            specs.append(pub_spec or spec)
+        return len(set(specs)) == 1
 
     #-----------------------Imx end-----------------------------------------
 

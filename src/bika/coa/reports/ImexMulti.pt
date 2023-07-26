@@ -112,6 +112,16 @@
     </style>
   </tal:css>
 
+    <tal:spec_not_unique condition="python:not view.is_spec_unique(collection)">
+    <div>
+      <h1>  
+      Multiple specifications found for the samples and this COA template  cannot be used for them. 
+      Please reselect the samples to be reported on, ensuring they use the same specification
+      </h1>
+    </div>
+  </tal:spec_not_unique>
+
+<tal:spec_unique condition="python: view.is_spec_unique(collection)">
   <!-- HEADER -->
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
@@ -401,16 +411,16 @@
                   <td class="text-secondary">
                     <span tal:content="python: row_data[1]"/>
                   </td>
-                  <td class="text-secondary text-center">
+                  <td class="text-secondary">
                     <span tal:content="python: row_data[5]"/>
                   </td>
-                  <td class="text-secondary text-center">
+                  <td class="text-secondary">
                     <span tal:content="python: row_data[6]"/>
                   </td>
-                  <td class="text-secondary text-center">
+                  <td class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
                   </td>
-                  <td class="text-secondary text-center">
+                  <td class="text-secondary">
                     <span tal:content="python: row_data[7]"/>
                   </td>
                   <tal:results repeat="model page">
@@ -621,5 +631,7 @@
       <div tal:replace="structure footer"/>
     </div>
   </tal:render>
+
+</tal:spec_unique>
 
 </tal:report>
