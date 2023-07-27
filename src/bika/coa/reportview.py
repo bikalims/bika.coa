@@ -642,6 +642,14 @@ class MultiReportView(MRV):
             specs.append(pub_spec or spec)
         return len(set(specs)) == 1
 
+    def is_verifier_unique(self, collection=None):
+        verifiers = []
+        analyses = self.get_analyses_by(collection)
+        for analysis in analyses:
+             verifier = self.get_verifier_by_analysis(analysis)
+             verifiers.append(verifier.get("verifier"))
+        return len(set(verifiers)) == 1
+
     #-----------------------Imx end-----------------------------------------
 
     #------------------------GHill begin-------------------------------------

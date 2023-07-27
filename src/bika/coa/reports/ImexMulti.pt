@@ -121,7 +121,16 @@
     </div>
   </tal:spec_not_unique>
 
-<tal:spec_unique condition="python: view.is_spec_unique(collection)">
+ <tal:not_unique_verifier condition="python:not view.is_verifier_unique(collection)">
+  <div>
+   <h1>  
+    Multiple Verifiers are found for the analyses in these samples. To use this COA the same user has to verify an
+    Analysis for all samples included
+   </h1>
+  </div> 
+ </tal:not_unique_verifier>
+
+<tal:spec_and_verifier_unique condition="python: view.is_spec_unique(collection) and view.is_verifier_unique(collection)">
   <!-- HEADER -->
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
@@ -632,6 +641,6 @@
     </div>
   </tal:render>
 
-</tal:spec_unique>
+</tal:spec_and_verifier_unique>
 
 </tal:report>
