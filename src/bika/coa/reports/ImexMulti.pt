@@ -305,7 +305,7 @@
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1 i18n:translate="">Results</h1>
-        <h1 i18n:translate="" tal:content="spec/contextual_title|nothing"/>
+	<h2 i18n:translate="" tal:content="string: Specification: ${spec/contextual_title|nothing}"/>
         <tal:page tal:repeat="page pages">
         <!-- Point of Captures -->
         <tal:poc tal:repeat="poc analyses_by_poc">
