@@ -121,16 +121,17 @@
     </div>
   </tal:spec_not_unique>
 
- <tal:not_unique_verifier condition="python:not view.is_verifier_unique(collection)">
+<tal:define_verifiers define="verifier_pair python:view.is_verifier_unique(collection)">
+ <tal:not_unique_verifier condition="python:not verifier_pair[0]"
+ 			  define="kw_list python:verifier_pair[1]">
   <div>
-   <h1>  
-    Multiple Verifiers are found for the analyses in these samples. To use this COA the same user has to verify an
-    Analysis for all samples included
-   </h1>
+	<h1 tal:content="string: Multiple Verifiers are found for the analysis with keyword ${kw_list} to use this COA the same user has to verify an
+    	Analysis for all samples included"/>
   </div> 
  </tal:not_unique_verifier>
+</tal:define_verifiers>
 
-<tal:spec_and_verifier_unique condition="python: view.is_spec_unique(collection) and view.is_verifier_unique(collection)">
+<tal:spec_and_verifier_unique condition="python: view.is_spec_unique(collection) and view.is_verifier_unique(collection)[0]">
   <!-- HEADER -->
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">

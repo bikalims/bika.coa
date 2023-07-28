@@ -643,12 +643,27 @@ class MultiReportView(MRV):
         return len(set(specs)) == 1
 
     def is_verifier_unique(self, collection=None):
-        verifiers = []
+        analysis_verifiers = {}
+        different_verifiers = []
         analyses = self.get_analyses_by(collection)
         for analysis in analyses:
-             verifier = self.get_verifier_by_analysis(analysis)
-             verifiers.append(verifier.get("verifier"))
-        return len(set(verifiers)) == 1
+            kw = analysis.Keyword
+            verifier = self.get_verifier_by_analysis(analysis).get("verifier")
+            if kw not in analysis_verifiers.keys():
+                analysis_verifiers[kw] = [verifier]
+            else:
+                if verifier not in analysis_verifiers.get(kw):
+                    analysis_verifiers[kw].append(verifier)
+        for pair in analysis_verifiers.items():
+            if len(pair[1]) > 1:
+                different_verifiers.append(pair[0])
+        if len(different_verifiers) == 0:
+            return [True,different_verifiers]
+        else:
+            all_keywords = ""
+            for names in different_verifiers:
+                all_keywords = all_keywords + names + ", "
+            return [False, all_keywords]
 
     #-----------------------Imx end-----------------------------------------
 
