@@ -582,11 +582,12 @@ class MultiReportView(MRV):
             datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False,"","","",""]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
-            for result_range in spec.getResultsRange():
-                if result_range.get("keyword") == analysis.Keyword:
-                    min_val = result_range.get("min")
-                    max_val = result_range.get("max")
-                    datum[5] = "{0} - {1}".format(min_val,max_val)
+            if spec:
+                for result_range in spec.getResultsRange():
+                    if result_range.get("keyword") == analysis.Keyword:
+                        min_val = result_range.get("min")
+                        max_val = result_range.get("max")
+                        datum[5] = "{0} - {1}".format(min_val,max_val)
             datum[6] = analysis.LowerDetectionLimit
             datum[7] = verifier.get("verifier", "-")
             if analysis.Method:
