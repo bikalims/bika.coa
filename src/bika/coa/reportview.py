@@ -568,18 +568,17 @@ class MultiReportView(MRV):
     def get_date_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
 
-    #----------------zlabs end-------------------------------------------------
+    # ----------------zlabs end-------------------------------------------------
 
-    #-----------------------Imx begin---------------------------------------
+    # -----------------------Imx begin---------------------------------------
 
-    def get_common_row_data_imex(self, collection, poc, category,spec):
-        """ A version of get_common_row_data that includes
-            the accreditation icon and verifier column """
+    def get_common_row_data_imex(self, collection, poc, category, spec):
+        """ A version of get_common_row_data for Imex """
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False,"","","",""]
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, "", "", "", ""]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
             if spec:
@@ -587,7 +586,7 @@ class MultiReportView(MRV):
                     if result_range.get("keyword") == analysis.Keyword:
                         min_val = result_range.get("min")
                         max_val = result_range.get("max")
-                        datum[5] = "{0} - {1}".format(min_val,max_val)
+                        datum[5] = "{0} - {1}".format(min_val, max_val)
             datum[6] = analysis.LowerDetectionLimit
             datum[7] = verifier.get("verifier", "-")
             if analysis.Method:
@@ -659,7 +658,7 @@ class MultiReportView(MRV):
             if len(pair[1]) > 1:
                 different_verifiers.append(pair[0])
         if len(different_verifiers) == 0:
-            return [True,different_verifiers]
+            return [True, different_verifiers]
         else:
             all_keywords = ""
             for names in different_verifiers:
