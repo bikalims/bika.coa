@@ -112,7 +112,18 @@
     </style>
   </tal:css>
 
+<tal:define_verifiers define="verifier_pair python:view.is_verifier_unique(collection)">
+ <tal:not_unique_verifier condition="python:not verifier_pair[0]"
+ 			  define="kw_list python:verifier_pair[1]">
+  <div>
+	<h1 tal:content="string: Multiple Verifiers are found for the analysis with keyword ${kw_list} to use this COA the same user has to verify an
+    	Analysis for all samples included"/>
+  </div> 
+ </tal:not_unique_verifier>
+</tal:define_verifiers>
+
   <!-- HEADER -->
+ <tal:same_verifier condition="python:view.is_verifier_unique(collection)[0]">
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
@@ -631,5 +642,5 @@
       <div tal:replace="structure footer"/>
     </div>
   </tal:render>
-
+ </tal:same_verifier>
 </tal:report>
