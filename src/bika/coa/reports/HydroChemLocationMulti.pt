@@ -214,7 +214,7 @@
   <!-- Batch error message start -->
   <tal:render condition="python:not view.dates_sampled_same_day(collection) or not view.dates_received_same_day(collection) or not view.same_sample_point_location(collection)">
     <div>
-      <h1> Samples are not from the same Location / not samples on the same date / not received on the same date</h1>
+      <h1> Samples are not from the same Location / not sampled on the same date / not received on the same date</h1>
     </div>
   </tal:render>
   <!-- Batch error message end -->
@@ -425,7 +425,7 @@
             <table class="table table-sm table-condensed small">
               <thead>
                 <tr>
-                  <th colspan="5">Sample ID</th>
+                  <th colspan="4">Sample ID</th>
                   <tal:ar repeat="model page">
                     <th colspan="4" class="font-weight-normal border-out">
                       <div class="text-primary text-center"
@@ -435,7 +435,7 @@
                 </tr>
                 <tr>
                   <tal:ar repeat="model page">
-                  <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                  <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                       <div class="text-left">Sample Point</div>
                   </th>
                   <th colspan="4" class="font-weight-normal text-center border-out">
@@ -446,7 +446,7 @@
                 </tr>
                 <tr class="noborder" style="border:none !important">
                   <tal:ar repeat="model page">
-                    <th colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                    <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                           Client Sample ID
                     </th>
                     <th colspan="4" class="font-weight-normal text-center border-out">
@@ -456,7 +456,7 @@
                 </tr>
                 <tr class="noborder">
                   <tal:ar repeat="model page">
-                    <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                    <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                           <div class="text-left">Sample Type</div>
                     </th>
                     <th colspan="4" class="font-weight-normal text-center border-out">
@@ -470,7 +470,7 @@
                     <tal:spec_values tal:define="specification model/Specification;
                                       publication_specification model/PublicationSpecification;
                                       spec python:publication_specification or specification;">
-                      <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                      <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                           <div class="text-left">Specification</div>
                       </th>
                       <th colspan="4" class="font-weight-normal text-center border-out">
@@ -486,7 +486,7 @@
                 </tr>
                 <tr>
                   <tal:ar repeat="model page">
-                  <th colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0" style="border-top: none">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" style="border-top: none">
                       <div class="text-left">Date Verified</div>
                   </th>
                   <th colspan="4" class="font-weight-normal text-center border-out">
@@ -503,8 +503,7 @@
                     <td class="font-weight-bold table-warning" colspan="2">
                         <span tal:content="category/Title"/>
                     </td>
-                    <td class="font-weight-bold" colspan="2">Method</td>
-                    <td class="font-weight-bold" colspan="1">Unit</td>
+                    <td class="font-weight-bold" colspan="2">Unit</td>
                     <tal:results repeat="model page">
                         <td class="font-weight-bold text-center border-lft" colspan="2">Result</td>
                         <td class="font-weight-bold text-center" colspan="1">Min</td>
@@ -520,9 +519,6 @@
                           <span tal:content="python: row_data[0]"/>
                     </td>
                     <td class="text-secondary" colspan="2">
-                      <span tal:content="python: row_data[1]"/>
-                    </td>
-                    <td class="text-secondary" colspan="1">
                       <span tal:content="python: row_data[2]"/>
                     </td>
                     <tal:results repeat="model page">
@@ -572,7 +568,7 @@
                             </tal:no_spec>
                         </tal:analysis>
                         <tal:analysis condition="not:analyses">
-                          <td class="text-center" colspan="2"></td>
+                          <td class="text-center border-lft" colspan="2"></td>
 			  <td class="text-center"></td>
 			  <td class="text-center border-rite"></td>
                         </tal:analysis>
