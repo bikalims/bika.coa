@@ -1113,7 +1113,9 @@ class MultiReportView(MRV):
     def get_verifier(self, collection):
         model = collection[0]
         analyses = self.get_analyses_by([model])
-        actor = getTransitionUsers(analyses[0].getObject(), "verify")
+        actor = []
+        if analyses:
+            actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
             return {"verifier": '', "email": ""}
             
