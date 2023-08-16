@@ -69,9 +69,10 @@
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
-     .report table td.results { width:22mm}
-     .report table th.results { width:22mm}
-     .report table.results td th { width:22mm}
+     .report table td.border-out { border-right: 1px solid #999; border-left: 1px solid #999;}
+     .report table th.border-out { border-right: 1px solid #999; border-left: 1px solid #999;}
+     .report table td.border-lft { border-left: 1px solid #999;}
+     .report table td.border-rite { border-right: 1px solid #999; padding-right: 2em;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
@@ -213,7 +214,7 @@
   <!-- Batch error message start -->
   <tal:render condition="python:not view.dates_sampled_same_day(collection) or not view.dates_received_same_day(collection) or not view.same_sample_point_location(collection)">
     <div>
-      <h1> Samples are not from the same Location / not samples on the same date / not received on the same date</h1>
+      <h1> Samples are not from the same Location / not sampled on the same date / not received on the same date</h1>
     </div>
   </tal:render>
   <!-- Batch error message end -->
@@ -406,194 +407,7 @@
         </div>
     </tal:render>
 
-    <!-- Results table attempt 1-->
-    <!--
-    <tal:render define="analyses_by_poc python:view.get_analyses_by_poc(collection);
-                        categories_by_poc python:view.get_categories_by_poc(collection);
-                        clients python:view.group_items_by('Client', collection);
-                        primarymodel python:collection[0];
-                        specification primarymodel/Specification;
-                        publication_specification primarymodel/PublicationSpecification;
-                        spec python:publication_specification or specification;">
-      <h1 i18n:translate="">Results</h1>
-      <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-        <div tal:condition="client">
-          <p i18n:translate="" tal:content="string:Unless indicated as sampled by ${client/Name|nothing}, sampling was performed by ${laboratory/title|nothing}"/>
-        </div>
-      </tal:by_client>
-      <tal:page tal:repeat="page pages">
-        <tal:poc tal:repeat="poc analyses_by_poc">
-          <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
-          <div class="table small">
-            <div class="table-row">
-              <div class="table-header">Sample ID</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-primary text-center"
-                      tal:content="model/Title"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Sample Point</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-center"
-                      tal:content="python:model.SamplePointTitle or '-'"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Client Sample ID</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-center"
-                      tal:content="python:model.ClientSampleID or '-'"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Sample Type</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-center"
-                      tal:content="python:model.SampleTypeTitle or '-'"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Specification</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-center"
-                      tal:condition="spec"
-                      tal:content="python:spec.Title() or '-'"/>
-                  <div class="text-center"
-                      tal:condition="not:spec"
-                      tal:content="python:'-'"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Date Verified</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-center"
-                      tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"/>
-                </div>
-              </tal:ar>
-            </div>
-          </div>
-          <div class="table small">
-            <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-              <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="table-cell font-weight-bold">
-                  <span tal:content="category/Title"/>
-                </div>
-                <div class="table-cell font-weight-bold">Method</div>
-                <div class="table-cell font-weight-bold">Unit</div>
-                <tal:results repeat="model page">
-                  <div class="table-cell-result font-weight-bold text-center" tal:content="string: Result"/>
-                  <div class="table">
-                    <div class="table-row">
-                      <div class="table-cell-min-max font-weight-bold text-center">Min</div>
-                      <div class="table-cell-min-max font-weight-bold text-center">Max</div>
-                    </div>
-                  </div>
-                </tal:results>
-              </div>
-              <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_hydro(page, poc=poc, category=category)"
-                      tal:repeat="row_data python:common_row_data">
-                <div class="table-cell text-secondary">
-                  <span tal:condition="python: row_data[4]">
-                    <img tal:attributes="src python:report_images['subcontracted_symbol_url']"/>
-                  </span>
-                  <span tal:content="python: row_data[0]"/>
-                </div>
-                <div class="table-cell text-secondary">
-                  <span tal:content="python: row_data[1]"/>
-                </div>
-                <div class="table-cell text-secondary">
-                  <span tal:content="python: row_data[2]"/>
-                </div>
-                <tal:results repeat="model page">
-                  <tal:analyses tal:define="specification model/Specification;
-                                            publication_specification model/PublicationSpecification;
-                                            spec python:publication_specification or specification;
-                                            analyses python:view.get_analyses_by(model, title=row_data[0]);">
-                    <tal:analysis tal:repeat="analysis analyses">
-                      <div class="table-cell-result text-center" style="padding-left:1px"
-                              tal:define="result python:model.get_formatted_result(analysis);
-                                          verified python:analysis.review_state in ['published', 'verified'];
-                                          uncertainty python:view.get_formatted_uncertainty(analysis)">
-                        <span class="font-weight-normal"
-                              tal:condition="python:result and verified"
-                              tal:content="structure result" />
-                          <span class="font-weight-normal"
-                                tal:condition="python:result and verified and uncertainty"
-                                tal:content="structure uncertainty" />
-                        <span class="font-weight-normal"
-                              tal:condition="python:result and not verified">-</span>
-                        <span class="font-weight-normal"
-                              tal:condition="not:result"></span>
-                        <span tal:condition="python:model.is_out_of_range(analysis)"
-                              class="font-weight-normal">
-                          <span class="outofrange text-danger">
-                                <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                          </span>
-                        </span>
-                      </div>
-                      <tal:specs tal:condition="spec" tal:repeat="result_range python:spec.getResultsRange()">
-                        <div class="table" tal:condition="python:view.matching_analysis_in_spec(analysis,result_range)">
-                          <div class="table-row">
-                              <div class="table-cell-min-max text-center" tal:content="python:'%s' % (result_range['min']) or '-'"/>
-                              <div class="table-cell-min-max text-center" tal:content="python:'%s' % (result_range['max']) or '-'"/>
-                          </div>
-                        </div>
-                      </tal:specs>
-                      <div class="table" tal:condition="python:spec and (not view.any_matching_analysis_in_spec(analysis,spec))">
-                        <div class="table-row">
-                            <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                            <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                        </div>
-                      </div>
-                      <div class="table" tal:condition="not:spec">
-                        <div class="table-row">
-                          <tal:not_specs>
-                            <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                            <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                          </tal:not_specs>
-                        </div>
-                      </div>
-                    </tal:analysis>
-                    <tal:analysis condition="not:analyses">
-		    <div class='table-cell'></div>                            
-		    <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                    <div class="table-cell-min-max text-center" tal:content="python:'-'"/>
-                    </tal:analysis>
-                  </tal:analyses>
-                </tal:results>
-              </div>
-            </tal:categories_in_poc>
-          </div>
-        </tal:poc>
-      </tal:page>
-    </tal:render>
-    -->
-<!-- Results attempt 2 -->
-
+    <!-- Results -->
     <tal:render condition="python:True"
                 define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                         categories_by_poc python:view.get_categories_by_poc(collection)">
@@ -611,20 +425,20 @@
             <table class="table table-sm table-condensed small">
               <thead>
                 <tr>
-                  <th colspan="5">Sample ID</th>
+                  <th colspan="4">Sample ID</th>
                   <tal:ar repeat="model page">
-                    <th colspan="4" class="font-weight-normal">
+                    <th colspan="4" class="font-weight-normal border-out">
                       <div class="text-primary text-center"
                           tal:content="model/Title"/>
                     </th>
                   </tal:ar>
                 </tr>
-                <tr class="noborder">
+                <tr>
                   <tal:ar repeat="model page">
-                  <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                  <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                       <div class="text-left">Sample Point</div>
                   </th>
-                  <th colspan="4" class="font-weight-normal text-center noborder">
+                  <th colspan="4" class="font-weight-normal text-center border-out">
                       <div class="text-center"
                           tal:content="python:model.SamplePointTitle or '-'"/>
                   </th>
@@ -632,20 +446,20 @@
                 </tr>
                 <tr class="noborder" style="border:none !important">
                   <tal:ar repeat="model page">
-                    <th colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                    <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                           Client Sample ID
                     </th>
-                    <th colspan="4" class="font-weight-normal text-center noborder">
+                    <th colspan="4" class="font-weight-normal text-center border-out">
                         <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                     </th>
                   </tal:ar>
                 </tr>
                 <tr class="noborder">
                   <tal:ar repeat="model page">
-                    <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                    <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                           <div class="text-left">Sample Type</div>
                     </th>
-                    <th colspan="4" class="font-weight-normal text-center noborder">
+                    <th colspan="4" class="font-weight-normal text-center border-out">
                         <div class="text-center"
                             tal:content="python:model.SampleTypeTitle or '-'"/>
                     </th>
@@ -656,10 +470,10 @@
                     <tal:spec_values tal:define="specification model/Specification;
                                       publication_specification model/PublicationSpecification;
                                       spec python:publication_specification or specification;">
-                      <th class="noborder" colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0">
+                      <th class="noborder" colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0">
                           <div class="text-left">Specification</div>
                       </th>
-                      <th colspan="4" class="font-weight-normal text-center noborder">
+                      <th colspan="4" class="font-weight-normal text-center border-out">
                           <div class="text-center"
                               tal:condition="spec"
                               tal:content="python:spec.Title() or '-'"/>
@@ -672,10 +486,10 @@
                 </tr>
                 <tr>
                   <tal:ar repeat="model page">
-                  <th colspan="5" tal:condition="python: repeat['model'].start or page.index(model) == 0" style="border-top: none">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" style="border-top: none">
                       <div class="text-left">Date Verified</div>
                   </th>
-                  <th colspan="4" class="font-weight-normal text-center" style="border-top: none; width:22mm">
+                  <th colspan="4" class="font-weight-normal text-center border-out">
                       <div class="text-center"
                           tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                   </th>
@@ -689,12 +503,11 @@
                     <td class="font-weight-bold table-warning" colspan="2">
                         <span tal:content="category/Title"/>
                     </td>
-                    <td class="font-weight-bold" colspan="2">Method</td>
-                    <td class="font-weight-bold" colspan="1">Unit</td>
+                    <td class="font-weight-bold" colspan="2">Unit</td>
                     <tal:results repeat="model page">
-                        <td class="font-weight-bold text-center" colspan="2">Result</td>
+                        <td class="font-weight-bold text-center border-lft" colspan="2">Result</td>
                         <td class="font-weight-bold text-center" colspan="1">Min</td>
-                        <td class="font-weight-bold text-center" colspan="1">Max</td>
+                        <td class="font-weight-bold text-center border-rite" colspan="1">Max</td>
                     </tal:results>
                   </tr> 
                   <tr tal:define="common_row_data python:view.get_common_row_data_hydro(page, poc=poc, category=category)"
@@ -706,9 +519,6 @@
                           <span tal:content="python: row_data[0]"/>
                     </td>
                     <td class="text-secondary" colspan="2">
-                      <span tal:content="python: row_data[1]"/>
-                    </td>
-                    <td class="text-secondary" colspan="1">
                       <span tal:content="python: row_data[2]"/>
                     </td>
                     <tal:results repeat="model page">
@@ -717,7 +527,7 @@
                                                 spec python:publication_specification or specification;
                                                 analyses python:view.get_analyses_by(model, title=row_data[0]);">
                         <tal:analysis tal:repeat="analysis analyses">
-                          <td colspan="2" class="text-center"
+                          <td colspan="2" class="text-center border-lft"
                               tal:define="result python:model.get_formatted_result(analysis);
                                           verified python:analysis.review_state in ['published', 'verified'];
                                           uncertainty python:view.get_formatted_uncertainty(analysis)">
@@ -740,27 +550,27 @@
                           </td>
                             <tal:has_specs tal:condition="spec" tal:repeat="result_range python:spec.getResultsRange()">
                               <tal:spec_in_analysis tal:condition="python:view.matching_analysis_in_spec(analysis,result_range)">
-                                <td class="text-center" >
+                                <td class="text-center">
                                     <span tal:content="python:'%s' % (result_range['min']) or ''"/>
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center border-rite">
                                     <span tal:content="python:'%s' % (result_range['max']) or ''"/>
                                 </td>
                               </tal:spec_in_analysis>
                             </tal:has_specs>
                             <tal:spec_not_in_analysis tal:condition="python:spec and (not view.any_matching_analysis_in_spec(analysis,spec))">
                                 <td class="text-center"></td>
-                                <td class="text-center"></td>
+                                <td class="text-center border-rite"></td>
                             </tal:spec_not_in_analysis>
                             <tal:no_spec tal:condition="not:spec">
                               <td class="text-center"></td>
-                              <td class="text-center"></td>
+                              <td class="text-center border-rite"></td>
                             </tal:no_spec>
                         </tal:analysis>
                         <tal:analysis condition="not:analyses">
-                          <td class="text-center" colspan="2"></td>
+                          <td class="text-center border-lft" colspan="2"></td>
 			  <td class="text-center"></td>
-			  <td class="text-center"></td>
+			  <td class="text-center border-rite"></td>
                         </tal:analysis>
                       </tal:analyses>
                     </tal:results>
