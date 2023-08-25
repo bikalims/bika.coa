@@ -405,45 +405,27 @@ class AjaxPublishView(AP):
         key_sort = sorted(title_sort, key=lambda x:(x[1][-1] is None,x[1][-1]))
         return key_sort
 
-    def create_sample_rows_2(self,grouped_analyses,field_analyses,lab_analyses):
-        sample_ids = ["Sample ID"]
-        sample_Points = ["Sample Points"]
-        sample_Types = ["Sample Types"]
-        if grouped_analyses.get("field"):
-            for field_Analysis_service in grouped_analyses.get("field"):
-                if field_Analysis_service.get("sampleID") not in sample_ids:
-                    sample_ids.append(field_Analysis_service.get("sampleID"))
-                    sample_Points.append(field_Analysis_service.get("samplePoint"))
-                    sample_Types.append(field_Analysis_service.get("sampleType"))
-                position_at_top = sample_ids.index(field_Analysis_service.get("sampleID")) - 1
-                title = field_Analysis_service.get('title')
-                field_analyses[title][position_at_top] = field_Analysis_service.get("result")
-        if grouped_analyses.get("lab"):
-            for lab_Analysis_service in grouped_analyses.get("lab"):
-                if lab_Analysis_service.get("sampleID") not in sample_ids:
-                    sample_ids.append(lab_Analysis_service.get("sampleID"))
-                    sample_Points.append(lab_Analysis_service.get("samplePoint"))
-                    sample_Types.append(lab_Analysis_service.get("sampleType"))
-                position_at_top = sample_ids.index(lab_Analysis_service.get("sampleID")) - 1
-                title = lab_Analysis_service.get('title')
-                if lab_analyses.get(title):
-                    lab_analyses.get(title)[position_at_top] = lab_Analysis_service.get("result")
-        sample_headers = [sample_ids,sample_Points,sample_Types]
-        return sample_headers,field_analyses,lab_analyses
+    def create_sample_rows(
+                self, grouped_analyses, field_analyses,
+                lab_analyses, samples):
 
-    def create_sample_rows(self, grouped_analyses, field_analyses, lab_analyses, samples):
-        sample_ids, sample_points, sample_types = self.get_sample_header_data(samples)
+        sample_ids, sample_points, sample_types = self.get_sample_header_data(
+                                                                    samples)
         if grouped_analyses.get("field"):
-            for field_Analysis_service in grouped_analyses.get("field"):
-                position_at_top = sample_ids.index(field_Analysis_service.get("sampleID")) - 1 
-                title = field_Analysis_service.get('title')
-                field_analyses[title][position_at_top] = field_Analysis_service.get("result")
+            for field_AS in grouped_analyses.get("field"):
+                position_at_top = sample_ids.index(
+                                            field_AS.get("sampleID")) - 1
+                title = field_AS.get('title')
+                field_analyses[title][position_at_top] = field_AS.get(
+                                                                "result")
         if grouped_analyses.get("lab"):
-            for lab_Analysis_service in grouped_analyses.get("lab"):
-                position_at_top = sample_ids.index(lab_Analysis_service.get("sampleID")) - 1 
-                title = lab_Analysis_service.get('title')
+            for lab_AS in grouped_analyses.get("lab"):
+                position_at_top = sample_ids.index(
+                                            lab_AS.get("sampleID")) - 1
+                title = lab_AS.get('title')
                 if lab_analyses.get(title):
-                    lab_analyses.get(title)[position_at_top] = lab_Analysis_service.get("result")
+                    lab_analyses.get(title)[position_at_top] = lab_AS.get(
+                                                                "result")
         sample_headers = [sample_ids, sample_points, sample_types]
         return sample_headers, field_analyses, lab_analyses
 
@@ -456,7 +438,6 @@ class AjaxPublishView(AP):
             sample_points.append(sample.getSamplePointTitle())
             sample_types.append(sample.getSampleTypeTitle())
         return sample_ids, sample_points, sample_types
-
 
     def merge_header_and_values(self,headers,values):
         """Merge the headers and their values to make writing to CSV easier"""
