@@ -192,6 +192,21 @@ class SingleReportView(SRV):
                  "accredited_symbol_url": accredited_symbol_url,}
         return datum
 
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,}
+        return datum
+
     def get_toolbar_logo(self):
         registry = getUtility(IRegistry)
         portal_url = self.portal_url
@@ -259,6 +274,12 @@ class SingleReportView(SRV):
     def is_analysis_accredited(self,analysis):
         if analysis.Accredited:
             return True
+        return False
+
+    def is_analysis_method_subcontracted(self, analysis):
+        if analysis.Method:
+            if analysis.Method.Supplier:
+                return True
         return False
 
 
