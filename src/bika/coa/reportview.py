@@ -929,8 +929,9 @@ class MultiReportView(MRV):
             return
         return "{0}, {1}, {2}".format(address,city,country)
 
-    #------------------------Hydro end--------------------------------------
+    # ------------------------Hydro end--------------------------------------
 
+    # ------------------------Cannabis start---------------------------------
     def get_date_analysed(self, sample):
         from_date = ""
         to_date = ""
@@ -980,6 +981,8 @@ class MultiReportView(MRV):
             common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
+
+    # -----------------------Cannabis end------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
