@@ -875,6 +875,21 @@ class MultiReportView(MRV):
         datetimes = [i.DateReceived for i in collection]
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
+
+    def same_sample_point_location(self,collection=None):
+        sample_point_locations = [i.getSamplePointLocation() for i in collection]
+        return len(set(sample_point_locations))
+
+    def matching_analysis_in_spec(self,analysis,result_range):
+        return analysis.getKeyword() == result_range['keyword']
+
+    def any_matching_analysis_in_spec(self,analysis,spec):
+        analysis_match = False
+        result_ranges = spec.getResultsRange()
+        for result_range in result_ranges:
+            if analysis.getKeyword() == result_range['keyword']:
+                analysis_match = True
+        return analysis_match
     
     def same_sample_point_location(self, collection=None):
         samplepoint_location = [i.getSamplePointLocation() for i in collection]
