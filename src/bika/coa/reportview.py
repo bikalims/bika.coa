@@ -890,10 +890,6 @@ class MultiReportView(MRV):
             if analysis.getKeyword() == result_range['keyword']:
                 analysis_match = True
         return analysis_match
-    
-    def same_sample_point_location(self, collection=None):
-        samplepoint_location = [i.getSamplePointLocation() for i in collection]
-        return len(set(samplepoint_location))
 
     def get_pages_hydro(self, options):
         if options.get("orientation", "") == "portrait":
