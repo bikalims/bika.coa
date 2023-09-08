@@ -851,6 +851,8 @@ class MultiReportView(MRV):
         specs = analysis.getResultsRange()
         fs = ''
         precision = analysis.getPrecision()
+        if not precision:
+            precision = 0
         precision_formatting = "{:." + str(precision) + "f}"
         if specs.get('min', None) and specs.get('max', None):
             min_val = precision_formatting.format(float(specs['min']))
