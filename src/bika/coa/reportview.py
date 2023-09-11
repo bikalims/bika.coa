@@ -857,7 +857,7 @@ class MultiReportView(MRV):
         if specs.get('min', None) and specs.get('max', None):
             min_val = precision_formatting.format(float(specs['min']))
             max_val = precision_formatting.format(float(specs['max']))
-            fs = '%s - %s' % (min_val, max_val)
+            fs = '(%s - %s)' % (min_val, max_val)
         elif specs.get('min', None):
             min_val = precision_formatting.format(float(specs['min']))
             fs = '> %s' % min_val
