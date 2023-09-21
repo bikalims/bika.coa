@@ -31,18 +31,22 @@ class ReportsListingViewAdapter(object):
             ("COA", {
                 "title": _("COA"),
                 "index": "sortable_title"},),
+            ("Batch", {
+                "title": _("Batch")},),
             ("State", {
                 "title": _("Review State")},),
             ("PDF", {
                 "title": _("Download PDF")},),
-            ("CSV", {
-                "title": _("Download CSV")},),
             ("FileSize", {
                 "title": _("Filesize")},),
+            ("CSV", {
+                "title": _("Download CSV")},),
             ("Date", {
                 "title": _("Published Date")},),
             ("PublishedBy", {
                 "title": _("Published By")},),
+            ("Sent", {
+                "title": _("Email sent")},),
             ("Recipients", {
                 "title": _("Recipients")},),
         ))
