@@ -7,10 +7,12 @@
 import logging
 from bika.lims.api import get_request
 from bika.coa.interfaces import IBikaCOALayer
+from zope.i18nmessageid import MessageFactory
 
 PRODUCT_NAME = "bika.coa"
 PROFILE_ID = "profile-{}:default".format(PRODUCT_NAME)
 logger = logging.getLogger(PRODUCT_NAME)
+_ = MessageFactory(PRODUCT_NAME)
 
 
 def initialize(context):

@@ -8,7 +8,7 @@ from zope.interface import implements
 from bika.lims import api
 from bika.lims.utils import get_link
 from bika.coa import is_installed
-from bika.extras.config import _
+from bika.coa import _
 from senaite.app.listing.interfaces import IListingView
 from senaite.app.listing.interfaces import IListingViewAdapter
 
