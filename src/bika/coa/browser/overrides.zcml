@@ -3,15 +3,6 @@
         xmlns:browser="http://namespaces.zope.org/browser"
         i18n_domain="bika.coa">
 
-  <!-- Reports listing view -->
-  <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="reports_listing"
-      class="bika.coa.browser.publish.reports_listing.ReportsListingView"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
 
   <!-- Ajax Publish View : ajax_publish -->
   <browser:page

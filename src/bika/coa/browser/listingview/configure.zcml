@@ -3,9 +3,16 @@
 
     <!-- main and batch samples lists -->
     <subscriber
-            for="bika.lims.interfaces.IAnalysisRequest
+            for="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults
                  zope.interface.Interface"
             provides="senaite.app.listing.interfaces.IListingViewAdapter"
             factory=".published_results.AnalysisRequestPublishedResults"/>
+
+    <!-- reports listing -->
+    <subscriber
+            for="bika.lims.browser.publish.reports_listing.ReportsListingView
+                 zope.interface.Interface"
+            provides="senaite.app.listing.interfaces.IListingViewAdapter"
+            factory=".report_listing.ReportsListingViewAdapter"/>
 
 </configure>
