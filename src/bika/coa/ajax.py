@@ -83,6 +83,8 @@ class AjaxPublishView(AP):
         elif template == "bika.coa:ZimlabsTransposedMulti.pt":
             csv_report = self.create_zlabs_csv_report(samples,coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
+        elif template == 'bika.hydrochem:HydroChemSystemsMulti.pt': 
+            csv_reports = [""]
         elif is_multi_template:
             csv_report = self.create_csv_reports(samples)
             csv_reports = [csv_report for i in range(len(pdf_reports))]

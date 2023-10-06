@@ -15,6 +15,7 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -866,7 +867,26 @@ class MultiReportView(MRV):
         if uncertainty:
             return "&plusmn; {}".format(uncertainty)
         return
-    
+
+    def get_formatted_specs_hydro(self, model, analysis):
+        specs = analysis.getResultsRange()
+        fs = ''
+        precision = analysis.getPrecision()
+        if not precision:
+            precision = 0
+        precision_formatting = "{:." + str(precision) + "f}"
+        if specs.get('min', None) and specs.get('max', None):
+            min_val = precision_formatting.format(float(specs['min']))
+            max_val = precision_formatting.format(float(specs['max']))
+            fs = '(%s - %s)' % (min_val, max_val)
+        elif specs.get('min', None):
+            min_val = precision_formatting.format(float(specs['min']))
+            fs = '> %s' % min_val
+        elif specs.get('max', None):
+            max_val = precision_formatting.format(float(specs['max']))
+            fs = '< %s' % max_val
+        return formatDecimalMark(fs, model.decimal_mark)
+
     def dates_sampled_same_day(self, collection=None):
         datetimes = [i.DateSampled for i in collection]
         dates = [v.Date() for v in datetimes]
@@ -876,7 +896,7 @@ class MultiReportView(MRV):
         datetimes = [i.DateReceived for i in collection]
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
-    
+
     def same_sample_point_location(self,collection=None):
         sample_point_locations = [i.getSamplePointLocation() for i in collection]
         return len(set(sample_point_locations))

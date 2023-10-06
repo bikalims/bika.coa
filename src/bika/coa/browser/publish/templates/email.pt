@@ -143,7 +143,7 @@
               <tal:reports repeat="report view/reports_data">
                 <tal:multireport  tal:condition="python:'Multi' in report['obj']['Metadata']['template']">
                     <input type="hidden" name="uids:list" tal:attributes="value report/uid"/>
-                    <div tal:condition="python: view.email_csv_report_enabled and repeat.report.number() == 1">
+                    <div tal:condition="python: view.email_csv_report_enabled and repeat.report.number() == 1 and 'bika.hydrochem:HydroChemSystemsMulti.pt' != report['obj']['Metadata']['template']">
                         <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2"
                              tal:define="filename report/filename;
                                          csv_title python: '{}.csv'.format(filename.split('.')[0]);">
@@ -179,30 +179,32 @@
               <!-- Additional Attachments -->
               <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
-                  <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
-                    <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
-                    <a href="#"
-                       class="attachment-link"
-                       target="_blank"
-                       tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
-                      <div class="attachment-file">
-                        <img tal:attributes="alt attachment/filename;
-                                            title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} kB)"
-                            src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
-                      </div>
-                      <span class="filename" tal:content="attachment/filename"/>
-
-                      <div class="attachment-info small">
-                        <span tal:content="attachment/attachment_keys"/>
-                        <span i18n:translate="">in</span>
-                        <span tal:content="report/sample/getId"/>
-                        <div class="fileinfo">
-                          <span class="filetype" tal:content="attachment/mimetype"/>
-                          <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
+		  <tal:is_not_result_import condition="python: attachment.get('attachment_keys') != 'Results, Automatic import'">
+                    <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                      <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
+                      <a href="#"
+                         class="attachment-link"
+                         target="_blank"
+                         tal:attributes="href string:${attachment/obj/absolute_url}/AttachmentFile">
+                        <div class="attachment-file">
+                          <img tal:attributes="alt attachment/filename;
+                                              title string:${attachment/filename} ${attachment/mimetype}(${attachment/filesize} kB)"
+                              src="++resource++senaite.core.browser.publish/img/attachment.png" width="32" />
                         </div>
-                      </div>
-                    </a>
-                  </div>
+                        <span class="filename" tal:content="attachment/filename"/>
+  
+                        <div class="attachment-info small">
+                          <span tal:content="attachment/attachment_keys"/>
+                          <span i18n:translate="">in</span>
+                          <span tal:content="report/sample/getId"/>
+                          <div class="fileinfo">
+                            <span class="filetype" tal:content="attachment/mimetype"/>
+                            <span class="filesize" tal:content="string:${attachment/filesize}kB"/>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+		  </tal:is_not_result_import>
                 </tal:attachments>
               </tal:reports>
             </div>
