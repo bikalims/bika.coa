@@ -85,6 +85,9 @@ class AjaxPublishView(AP):
             csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif template == 'bika.hydrochem:HydroChemSystemsMulti.pt': 
             csv_reports = [""]
+        elif template == "bika.cannabis:CannabisUSMulti.pt":
+            csv_report = self.create_csv_reports_cannabis(samples, coa_num)
+            csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
             csv_report = self.create_csv_reports(samples)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
@@ -610,6 +613,94 @@ class AjaxPublishView(AP):
             writer.writerow(["Analysis", "Result", "Unit"])
             for a_info in group_cats[g_cat]:
                 writer.writerow([a_info['title'], a_info['result'], a_info['unit']])
+
+        return output.getvalue()
+
+    def create_csv_reports_cannabis(self, samples, coa_num):
+        analyses = []
+        output = StringIO.StringIO()
+        client_headers = [["COA ID", coa_num], 
+                          ["Client", samples[0].Client.title],
+                          ["Client Contact", samples[0].Contact.title]]
+        headers = ["Sample ID", "Tracking ID", "Client Sample ID",
+                   "Batch ID", "License", "Sample Type", "Strain",
+                   "Lot", "Cultivation Batch ID", "Quantity",
+                   "Date Sampled", "Date Received",
+                   "Date Verified", "Date Published"]
+        body = []
+        for sample in samples:
+            date_received = sample.DateReceived
+            date_sampled = sample.DateSampled
+            if date_sampled:
+                date_sampled = date_sampled.strftime('%m-%d-%y')
+            if date_received:
+                date_received = date_received.strftime('%m-%d-%y')
+            date_verified = sample.getDateVerified()
+            if date_verified:
+                date_verified = date_verified.strftime('%m-%d-%y')
+            license_num = sample.License
+            if license_num:
+                license_num = license_num.license_number
+            strain = sample.Strain
+            if strain:
+                strain = strain.title
+            date_published = sample.DatePublished
+            if date_published:
+                date_published = date_published.strftime('%m-%d-%y')
+
+            writer = csv.writer(output)
+            line = [
+                sample.id,
+                sample.TrackingID,
+                sample.ClientSampleID,
+                sample.getBatchID(),
+                license_num,
+                sample.SampleTypeTitle,
+                strain,
+                sample.LotNumber,
+                sample.CultivationBatchID,
+                sample.Quantity,
+                date_sampled,
+                date_received,
+                date_verified,
+                date_published
+            ]
+
+            analyses = sample.getAnalyses(full_objects=True)
+            group_cats = {}
+            for analysis in analyses:
+                analysis_info = {'title': analysis.Title(),
+                                 'result': analysis.getFormattedResult(html=False),
+                                 'unit': analysis.getService().getUnit()}
+                if analysis.getCategoryTitle() not in group_cats.keys():
+                    group_cats[analysis.getCategoryTitle()] = []
+                group_cats[analysis.getCategoryTitle()].append(analysis_info)
+
+            for g_cat in sorted(group_cats.keys()):
+                for a_info in group_cats[g_cat]:
+                    title = a_info['title']
+                    result = a_info['result']
+                    unit = a_info['unit']
+                    title_unit = title
+                    if unit:
+                        title_unit = '{} ({})'.format(title, unit)
+                    if len(line) != len(headers):
+                        for i in headers[len(line):]:
+                            line.append('')
+
+                    if title_unit not in headers:
+                        headers.append(title_unit)
+                        line.append(result)
+                    else:
+                        line[headers.index(title_unit)] = result
+
+            body.append(line)
+        
+        for header in client_headers:
+            writer.writerow(header)
+        writer.writerow(headers)
+        for rec in body:
+            writer.writerow(rec)
 
         return output.getvalue()
 
