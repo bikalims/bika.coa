@@ -380,19 +380,6 @@
                 <div class="table-header-address">Address</div>
                 <div class="table-cell-address" tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
             </div>
-            <!-- <div class="table-row">
-                <div class="table-header-address">Date Sampled</div>
-                <div class="table-cell-address" tal:content="python:view.to_localized_date(primarysample.DateSampled)"/>
-                <div class="table-cell-address"></div>
-                <div class="table-cell-address"></div>
-            </div>
-            <div class="table-row">
-                <div class="table-header-address">Date Received</div>
-                <div class="table-cell-address" tal:content="python:view.to_localized_date(primarysample.DateReceived)"/>
-                <div class="table-cell-address"></div>
-                <div class="table-cell-address"></div>
-	   </div>
-	    -->
         </div>
     </tal:render>
 
