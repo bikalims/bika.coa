@@ -977,8 +977,8 @@ class MultiReportView(MRV):
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
             datum[5] = self.is_analysis_method_subcontracted(analysis)
-            specification  = analysis.Specification
-            publication_specification = analysis.PublicationSpecification
+            specification  = analysis.getSpecification()
+            publication_specification = analysis.getPublicationSpecification()
             spec = publication_specification or specification
             if spec:
                 for result_range in spec.getResultsRange():
