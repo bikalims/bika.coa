@@ -92,30 +92,15 @@
         height:100px;
     }
 
-    .bgbehind {
-        background-image:url(<tal:t replace="python:view.get_toolbar_logo()"/>);
-        z-index:100;
-        background-position: top right;
-        background-size: 938px 162px; 
-        opacity:0.1 !important;
-        background-repeat: no-repeat;
-        position: absolute;
-        top: -750%;
-        left: 55%;
-        transform: rotate(305deg);
-        width:<tal:t replace="python:'{:.2f}mm'.format(page_width)"/> ;
-        height:<tal:t replace="python:'{:.2f}mm'.format(page_height)"/>;
-    }
-
      .report .section-footer #footer-line {
        width: 100%;
        height: 2mm;
        border-top: 1px solid black;
      }
 
-    .table {
+    .div-table {
       display: table;
-      width: 100%;
+      width: auto;
     }
 
     .table-row {
@@ -127,13 +112,14 @@
       padding: 4px;
       font-weight: bold;
       border-top: 1px solid #ccc;
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 4.5))"/>;
     }
 
     .table-cell {
       display: table-cell;
       padding: 2px;
       border-top: 1px solid #ccc;
-      width: 22mm;
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 4.5))"/>;
     }
 
      <tal:block condition="python:content_width and content_height">
