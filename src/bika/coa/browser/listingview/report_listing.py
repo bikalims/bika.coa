@@ -66,6 +66,12 @@ class ReportsListingViewAdapter(object):
                 url, value="CSV", target="_blank")
 
         pdf = self.listing.get_pdf(obj)
+        filesize_pdf = self.listing.get_filesize(pdf)
+        if filesize_pdf > 0:
+            url = "{}/at_download/Pdf".format(obj.absolute_url())
+            item["replace"]["PDF"] = get_link(
+                url, value="PDF", target="_blank")
+
         pdf_filename = pdf.filename
         pdf_filename_value = 'Unknown'
         if pdf_filename:
