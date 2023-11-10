@@ -193,6 +193,21 @@ class SingleReportView(SRV):
                  "accredited_symbol_url": accredited_symbol_url,}
         return datum
 
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,}
+        return datum
+
     def get_toolbar_logo(self):
         registry = getUtility(IRegistry)
         portal_url = self.portal_url
@@ -260,6 +275,12 @@ class SingleReportView(SRV):
     def is_analysis_accredited(self,analysis):
         if analysis.Accredited:
             return True
+        return False
+
+    def is_analysis_method_subcontracted(self, analysis):
+        if analysis.Method:
+            if analysis.Method.Supplier:
+                return True
         return False
 
 
@@ -928,7 +949,60 @@ class MultiReportView(MRV):
             return
         return "{0}, {1}, {2}".format(address,city,country)
 
-    #------------------------Hydro end--------------------------------------
+    # ------------------------Hydro end--------------------------------------
+
+    # ------------------------Cannabis start---------------------------------
+    def get_date_analysed(self, sample):
+        from_date = ""
+        to_date = ""
+        analyses = self.get_analyses_by(sample)
+        all_dates = []
+        for analysis in analyses:
+            date_captured = analysis.ResultCaptureDate
+            if date_captured:
+                all_dates.append(date_captured)
+        all_dates.sort()
+        if len(all_dates) > 0:
+            from_date =  self.to_localized_date(all_dates[0])
+            to_date =  self.to_localized_date(all_dates[-1])
+        return [from_date, to_date]
+
+    def get_common_row_data_cannabis(self, collection, poc, category):
+        """ A version of get_common_row_data for Cannabis """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, False, "", ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = self.is_analysis_method_subcontracted(analysis)
+            specification  = analysis.getSpecification()
+            publication_specification = analysis.getPublicationSpecification()
+            spec = publication_specification or specification
+            if spec:
+                for result_range in spec.getResultsRange():
+                    if result_range.get("keyword") == analysis.Keyword:
+                        min_val = result_range.get("min")
+                        max_val = result_range.get("max")
+                        datum[6] = "{0} - {1}".format(min_val, max_val)
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    # -----------------------Cannabis end------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
