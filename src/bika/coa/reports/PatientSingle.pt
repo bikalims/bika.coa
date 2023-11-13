@@ -263,19 +263,19 @@
         <table class="table table-sm table-condensed">
           <tr>
             <td colspan="3" class="label" i18n:translate="">Name</td>
-            <td tal:content="model/Patient/FullName|nothing"></td>
+            <td tal:content="model/getFullname|nothing"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Medical Record #</td>
-            <td tal:content="model/ClientSampleID"></td>
+            <td tal:content="model/getMedicalRecordNumberValue|nothing"></td>
             <td class="label" i18n:translate="">Birth Date</td>
-            <td tal:content="python:view.to_localized_time(model.DateReceived)"></td>
+            <td tal:content="model/getDateOfBirth|nothing"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">LIMS ID</td>
-            <td tal:content="model/SampleType/title|nothing"></td>
-            <td class="label" i18n:translate="">Age</td>
-            <td tal:content="python:view.to_localized_time(model.get_transition_date('senaite_sample_workflow', 'verified'))"></td>
+            <td tal:content="string:LIMS-ID pending "></td>
+            <td class="label" i18n:translate="">Age / Gender</td>
+	    <td tal:content="string:${model/getAgeYmd|nothing} ${model/getSex|nothing}"></td>
           </tr>
         </table>
       </div>
@@ -293,17 +293,16 @@
 		      sample_id model/getId;">
     <div class="row section-summary no-gutters">
       <div class="w-100">
-        <h1 i18n:translate="">Summary</h1>
-	  <span class="barcode-container text-right">
-          <!-- Barcode -->
-            <div class="barcode"
-                 tal:attributes="data-id sample_id;"
-                 data-barHeight="18"
-                 data-code="code39"
-                 data-addQuietZone="true"
-                 data-showHRI="false">
-            </div>
-	  </span>
+
+	<h1 i18n:translate="" style="display: inline;">Summary</h1>
+	<p class="barcode" 
+		tal:attributes="data-id sample_id;"
+		data-barHeight="18"
+		data-code="code39"
+		data-addQuietZone="true"
+		data-showHRI="false"
+		style="display: inline-block; margin: 0;">
+	</p>
 
         <table class="table table-sm table-condensed">
           <tr>
