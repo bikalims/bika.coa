@@ -568,25 +568,6 @@
     </tal:render>
       <!-- Results end -->
 
-      <!-- Legend start -->
-      <tal:render>
-      <div>
-          <div>
-            <h2 i18n:translate="">Legend</h2>
-          </div>
-          <div>
-            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['accredited_symbol_url']"/></span> Accredited methods</h3>
-          </div>
-          <div>
-            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['savcregistered_symbol_url']"/></span>  South African Veterinary Council registered</h3>
-          </div>
-          <div>
-            <h3 i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span> Subcontracted methods</h3>
-          </div>
-        </div>
-      </tal:render>
-      <!-- Legend end -->
-
 
       <!-- Publisher start -->
       <tal:render define="publish python:view.get_publisher();
