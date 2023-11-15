@@ -262,21 +262,21 @@
         <h1 i18n:translate="">Patient</h1>
         <table class="table table-sm table-condensed">
           <tr>
-            <td colspan="3" class="label" i18n:translate="">Name</td>
-            <td tal:content="model/getFullname|nothing"></td>
+            <td class="label" i18n:translate="">Name</td>
+            <td colspan="3" tal:content="python: model.getPatientFullName()"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Medical Record #</td>
             <td tal:content="model/getMedicalRecordNumberValue|nothing"></td>
             <td class="label" i18n:translate="">Birth Date</td>
-            <td tal:content="model/getDateOfBirth|nothing"></td>
+            <td tal:content="python: view.to_localized_date(model.getDateOfBirth()[0])"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">LIMS ID</td>
-            <td tal:content="string:LIMS-ID pending "></td>
+            <td tal:content="model/getId"></td>
             <td class="label" i18n:translate="">Age / Gender</td>
-	    <td tal:content="string:${model/getAgeYmd|nothing} ${model/getSex|nothing}"></td>
-          </tr>
+	    <td tal:content="python: view.output_sex_and_age(model)"></td>
+          </tr>          
         </table>
       </div>
     </div>
@@ -303,7 +303,6 @@
 		data-showHRI="false"
 		style="display: inline-block; margin: 0;">
 	</p>
-
         <table class="table table-sm table-condensed">
           <tr>
             <td class="label" i18n:translate="">Sample ID</td>

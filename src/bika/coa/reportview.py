@@ -285,6 +285,18 @@ class SingleReportView(SRV):
                 return True
         return False
 
+    def to_localized_date(self, date):
+        return self.to_localized_time(date)[:10]
+
+    def sex_mapping(self, sex):
+        sex_dict = {"m": "male", "f":"female"}
+        return sex_dict.get(sex)
+
+    def output_sex_and_age(self, model):
+        age = model.getAgeYmd()
+        sex = model.getSex()
+        sex = self.sex_mapping(sex)
+        return age + " " + sex
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
