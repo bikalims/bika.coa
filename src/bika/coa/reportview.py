@@ -169,7 +169,9 @@ class SingleReportView(SRV):
 
     def get_formatted_date(self, analysis):
         result = analysis.ResultCaptureDate
-        return result.strftime("%Y-%m-%d")
+        if result:
+            return result.strftime("%Y-%m-%d")
+        return ""
 
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
