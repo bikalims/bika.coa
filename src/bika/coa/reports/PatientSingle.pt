@@ -205,6 +205,12 @@
                 <div class="lab-country">
                   <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
                 </div>
+		<div>
+                  <span tal:content="laboratory/EmailAddress">Lab Email</span>
+	        </div>
+		<div>
+                  <span tal:content="laboratory/Phone">Lab Phone Number</span>
+	        </div>
               </div>
               <div class="lab-url">
                 <a tal:attributes="href laboratory/LabURL"
@@ -272,10 +278,8 @@
             <td tal:content="python: view.to_localized_date(model.getDateOfBirth()[0])"></td>
           </tr>
           <tr>
-            <td class="label" i18n:translate="">LIMS ID</td>
-            <td tal:content="model/getId"></td>
             <td class="label" i18n:translate="">Age / Gender</td>
-	    <td tal:content="python: view.output_sex_and_age(model)"></td>
+	    <td colspan="3" tal:content="python: view.output_sex_and_age(model)"></td>
           </tr>          
         </table>
       </div>
@@ -686,7 +690,7 @@
   </tal:render>
 
   <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:not footer"
+  <tal:render condition="python:False"
               define="laboratory python:view.laboratory;">
     <div class="row section-footer no-gutters">
       <!-- Footer Line -->
