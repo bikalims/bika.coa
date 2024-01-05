@@ -88,6 +88,9 @@ class AjaxPublishView(AP):
         elif template == "bika.cannabis:CannabisUSMulti.pt":
             csv_report = self.create_csv_reports_cannabis(samples, coa_num)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
+        elif template == "bika.cannabis:CannabisMulti.pt":
+            csv_report = self.create_csv_reports_metrc(samples, coa_num)
+            csv_reports = [csv_report for i in range(len(pdf_reports))]
         elif is_multi_template:
             csv_report = self.create_csv_reports(samples)
             csv_reports = [csv_report for i in range(len(pdf_reports))]
@@ -714,6 +717,72 @@ class AjaxPublishView(AP):
         
         for header in client_headers:
             writer.writerow(header)
+        writer.writerow(headers)
+        for rec in body:
+            writer.writerow(rec)
+
+        return output.getvalue()
+
+    def create_csv_reports_metrc(self, samples, coa_num):
+        analyses = []
+        output = StringIO.StringIO()
+        headers = ["Date Published", "Metric Package ID", "Test",
+                   "Results", "Pass/Fail",]
+        body = []
+        for sample in samples:
+            date_published = sample.DatePublished
+            if date_published:
+                date_published = date_published.strftime('%m-%d-%y')
+            package_id = sample.TrackingID
+            sample_type = sample.SampleTypeTitle
+
+            writer = csv.writer(output)
+            analyses = sample.getAnalyses(full_objects=True)
+            group_cats = {}
+            for analysis in analyses:
+                unit =  analysis.getService().getUnit()
+                as_title = analysis.Title()
+                bool_outcome = "True"
+                specs = analysis.getResultsRange()
+                int_result = float(analysis.getFormattedResult(html=False))
+                if specs:
+                    if specs.get('min', None) and specs.get('max', None):
+                        min_val = float(specs['min'])
+                        max_val = float(specs['max'])
+                        if float_result < min_val or float_result > max_val:
+                            bool_outcome = "False"
+                    elif specs.get('min', None):
+                        min_val = float(specs['min'])
+                        if float_result < min_val:
+                            bool_outcome = "False"
+                    elif specs.get('max', None):
+                        max_val = float(specs['max'])
+                        if float_result > max_val:
+                            bool_outcome = "False"
+
+                analysis_info = {'test': "{0} ({1}) {2}".format(as_title, unit, sample_type),
+                                 'result': analysis.getFormattedResult(html=False),
+                                 'pass_fail': bool_outcome,}
+                if analysis.getCategoryTitle() not in group_cats.keys():
+                    group_cats[analysis.getCategoryTitle()] = []
+                group_cats[analysis.getCategoryTitle()].append(analysis_info)
+
+            for g_cat in sorted(group_cats.keys()):
+                line = []
+                for a_info in group_cats[g_cat]:
+                    test = a_info['test']
+                    result = a_info['result']
+                    pass_fail = a_info['pass_fail']
+                    line.append(date_published)
+                    line.append(package_id)
+                    line.append(test)
+                    line.append(result)
+                    line.append(pass_fail)
+                    if len(line) != len(headers):
+                        for i in headers[len(line):]:
+                            line.append('')
+                    body.append(line)
+        
         writer.writerow(headers)
         for rec in body:
             writer.writerow(rec)
