@@ -791,6 +791,31 @@ class MultiReportView(MRV):
                 common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
+
+    def get_analyses_headers(self, collection, poc, category):
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        headers = []
+        for analysis in analyses:
+            title  = analysis.title
+            if title not in headers:
+                headers.append(title)
+        return headers
+
+    def get_aquaculture_data(self, collection, poc, category):
+        """
+        :returns: {"sample_id":{"analysisTitle": "analysisResult"}} eg
+                  {"ABC-12": {"Calcium": 20}}
+        """
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        headers = []
+        data = {}
+        for analysis in analyses:
+            sample_id = analysis.aq_parent.getId()
+            if sample_id not in data:
+                data[sample_id] = {analysis.title: analysis.getFormattedResult()}
+            else:
+                data[sample_id].update({analysis.title: analysis.getFormattedResult()})
+        return data
     
     def get_datetime_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
