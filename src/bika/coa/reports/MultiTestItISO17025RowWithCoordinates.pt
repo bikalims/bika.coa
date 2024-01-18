@@ -176,25 +176,35 @@
      <td>
      <div style="text-align: left">
               <div class="lab-title font-weight-bold">
-                <div tal:replace="laboratory/title|nothing"/>
-              </div>
-              <div class="lab-address">
-                <div class="lab-street">
-                <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
-              </div>
-              <div class="lab-city">
-                <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
-              </div>
-              <div class="lab-zip">
-                <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
-              </div>
-              <div class="lab-state">
-                <div tal:replace="laboratory/PostalAddress/state|nothing"></div>
-              </div>
-              <div class="lab-country">
-                  <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
-              </div>
+                <div> Test It LAB</div>
      </div>
+
+     <div style="text-align: left">
+              <div class="Street">
+                <div> Plot 9D Kwagga Street</div>
+     </div>
+
+     <div style="text-align: left">
+              <div class="Suburb">
+                <div>Quaggafontein</div>
+     </div>
+     <div style="text-align: left">
+              <div class="Town">
+                <div>Bloemfontein</div>
+     </div>
+     <div style="text-align: left">
+              <div class="Province">
+                <div>Free State</div>
+     </div>
+     <div style="text-align: left">
+              <div class="Code">
+                <div>9301</div>
+     </div>
+     <div style="text-align: left">
+              <div class="Country">
+                <div>South Africa</div>
+     </div>
+
      <div class="accreditation-logo" style="align:left"
                  tal:define="accredited laboratory/LaboratoryAccredited;
                              accreditation_logo laboratory/AccreditationBodyLogo;"
@@ -213,8 +223,10 @@
 </tal:render>
 <!-- /Adress and accreditation block -->
   <!-- TEST IT LAB COA DETALS -->
-      <tal:render condition="python:len(collection)>0"
-              define="primarymodel python:collection[0];">  
+  <tal:render condition="python:len(collection)>0"
+              define="primarymodel python:collection[0];
+                      batch primarymodel/Batch;">
+
 <div style="background-color:white;color:black;padding:5px;">
 <div> <strong> Important documents and information </strong> </div> 
 <br>
@@ -228,16 +240,16 @@
 <li>We respect your privacy and <a href="https://www.testit-labs.co.za/privacy-policy/>">personal information</a> </li>
 <li> <a href="https://www.testit-labs.co.za/terms-conditions/"> Terms and Conditions </a></li>
 <li>We welcome your <a href="https://www.testit-labs.co.za/contact-us/"> feedback</a> or <a href="https://www.testit-labs.co.za/contact-us/">get in touch</a> with us for queries or complaints</li>
-<li>Result Query: <a href="mailto:francois@testit-labs.co.za?subject=tal:content=batch/getId">Francois le Roux</a> Financial: <a href="sunet@testit-labs.co.za">Sunet van Biljon</a>Complaints: <a href="elsabe@testit-labs.co.za">Elsabe Botes</a> </li>
+<li>Result Query: <a href="mailto:francois@testit-labs.co.za?subject=${batch/getId} Free 10 minute consultation">Francois le Roux</a> Financial: <a href="mailto:sunet@testit-labs.co.za?subject=${batch/getId} Financial Query">Sunet van Biljon</a>Complaints: <a href="mailto:elsabe@testit-labs.co.za?subject=${batch/getId} Complaint">Elsabe Botes</a></li>
 <li>Outsourced or subcontracted tests are indicated per method</li>
-<li>  <span class="accredited-symbol text-success" tal:content="accredited_symbol"> </span> Included in the SANAS Schedule of Accreditation for this laboratory</li>
+
+<li>  <span class="accredited-symbol text-success" tal:content="accredited_symbol"> </span> Is not included in the SANAS Schedule of Accreditation for this laboratory</li>
 <li>Information provided by <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                       <a tal:content="client/Name"/>
 </tal:by_client>include and is not limited to Sample Type, Sampler, Publication Spesification, Date/Time Sampled.</li>
 <li>                           <span class="outofrange text-danger">
                                   <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                           </span> Result out of client specified range</li>
-<li>Outsourced or subcontracted tests indicated per method</li>
 <br>
 <div> <strong>Date Published :</strong>  <span tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)"> </div> 
 <div>  <strong> Report authorized by Technical Signatory:</strong> <span tal:content="reporter/fullname|reporter/username"/>
@@ -323,14 +335,24 @@
     <tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sample Latitude</td>
     <td>
-<span tal:content="python: model.SamplePoint.Latitude['degrees'] + '°' + model.SamplePoint.Latitude['seconds'] + '′' +  model.SamplePoint.Latitude['minutes'] + '″' + ' ' + model.SamplePoint.Latitude['bearing']"></span>
+      <span tal:condition="python: model.SamplePoint.Latitude and model.SamplePoint.Latitude['degrees'] is not None and model.SamplePoint.Latitude['seconds'] is not None and model.SamplePoint.Latitude['minutes'] is not None and model.SamplePoint.Latitude['bearing'] is not None"
+      tal:content="python: model.SamplePoint.Latitude['degrees'] + '°' + model.SamplePoint.Latitude['seconds'] + '′' +  model.SamplePoint.Latitude['minutes'] + '″' + model.SamplePoint.Latitude['bearing']">
+      </span>
+    <span tal:condition="python: not (model.SamplePoint.Latitude and model.SamplePoint.Latitude['degrees'] is not None and model.SamplePoint.Latitude['seconds'] is not None and model.SamplePoint.Latitude['minutes'] is not None and model.SamplePoint.Latitude['bearing'] is not None)">
+    -
+    </span>
      </td>
   </tr>
 
       <tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sample Longitude</td>
-    <td>
-    <span tal:content="python: model.SamplePoint.Longitude['degrees'] + '°' + model.SamplePoint.Longitude['seconds'] + '′' +  model.SamplePoint.Longitude['minutes'] + '″' + model.SamplePoint.Longitude['bearing']"></span>
+     <td>
+      <span tal:condition="python: model.SamplePoint.Longitude and model.SamplePoint.Longitude['degrees'] is not None and model.SamplePoint.Longitude['seconds'] is not None and model.SamplePoint.Longitude['minutes'] is not None and model.SamplePoint.Longitude['bearing'] is not None"
+      tal:content="python: model.SamplePoint.Longitude['degrees'] + '°' + model.SamplePoint.Longitude['seconds'] + '′' +  model.SamplePoint.Longitude['minutes'] + '″' + model.SamplePoint.Longitude['bearing']">
+      </span>
+      <span tal:condition="python: not (model.SamplePoint.Longitude and model.SamplePoint.Longitude['degrees'] is not None and model.SamplePoint.Longitude['seconds'] is not None and model.SamplePoint.Longitude['minutes'] is not None and model.SamplePoint.Longitude['bearing'] is not None)">
+    -
+      </span>
      </td>
   </tr>
 
@@ -441,7 +463,7 @@
                         <span class="text-success"
                               style="font-family:sans;"
                               tal:content="accredited_symbol"
-                              tal:condition="analysis/Accredited">
+                              tal:condition="not: analysis/Accredited">
                       <td class="text-left">
                         <span tal:condition="analysis/Method">
                           <span class="font-normal" tal:content="analysis/Method/ShortTitle|analysis/Method/Title"></span>
@@ -465,7 +487,6 @@
                           </tal:pubspecs>
                         </span>
                       </td>
-
                       <td class="upperspecs" style="text-align: center">
                         <span tal:condition="model/PublicationSpecification">
                           <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
@@ -474,7 +495,6 @@
                           </tal:pubspecs>
                         </span>
                       </td>
-
                       <td>
                         <span tal:condition="model/PublicationSpecification">
                           <tal:pubspecs tal:repeat="pubspec python:model.getPublicationSpecification().getResultsRange()">
@@ -490,6 +510,7 @@
                       </td>
                     </tr>
                   </tal:analyses>
+
                 </tbody>
 
                 <tfoot tal:define="category_comments python:category.Comments">
@@ -508,12 +529,13 @@
             </tal:poc>
         </div>
       </div>
+                                            <div> End of results for <span tal:content="python:model.ClientSampleID or 'the above sample'"/> (<a tal:content="model/getId">) </div>
     </tal:model>
-    <p style="page-break-after: always;"></p>
+
   </tal:render>
 
   <!--  RESULTS INTERPRETATIONS -->
-  <tal:render condition="python:True">
+  <!--<tal:render condition="python:True">
     <tal:model repeat="model collection">
       <div class="row section-resultsinterpretation no-gutters"
            tal:define="ris python:model.get_resultsinterpretation();
@@ -527,16 +549,17 @@
         </div>
       </div>
     </tal:model>
-  </tal:render>
+  </tal:render>-->
 
   <div class="text-center">
  <th>
   <strong>
    END OF RESULTS
   </strong>
-  <HR>
+    <p style="page-break-after: always;"></p>
  </th>
 </div>
+
 
   <!-- QC RESULTS -->
   <!--<tal:render condition="python:True">
