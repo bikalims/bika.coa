@@ -323,6 +323,44 @@ class MultiReportView(MRV):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
+    def get_pages_aqua_culture(self, category_model, sample_model=None):
+        """
+        """
+        data = {}
+        num_per_page = 5
+        pages = []
+        new_page = []
+        for model in self.collection:
+            for analysis in model.getAnalyses():
+                an_super = SuperModel(analysis.UID)
+                category = an_super.Category
+                if category not in data:
+                    data[category] = {model: [an_super]}
+                else:
+                    if model not in data[category]:
+                        data[category][model] = [an_super]
+                    else:
+                        data[category][model].append(an_super)
+
+        if sample_model:
+            sample = data[category_model][sample_model]
+            for idx, col in enumerate(sample):
+                if idx % num_per_page == 0:
+                    if len(new_page):
+                        pages.append(new_page)
+                        logger.info("New page len = {}".format(len(new_page)))
+                    new_page = [col]
+                    continue
+                new_page.append(col)
+
+            if len(new_page) > 0:
+                pages.append(new_page)
+                logger.info("Last page len = {}".format(len(new_page)))
+            data[category_model][sample_model] = pages
+            return data[category_model][sample_model]
+
+        return data[category_model]
+
     def get_pages_awtc(self, options):
         if options.get("orientation", "") == "portrait":
             num_per_page = 5
@@ -791,31 +829,6 @@ class MultiReportView(MRV):
                 common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
-
-    def get_analyses_headers(self, collection, poc, category):
-        analyses = self.get_analyses_by(collection, poc=poc, category=category)
-        headers = []
-        for analysis in analyses:
-            title  = analysis.title
-            if title not in headers:
-                headers.append(title)
-        return headers
-
-    def get_aquaculture_data(self, collection, poc, category):
-        """
-        :returns: {"sample_id":{"analysisTitle": "analysisResult"}} eg
-                  {"ABC-12": {"Calcium": 20}}
-        """
-        analyses = self.get_analyses_by(collection, poc=poc, category=category)
-        headers = []
-        data = {}
-        for analysis in analyses:
-            sample_id = analysis.aq_parent.getId()
-            if sample_id not in data:
-                data[sample_id] = {analysis.title: analysis.getFormattedResult()}
-            else:
-                data[sample_id].update({analysis.title: analysis.getFormattedResult()})
-        return data
     
     def get_datetime_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
