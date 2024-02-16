@@ -1,9 +1,11 @@
 from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
 from plone import api as ploneapi
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from zope.component._api import getAdapters
 
+from bika.coa import _
 from bika.coa import logger
 
 from bika.lims import api
@@ -852,17 +854,6 @@ class MultiReportView(MRV):
                 "savcregistered_symbol_url": savcregistered_symbol_url,}
         return datum
     
-    def get_country_name(self,country_code):
-        countries = geo.get_countries()
-        items = map(lambda item: (item.alpha_2, item.name), countries)
-        if not country_code:
-            return "-"
-        for pair in items:
-            if country_code in pair[0]:
-                country_name = pair[1]
-                return country_name
-        return "-"
-
     #------------------------GHill end---------------------------------------
 
     #------------------------Hydro begin-------------------------------------
@@ -1450,3 +1441,21 @@ class MultiReportView(MRV):
                 continue
             verifiers.append(verifier)
         return verifiers
+
+    def get_country_name(self, country):
+        vocabulary = self.get_countries()
+        title = vocabulary.getValue(country)
+        return title
+
+    def get_country_titles(self, countries):
+        titles = []
+        for country in countries:
+            title = str(self.get_country_name(country))
+            titles.append(title)
+        return ", ".join(titles)
+
+    def get_countries(self):
+        items = map(
+            lambda country: (_(country.alpha_2), _(country.name)), geo.get_countries()
+        )
+        return DisplayList(items)
