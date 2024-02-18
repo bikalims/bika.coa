@@ -1459,3 +1459,25 @@ class MultiReportView(MRV):
             lambda country: (_(country.alpha_2), _(country.name)), geo.get_countries()
         )
         return DisplayList(items)
+
+    def get_analyses_methods(self, collection=None, poc=None, category=None):
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        analyses_parameters = []
+        for c, analysis in enumerate(analyses):
+            methods = analysis.getAnalysisService().getAvailableMethods()
+            for m, method in enumerate(methods):
+                title = method.Title()
+                description = method.Description()
+                method_id = method.getId()
+                rec = {
+                    "title": title,
+                    "description": description,
+                    "method_id": method_id,
+                }
+
+                if rec in analyses_parameters:
+                    continue
+                analyses_parameters.append(rec)
+        items = sorted(
+            analyses_parameters, key=lambda item: item["method_id"])
+        return items
