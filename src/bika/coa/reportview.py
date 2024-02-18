@@ -7,6 +7,7 @@ from zope.component._api import getAdapters
 
 from bika.coa import _
 from bika.coa import logger
+from bika.coa.vocabulary import SEXES
 
 from bika.lims import api
 from bika.lims.api import _marker
@@ -1458,6 +1459,14 @@ class MultiReportView(MRV):
         items = map(
             lambda country: (_(country.alpha_2), _(country.name)), geo.get_countries()
         )
+        return DisplayList(items)
+
+    def get_sex_title(self, model):
+        title = model.getObject().Sex
+        return str(self.get_sexes().getValue(title))
+
+    def get_sexes(self):
+        items = map(lambda item: (_(item[0]), _(item[1])), SEXES)
         return DisplayList(items)
 
     def get_analyses_methods(self, collection=None, poc=None, category=None):
