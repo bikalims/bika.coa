@@ -19,6 +19,7 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import user_fullname
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -1490,3 +1491,15 @@ class MultiReportView(MRV):
         items = sorted(
             analyses_parameters, key=lambda item: item["method_id"])
         return items
+
+    def get_footer_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["bika.footer_logo"]
+        except (AttributeError, KeyError):
+            return self.get_toolbar_logo()
+        return portal_url + logo
+
+    def get_batch_sampler(self, batch, user_id):
+        return user_fullname(batch, user_id)
