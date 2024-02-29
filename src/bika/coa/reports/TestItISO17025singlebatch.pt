@@ -249,7 +249,7 @@
             <tal:manager repeat="manager python:model.managers">
               <td>
                 <div>
-                  <img style="width:150px;height:75px;" tal:condition="manager/Signature"
+                  <img style="width:150px;height:75px;" tal:condition="manager/getSignature"
                        tal:attributes="src string:${manager/absolute_url}/Signature"/>
                 </div>
               </td>

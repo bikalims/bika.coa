@@ -636,13 +636,13 @@
               <tal:manager repeat="manager managers">
                 <td style="border:none">
                   <div>
-                    <img tal:condition="manager/Signature"
+                    <img tal:condition="manager/getSignature"
                          tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
                   </div>
                   <div class="font-weight-bold">
-                    <span tal:content="manager/Salutation"></span>
-                    <span tal:condition="manager/Salutation">&nbsp;</span>
-                    <span tal:content="manager/Fullname"></span>
+                    <span tal:content="manager/getSalutation"></span>
+                    <span tal:condition="manager/getSalutation">&nbsp;</span>
+                    <span tal:content="manager/getFullname"></span>
                   </div>
                   <div>
                     <span tal:content="manager/JobTitle"></span>
