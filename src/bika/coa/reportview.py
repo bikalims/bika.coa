@@ -1148,6 +1148,14 @@ class MultiReportView(MRV):
                 return False
         return len(batches) == 1
 
+    def is_sps_unique(self, collection=None):
+        """Checks for unique sample points in a batch
+        """
+        if not self.is_batch_unique(collection):
+            return False
+        sample_points = [i.SamplePointTitle for i in collection if getattr(i , "SamplePoint", "")]
+        return len(set(sample_points)) == 1
+
     def get_order_number(self, collection=None):
         if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
             return collection[0].ClientOrderNumber
