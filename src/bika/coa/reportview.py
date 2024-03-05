@@ -358,6 +358,9 @@ class MultiReportView(MRV):
                 new_page.append(col)
 
             if len(new_page) > 0:
+                if len(new_page) < num_per_page:
+                    for i in range(num_per_page - len(new_page)):
+                        new_page.append("")
                 pages.append(new_page)
                 logger.info("Last page len = {}".format(len(new_page)))
             data[category_model][sample_model] = pages
