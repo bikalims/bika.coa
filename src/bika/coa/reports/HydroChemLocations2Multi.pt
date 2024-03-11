@@ -532,6 +532,8 @@
               </div>
             </tal:categories_in_poc>
           </div>
+          <br />
+          <br />
         </tal:poc>
       </tal:page>
     </tal:render>
