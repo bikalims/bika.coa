@@ -198,18 +198,27 @@
     </style>
   </tal:css>
 
+  <!-- Unique specification error message start -->
+  <tal:spec_not_unique condition="python:not view.is_spec_unique(collection)">
+    <div>
+      <h1>  
+      All Samples must use the same specification for this COA
+      </h1>
+    </div>
+  </tal:spec_not_unique>
+  <!-- Unique specification error message end -->
 
-  <!-- Batch error message start -->
+  <!-- Samplepoint Location error message start -->
   <tal:render condition="python:not view.same_sample_point_location(collection)">
     <div>
       <h1> Samples are not from the same Location </h1>
     </div>
   </tal:render>
-  <!-- Batch error message end -->
+  <!-- Samplepoint Location error message end -->
 
 
   <!-- HEADER -->
-  <tal:meets_conditions condition="python: view.same_sample_point_location(collection)">
+  <tal:meets_conditions condition="python: view.same_sample_point_location(collection) and view.is_spec_unique(collection)">
   <tal:render>
     <div class="row section-header no-gutters">
       <!-- Header Table -->
@@ -371,7 +380,10 @@
 
     <!-- Location mini table -->
     <tal:render define="primarysample python:collection[0];
-                        samplepointlocation python:primarysample.getSamplePointLocation();"
+                        samplepointlocation python:primarysample.getSamplePointLocation();
+                        specification primarysample/Specification;
+                        publication_specification primarysample/PublicationSpecification;
+                        spec python:publication_specification or specification;"
                 condition="samplepointlocation">
         <div class="div-table" style="width:100%; margin-bottom: 1rem;">
             <div class="table-row">
@@ -380,11 +392,30 @@
                 <div class="table-header-address">Address</div>
                 <div class="table-cell-address" tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
             </div>
+            <div class="table-row">
+                <div class="table-header-address">Specification</div>
+                <tal:has_spec condition="spec">
+                    <div class="table-cell-address" tal:content="python:spec.Title() or '-'"/>
+                </tal:has_spec>
+                <tal:has_no_spec condition="not:spec">
+                    <div class="table-cell-address" tal:content="python:'-'"/>
+                </tal:has_no_spec>
+                <div class="table-header-address">Date Received</div>
+                <div class="table-cell-address" tal:content="python:primarysample.DateReceived and view.to_localized_date(primarysample.DateReceived) or '-'"/>
+            </div>
+            <div class="table-row">
+                <div class="table-header-address">Date Sampled</div>
+                <div class="table-cell-address" tal:content="python:primarysample.DateSampled and view.to_localized_date(primarysample.DateSampled) or '-'"/>
+                <div class="table-header-address">Date Verified</div>
+                <div class="table-cell-address" tal:content="python:primarysample.getDateVerified() and view.to_localized_date(primarysample.getDateVerified()) or '-'"/>
+            </div>
         </div>
+        <br />
     </tal:render>
+    <!-- Location mini table end-->
 
-<!-- Results start -->
 
+    <!-- Results start -->
     <tal:render condition="python:True"
                 define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                         categories_by_poc python:view.get_categories_by_poc(collection)">
@@ -420,45 +451,6 @@
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal border-out text-center"
                       tal:content="python:model.SamplePointTitle or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header noborder">Specification</div>
-              <tal:ar repeat="model page">
-                <tal:spec_values tal:define="specification model/Specification;
-                                  publication_specification model/PublicationSpecification;
-                                  spec python:publication_specification or specification;">
-                  <div class="table-cell font-weight-normal text-center border-out">
-                      <div class="text-center"
-                          tal:condition="spec"
-                          tal:content="python:spec.Title() or '-'"/>
-                      <div class="text-center"
-                          tal:condition="not:spec"
-                          tal:content="python:'-'"/>
-                  </div>
-                </tal:spec_values>
-              </tal:ar>
-            </div>
-
-            <div class="table-row">
-              <div class="table-header" class="noborder">Date Sampled</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Date Received</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Date Verified</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"/>
               </tal:ar>
             </div>
 	</div>

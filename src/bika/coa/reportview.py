@@ -933,7 +933,7 @@ class MultiReportView(MRV):
 
     def same_sample_point_location(self,collection=None):
         sample_point_locations = [i.getSamplePointLocation() for i in collection]
-        return len(set(sample_point_locations))
+        return len(set(sample_point_locations)) == 1
 
     def matching_analysis_in_spec(self,analysis,result_range):
         return analysis.getKeyword() == result_range['keyword']
