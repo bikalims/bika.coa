@@ -380,10 +380,7 @@
 
     <!-- Location mini table -->
     <tal:render define="primarysample python:collection[0];
-                        samplepointlocation python:primarysample.getSamplePointLocation();
-                        specification primarysample/Specification;
-                        publication_specification primarysample/PublicationSpecification;
-                        spec python:publication_specification or specification;"
+                        samplepointlocation python:primarysample.getSamplePointLocation();"
                 condition="samplepointlocation">
         <div class="div-table" style="width:100%; margin-bottom: 1rem;">
             <div class="table-row">
@@ -393,19 +390,8 @@
                 <div class="table-cell-address" tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
             </div>
             <div class="table-row">
-                <div class="table-header-address">Specification</div>
-                <tal:has_spec condition="spec">
-                    <div class="table-cell-address" tal:content="python:spec.Title() or '-'"/>
-                </tal:has_spec>
-                <tal:has_no_spec condition="not:spec">
-                    <div class="table-cell-address" tal:content="python:'-'"/>
-                </tal:has_no_spec>
                 <div class="table-header-address">Date Received</div>
                 <div class="table-cell-address" tal:content="python:primarysample.DateReceived and view.to_localized_date(primarysample.DateReceived) or '-'"/>
-            </div>
-            <div class="table-row">
-                <div class="table-header-address">Date Sampled</div>
-                <div class="table-cell-address" tal:content="python:primarysample.DateSampled and view.to_localized_date(primarysample.DateSampled) or '-'"/>
                 <div class="table-header-address">Date Verified</div>
                 <div class="table-cell-address" tal:content="python:primarysample.getDateVerified() and view.to_localized_date(primarysample.getDateVerified()) or '-'"/>
             </div>
@@ -440,10 +426,34 @@
               </tal:ar>
             </div>
             <div class="table-row">
+              <div class="table-header" class="noborder">Date Sampled</div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal border-out text-center"
+                      tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+              </tal:ar>
+            </div>
+            <div class="table-row">
               <div class="table-header" class="noborder">Sample Type</div>
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal border-out text-center"
                       tal:content="python:model.SampleTypeTitle or '-'"/>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header noborder">Specification</div>
+              <tal:ar repeat="model page">
+                <tal:spec_values tal:define="specification model/Specification;
+                                  publication_specification model/PublicationSpecification;
+                                  spec python:publication_specification or specification;">
+                  <div class="table-cell font-weight-normal text-center border-out">
+                      <div class="text-center"
+                          tal:condition="spec"
+                          tal:content="python:spec.Title() or '-'"/>
+                      <div class="text-center"
+                          tal:condition="not:spec"
+                          tal:content="python:'-'"/>
+                  </div>
+                </tal:spec_values>
               </tal:ar>
             </div>
             <div class="table-row">
