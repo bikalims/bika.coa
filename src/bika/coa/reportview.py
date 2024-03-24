@@ -276,6 +276,7 @@ class SingleReportView(SRV):
 
         return verifier
 
+
     def is_analysis_accredited(self,analysis):
         if analysis.Accredited:
             return True
@@ -1380,15 +1381,6 @@ class MultiReportView(MRV):
             has_additional_info = True
         return has_additional_info
 
-
-    def get_analyst(self, collection):
-        model = collection[0]
-        analyses = self.get_analyses_by([model])
-        actor = getTransitionUsers(analyses[0], "submit")
-        user = actor[0] if actor else ""
-        user = api.get_user(user)
-        return user.fullname
-
     def get_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
@@ -1514,3 +1506,36 @@ class MultiReportView(MRV):
 
     def get_batch_sampler(self, batch, user_id):
         return user_fullname(batch, user_id)
+
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] =  contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                    contact.getSalutation(), contact.getFullname())
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
+
+    def get_analysts(self, collection):
+        analyses = self.get_analyses_by(collection)
+        analysts = []
+        for analysis in analyses:
+            analyst = self.get_analyst_by_analysis(analysis)
+            if analyst in analysts:
+                continue
+            analysts.append(analyst)
+        return analysts
