@@ -5,7 +5,7 @@ from .fields import ExtReferenceField
 from bika.lims.interfaces import IMethod
 from zope.component import adapts
 from zope.interface import implements
-from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
+from senaite.core.browser.widgets import ReferenceWidget as BikaReferenceWidget
 
 
 class MethodSchemaExtender(object):

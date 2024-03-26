@@ -1,23 +1,32 @@
 from DateTime import DateTime
+from Products.Archetypes.public import DisplayList
 from plone import api as ploneapi
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
 from zope.component._api import getAdapters
 
+from bika.coa import _
 from bika.coa import logger
+from bika.coa.vocabulary import SEXES
+
 from bika.lims import api
 from bika.lims.api import _marker
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
-    IResultOutOfRange
+from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
+from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils import user_fullname
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
+
 from senaite.app.supermodel import SuperModel
+from senaite.core.api import geo
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
-from bika.coa.ajax import AjaxPublishView as AP
 
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
@@ -151,22 +160,12 @@ class SingleReportView(SRV):
     """
 
     def get_coa_number(self, model):
-        today = DateTime()
-        query = {
-            "portal_type": "ARReport",
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
-        return coa_num
+        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        return dry_run
 
     def get_sampler_fullname(self, model):
         obj = model.instance
@@ -174,7 +173,9 @@ class SingleReportView(SRV):
 
     def get_formatted_date(self, analysis):
         result = analysis.ResultCaptureDate
-        return result.strftime("%Y-%m-%d")
+        if result:
+            return result.strftime("%Y-%m-%d")
+        return ""
 
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
@@ -191,7 +192,26 @@ class SingleReportView(SRV):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url}
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                 "accredited_symbol_url": accredited_symbol_url,}
+        return datum
+
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,}
         return datum
 
     def get_toolbar_logo(self):
@@ -224,6 +244,64 @@ class SingleReportView(SRV):
         styles["logo_styles"] = " ".join(css)
         return styles
 
+    def get_verifier_by_analysis(self, model):
+        analysis = api.get_object(model)
+        actor = getTransitionUsers(analysis, "verify")
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtitle": "", "default_department": "",
+                    }
+        if not actor:
+            return verifier
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        roles = ploneapi.user.get_roles(username=user_name)
+        date_verified = self.to_localized_time(model.getDateVerified())
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return verifier
+
+        verifier["fullname"] =  contact.getFullname()
+        verifier["role"] = roles[0]
+        verifier["date_verified"] =  date_verified
+        verifier["email"] =  contact.getEmailAddress()
+        verifier["jobtitle"] = contact.getJobTitle()
+        if contact.getDefaultDepartment():
+            default_department = contact.getDefaultDepartment().Title()
+            verifier["default_department"] = default_department
+        if contact.getSalutation():
+            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+        else:
+            verifier["verifier"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
+
+        return verifier
+
+
+    def is_analysis_accredited(self,analysis):
+        if analysis.Accredited:
+            return True
+        return False
+
+    def is_analysis_method_subcontracted(self, analysis):
+        if analysis.Method:
+            if analysis.Method.Supplier:
+                return True
+        return False
+
+    def to_localized_date(self, date):
+        return self.to_localized_time(date)[:10]
+
+    def sex_mapping(self, sex):
+        sex_dict = {"m": "male", "f":"female"}
+        return sex_dict.get(sex)
+
+    def output_sex_and_age(self, model):
+        age = model.getAgeYmd()
+        sex = model.getSex()
+        sex = self.sex_mapping(sex)
+        return age + " " + sex
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
@@ -236,6 +314,76 @@ class MultiReportView(MRV):
         self.request = request
 
     def get_pages(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 4
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 7
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 5
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+    def get_pages_aqua_culture(self, category_model, sample_model=None):
+        """
+        """
+        data = {}
+        num_per_page = 5
+        pages = []
+        new_page = []
+        for model in self.collection:
+            for analysis in model.getAnalyses():
+                an_super = SuperModel(analysis.UID)
+                category = an_super.Category
+                if category not in data:
+                    data[category] = {model: [an_super]}
+                else:
+                    if model not in data[category]:
+                        data[category][model] = [an_super]
+                    else:
+                        data[category][model].append(an_super)
+
+        if sample_model:
+            sample = data[category_model][sample_model]
+            for idx, col in enumerate(sample):
+                if idx % num_per_page == 0:
+                    if len(new_page):
+                        pages.append(new_page)
+                        logger.info("New page len = {}".format(len(new_page)))
+                    new_page = [col]
+                    continue
+                new_page.append(col)
+
+            if len(new_page) > 0:
+                if len(new_page) < num_per_page:
+                    for i in range(num_per_page - len(new_page)):
+                        new_page.append("")
+                pages.append(new_page)
+                logger.info("Last page len = {}".format(len(new_page)))
+            data[category_model][sample_model] = pages
+            return data[category_model][sample_model]
+
+        return data[category_model]
+
+    def get_pages_awtc(self, options):
         if options.get("orientation", "") == "portrait":
             num_per_page = 5
         elif options.get("orientation", "") == "landscape":
@@ -269,7 +417,9 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = verifier.get("verifier", "-")
             if analysis.Method:
                 datum[1] = analysis.Method.Title()
             instruments = analysis.getAnalysisService().getInstruments()
@@ -286,12 +436,39 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-#---------------------------------- Z labs start ------------------------------------------
+    def get_common_row_data_updated(self, collection, poc, category):
+        """ A version of get_common_row_data that includes
+            the accreditation icon and verifier column """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False, ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = verifier.get("verifier", "-")
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    #---------------------------------- Z labs start ------------------------------------------
     def get_methods_data(self,collection):
         analyses = self.get_analyses_by(collection)
         methods = {}
         for analysis in analyses:
-            if analysis.Method:
+            if analysis.Method: #add variable to analysis.method.Title, try not to pass 80 characters on a line.
                 if analysis.Method.Title() not in methods.keys():
                     methods[analysis.Method.Title()] = [analysis.Method.Title(),analysis.Title(),analysis.Method.description]
                 elif analysis.Title() not in methods[analysis.Method.Title()][1]:
@@ -319,12 +496,21 @@ class MultiReportView(MRV):
                 methods_list.append(analysis_service.getMethod().Title())
             else:
                 methods_list.append("")
-            analysis_Ids_list.append(analysis_service.Title())
+            if self.is_analysis_accredited(analysis_service):
+                analysis_Ids_list.append(analysis_service.Title()+"accredited")
+            else:
+                analysis_Ids_list.append(analysis_service.Title())
             unit_list.append(analysis_service.getUnit())
         
         final_body_rows = [
             analysis_Ids_list,methods_list,unit_list,]
         return eligible_analysis_services,final_body_rows
+
+    def zlabs_is_accredited(self,service_title):
+        if "accredited" in service_title:
+            return [True,service_title.replace("accredited","")]
+        return [False,service_title]
+
     
     def get_zlabs_analysis_request(self,samples,analysis_services,extra_column):
         sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
@@ -383,11 +569,11 @@ class MultiReportView(MRV):
                 all_dates.append(date_verified)
         all_dates.sort()
         if len(all_dates) > 1:
-            verified_from = all_dates[0].strftime('%d/%m/20%y')
-            verified_to = all_dates[-1].strftime('%d/%m/20%y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[-1])
         if len(all_dates) == 1:
-            verified_from = all_dates[0].strftime('%d/%m/20%y')
-            verified_to = all_dates[0].strftime('%d/%m/20%y')
+            verified_from = self.to_localized_date(all_dates[0])
+            verified_to = self.to_localized_date(all_dates[0])
         return [verified_from,verified_to]
 
     def get_analyzed_dates(self,samples):
@@ -401,11 +587,11 @@ class MultiReportView(MRV):
                     all_dates.append(date_analyzed)
         all_dates.sort()
         if len(all_dates) > 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
-            analyzed_to = all_dates[-1].strftime('%d/%m/20%y')
+            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
+            analyzed_to = all_dates[-1].strftime('%d/%m/%Y')
         if len(all_dates) == 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/20%y')
-            analyzed_to = all_dates[0].strftime('%d/%m/20%y')
+            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
+            analyzed_to = all_dates[0].strftime('%d/%m/%Y')
         return [analyzed_from,analyzed_to]
 
     def within_uncertainty(self,result,min,max):
@@ -464,13 +650,416 @@ class MultiReportView(MRV):
     def get_date_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
 
-#----------------zlabs end-------------------------------------------------
+    # ----------------zlabs end-------------------------------------------------
+
+    # -----------------------Imx begin---------------------------------------
+
+    def get_common_row_data_imex(self, collection, poc, category, spec):
+        """ A version of get_common_row_data for Imex """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, "", "", "", ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            if spec:
+                for result_range in spec.getResultsRange():
+                    if result_range.get("keyword") == analysis.Keyword:
+                        min_val = result_range.get("min")
+                        max_val = result_range.get("max")
+                        datum[5] = "{0} - {1}".format(min_val, max_val)
+            datum[6] = analysis.LowerDetectionLimit
+            datum[7] = verifier.get("verifier", "-")
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    def get_pages_imex(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 3
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 5
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 4
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+    def is_spec_unique(self, collection=None):
+        specs = []
+        for sample in collection:
+            spec = sample.Specification
+            pub_spec = sample.PublicationSpecification
+            specs.append(pub_spec or spec)
+        return len(set(specs)) == 1
+
+    def is_verifier_unique(self, collection=None):
+        analysis_verifiers = {}
+        different_verifiers = []
+        analyses = self.get_analyses_by(collection)
+        for analysis in analyses:
+            kw = analysis.Keyword
+            verifier = self.get_verifier_by_analysis(analysis).get("verifier")
+            if kw not in analysis_verifiers.keys():
+                analysis_verifiers[kw] = [verifier]
+            else:
+                if verifier not in analysis_verifiers.get(kw):
+                    analysis_verifiers[kw].append(verifier)
+        for pair in analysis_verifiers.items():
+            if len(pair[1]) > 1:
+                different_verifiers.append(pair[0])
+        if len(different_verifiers) == 0:
+            return [True, different_verifiers]
+        else:
+            all_keywords = ""
+            for names in different_verifiers:
+                all_keywords = all_keywords + names + ", "
+            return [False, all_keywords]
+
+    #-----------------------Imx end-----------------------------------------
+
+    #------------------------GHill begin-------------------------------------
+
+    def get_pages_long_names(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 4
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 7
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 4
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+    def get_received_dates(self, samples):
+        earliest_creation_date = ""
+        all_dates = []
+        for sample in samples:
+            date_received = sample.getDateReceived()
+            all_dates.append(date_received)
+        all_dates.sort()
+        if len(all_dates) > 0:
+            earliest_creation_date = self.to_localized_date(all_dates[0])
+        else:
+            return None
+        return earliest_creation_date
+
+    def get_common_row_data_green(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-",
+                        model.get_formatted_unit(analysis), "-",
+                        False, False, False, "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = self.is_analysis_method_subcontracted(analysis)
+            datum[6] = self.is_analysis_method_savcregistered(analysis)
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[7] = verifier.get("verifier", "-")
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    def get_common_row_data_green_dalrrd(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            if analysis.getSortKey():
+                datum = [analysis.Title(), "-",
+                         model.get_formatted_unit(analysis), "-",
+                         False, False, False, "-"]
+                if analysis.Method:
+                    datum[1] = analysis.Method.Title()
+                datum[4] = self.is_analysis_accredited(analysis)
+                datum[5] = self.is_analysis_method_subcontracted(analysis)
+                datum[6] = self.is_analysis_method_savcregistered(analysis)
+                verifier = self.get_verifier_by_analysis(analysis)
+                datum[7] = verifier.get("verifier", "-")
+                instruments = analysis.getAnalysisService().getInstruments()
+                # TODO: Use getInstruments
+                instr_list = []
+                if instruments:
+                    for i, instrument in enumerate(instruments):
+                        title = instrument.Title()
+                        if title in instr_list:
+                            continue
+                        instr_list.append(title)
+                    datum[3] = " ".join(instr_list)
+                common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+    
+    def get_datetime_string(self,num_date):
+        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
+
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        savcregistered_symbol_url = "{}/++resource++bika.coa.images/savcregistered.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,
+                "savcregistered_symbol_url": savcregistered_symbol_url,}
+        return datum
+    
+    #------------------------GHill end---------------------------------------
+
+    #------------------------Hydro begin-------------------------------------
+    def get_common_row_data_hydro(self, collection, poc, category):
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-",
+                        model.get_formatted_unit(analysis), "-",
+                        False, "-"]
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            datum[4] = self.is_analysis_method_subcontracted(analysis)
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[5] = verifier.get("verifier", "-")
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+    
+    def get_formatted_uncertainty(self, analysis):
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        decimalmark = setup.getDecimalMark()
+        uncertainty = format_uncertainty(
+            analysis.instance,
+            decimalmark=decimalmark,
+            sciformat=sciformat,
+        )
+        if uncertainty:
+            return "&plusmn; {}".format(uncertainty)
+        return
+
+    def get_formatted_specs_hydro(self, model, analysis):
+        specs = analysis.getResultsRange()
+        fs = ''
+        precision = analysis.getPrecision()
+        if not precision:
+            precision = 0
+        precision_formatting = "{:." + str(precision) + "f}"
+        if specs.get('min', None) and specs.get('max', None):
+            min_val = precision_formatting.format(float(specs['min']))
+            max_val = precision_formatting.format(float(specs['max']))
+            fs = '(%s - %s)' % (min_val, max_val)
+        elif specs.get('min', None):
+            min_val = precision_formatting.format(float(specs['min']))
+            fs = '> %s' % min_val
+        elif specs.get('max', None):
+            max_val = precision_formatting.format(float(specs['max']))
+            fs = '< %s' % max_val
+        return formatDecimalMark(fs, model.decimal_mark)
+
+    def dates_sampled_same_day(self, collection=None):
+        datetimes = [i.DateSampled for i in collection]
+        dates = [v.Date() for v in datetimes]
+        return len(set(dates)) == 1
+
+    def dates_received_same_day(self, collection=None):
+        datetimes = [i.DateReceived for i in collection]
+        dates = [v.Date() for v in datetimes]
+        return len(set(dates)) == 1
+
+    def same_sample_point_location(self,collection=None):
+        sample_point_locations = [i.getSamplePointLocation() for i in collection]
+        return len(set(sample_point_locations)) == 1
+
+    def matching_analysis_in_spec(self,analysis,result_range):
+        return analysis.getKeyword() == result_range['keyword']
+
+    def any_matching_analysis_in_spec(self,analysis,spec):
+        analysis_match = False
+        result_ranges = spec.getResultsRange()
+        for result_range in result_ranges:
+            if analysis.getKeyword() == result_range['keyword']:
+                analysis_match = True
+        return analysis_match
+
+    def get_pages_hydro(self, options):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = 3
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = 5
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = 3
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+    
+    def get_location_address(self,location):
+        address = location.getAddress()[0].get('address')
+        city = location.getAddress()[0].get('city')
+        country = location.getAddress()[0].get('country')
+        if not (address or city or country):
+            return
+        return "{0}, {1}, {2}".format(address,city,country)
+
+    # ------------------------Hydro end--------------------------------------
+
+    # ------------------------Cannabis start---------------------------------
+    def get_date_analysed(self, sample):
+        from_date = ""
+        to_date = ""
+        analyses = self.get_analyses_by(sample)
+        all_dates = []
+        for analysis in analyses:
+            date_captured = analysis.ResultCaptureDate
+            if date_captured:
+                all_dates.append(date_captured)
+        all_dates.sort()
+        if len(all_dates) > 0:
+            from_date =  self.to_localized_date(all_dates[0])
+            to_date =  self.to_localized_date(all_dates[-1])
+        return [from_date, to_date]
+
+    def get_common_row_data_cannabis(self, collection, poc, category):
+        """ A version of get_common_row_data for Cannabis """
+        model = collection[0]
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        common_data = []
+        for analysis in analyses:
+            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, False, "", ""]
+            verifier = self.get_verifier_by_analysis(analysis)
+            datum[4] = self.is_analysis_accredited(analysis)
+            datum[5] = self.is_analysis_method_subcontracted(analysis)
+            specification  = analysis.getSpecification()
+            publication_specification = analysis.getPublicationSpecification()
+            spec = publication_specification or specification
+            if spec:
+                for result_range in spec.getResultsRange():
+                    if result_range.get("keyword") == analysis.Keyword:
+                        min_val = result_range.get("min")
+                        max_val = result_range.get("max")
+                        datum[6] = "{0} - {1}".format(min_val, max_val)
+            if analysis.Method:
+                datum[1] = analysis.Method.Title()
+            instruments = analysis.getAnalysisService().getInstruments()
+            # TODO: Use getInstruments
+            instr_list = []
+            if instruments:
+                for i, instrument in enumerate(instruments):
+                    title = instrument.Title()
+                    if title in instr_list:
+                        continue
+                    instr_list.append(title)
+                datum[3] = " ".join(instr_list)
+            common_data.append(datum)
+        unique_data = self.uniquify_items(common_data)
+        return unique_data
+
+    # -----------------------Cannabis end------------------------------
 
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
         all_analyses = self.get_analyses_by_poc(collection)
         analyses = all_analyses.get(poc)
         common_data = []
+        if not analyses:
+            return
         for analysis in analyses:
             datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
             if analysis.Method:
@@ -577,6 +1166,14 @@ class MultiReportView(MRV):
                 return False
         return len(batches) == 1
 
+    def is_sps_unique(self, collection=None):
+        """Checks for unique sample points in a batch
+        """
+        if not self.is_batch_unique(collection):
+            return False
+        sample_points = [i.SamplePointTitle for i in collection if getattr(i , "SamplePoint", "")]
+        return len(set(sample_points)) == 1
+
     def get_order_number(self, collection=None):
         if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
             return collection[0].ClientOrderNumber
@@ -585,6 +1182,17 @@ class MultiReportView(MRV):
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
             if analysis.Method.Supplier:
+                return True
+        return False
+    
+    def is_analysis_accredited(self,analysis):
+        if analysis.Accredited:
+            return True
+        return False
+    
+    def is_analysis_method_savcregistered(self, analysis):
+        if analysis.Method:
+            if getattr(analysis.Method,'SAVCRegistered',''):
                 return True
         return False
 
@@ -656,9 +1264,11 @@ class MultiReportView(MRV):
     def get_verifier(self, collection):
         model = collection[0]
         analyses = self.get_analyses_by([model])
-        actor = getTransitionUsers(analyses[0].getObject(), "verify")
+        actor = []
+        if analyses:
+            actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
-            return {"verifier": 'admin', "email": ""}
+            return {"verifier": '', "email": ""}
             
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
@@ -670,7 +1280,7 @@ class MultiReportView(MRV):
             return verifier
 
         verifier["fullname"] =  contact.getFullname()
-        verifier["role"] =  roles[0]
+        verifier["role"] = roles[0]
         verifier["date_verified"] =  date_verified
         verifier["email"] =  contact.getEmailAddress()
 
@@ -681,10 +1291,67 @@ class MultiReportView(MRV):
 
         return verifier
 
+    def get_verifier_by_analysis(self, model):
+        analysis = api.get_object(model)
+        actor = getTransitionUsers(analysis, "verify")
+        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
+                    "signature": "", "jobtitle": "", "default_department": "",
+                    }
+        if not actor:
+            return verifier
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        roles = ploneapi.user.get_roles(username=user_name)
+        date_verified = self.to_localized_time(model.getDateVerified())
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return verifier
+
+        verifier["fullname"] =  contact.getFullname()
+        verifier["role"] = roles[0]
+        # verifier["date_verified"] =  date_verified
+        verifier["email"] =  contact.getEmailAddress()
+        verifier["jobtitle"] = contact.getJobTitle()
+        if contact.getDefaultDepartment():
+            default_department = contact.getDefaultDepartment().Title()
+            verifier["default_department"] = default_department
+        if contact.getSalutation():
+            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+        else:
+            verifier["verifier"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
+
+        return verifier
+
+    def get_lab_supervisor(self):
+        laboratory = self.laboratory
+        contact = laboratory.getSupervisor()
+        supervisor = {"fullname": "", "supervisor": "",
+                      "signature": "", "jobtitle": "",
+                     }
+        if not contact:
+            return supervisor
+
+        supervisor["fullname"] =  contact.getFullname()
+        supervisor["jobtitle"] = contact.getJobTitle()
+        if contact.getSalutation():
+            salutation = contact.getSalutation()
+            fullname = contact.getFullname()
+            supervisor["supervisor"] = "{}. {}".format(salutation, fullname)
+        else:
+            supervisor["supervisor"] = "{}".format(contact.getFullname())
+        if contact.getSignature():
+            supervisor["signature"] = '{}/Signature'.format(contact.absolute_url())
+
+        return supervisor
+
+
     def get_publisher(self):
         publisher = {
                 "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "",}
+                "email": "", "jobtitle": "", "publisher_job": "",}
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
@@ -693,12 +1360,17 @@ class MultiReportView(MRV):
             return publisher
 
         publisher["email"] = '{}'.format(user.getEmailAddress())
+        publisher["jobtitle"] =  user.getJobTitle()
         if user.getSalutation():
             publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
         else:
             publisher["publisher"] = '{}'.format(user.getFullname())
-        if user.Signature:
+        fullname = publisher["publisher"]
+        jobtitle = publisher["jobtitle"]
+        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
+        if user.getSignature():
             publisher["user_url"] = user.absolute_url()
+
         return publisher
 
     def has_results_intepretation(self, collection):
@@ -722,15 +1394,6 @@ class MultiReportView(MRV):
         if self.has_results_intepretation(collection) or self.has_remarks(collection):
             has_additional_info = True
         return has_additional_info
-
-
-    def get_analyst(self, collection):
-        model = collection[0]
-        analyses = self.get_analyses_by([model])
-        actor = getTransitionUsers(analyses[0], "submit")
-        user = actor[0] if actor else ""
-        user = api.get_user(user)
-        return user.fullname
 
     def get_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
@@ -762,22 +1425,12 @@ class MultiReportView(MRV):
         return self.to_localized_time(date)[:10]
 
     def get_coa_number(self):
-        today = DateTime()
-        query = {
-            "portal_type": "ARReport",
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
-        return coa_num
+        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        return dry_run
 
     def get_coa_styles(self):
         registry = getUtility(IRegistry)
@@ -797,3 +1450,106 @@ class MultiReportView(MRV):
         css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
         styles["logo_styles"] = " ".join(css)
         return styles
+
+    def get_verifiers(self, collection):
+        analyses = self.get_analyses_by(collection)
+        verifiers = []
+        for analysis in analyses:
+            verifier = self.get_verifier_by_analysis(analysis)
+            if verifier in verifiers:
+                continue
+            verifiers.append(verifier)
+        return verifiers
+
+    def get_country_name(self, country):
+        vocabulary = self.get_countries()
+        title = vocabulary.getValue(country)
+        return title
+
+    def get_country_titles(self, countries):
+        titles = []
+        for country in countries:
+            title = str(self.get_country_name(country))
+            titles.append(title)
+        return ", ".join(titles)
+
+    def get_countries(self):
+        items = map(
+            lambda country: (_(country.alpha_2), _(country.name)), geo.get_countries()
+        )
+        return DisplayList(items)
+
+    def get_sex_title(self, model):
+        title = model.getObject().Sex
+        return str(self.get_sexes().getValue(title))
+
+    def get_sexes(self):
+        items = map(lambda item: (_(item[0]), _(item[1])), SEXES)
+        return DisplayList(items)
+
+    def get_analyses_methods(self, collection=None, poc=None, category=None):
+        analyses = self.get_analyses_by(collection, poc=poc, category=category)
+        analyses_parameters = []
+        for c, analysis in enumerate(analyses):
+            methods = analysis.getAnalysisService().getAvailableMethods()
+            for m, method in enumerate(methods):
+                title = method.Title()
+                description = method.Description()
+                method_id = method.getId()
+                rec = {
+                    "title": title,
+                    "description": description,
+                    "method_id": method_id,
+                }
+
+                if rec in analyses_parameters:
+                    continue
+                analyses_parameters.append(rec)
+        items = sorted(
+            analyses_parameters, key=lambda item: item["method_id"])
+        return items
+
+    def get_footer_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["bika.footer_logo"]
+        except (AttributeError, KeyError):
+            return self.get_toolbar_logo()
+        return portal_url + logo
+
+    def get_batch_sampler(self, batch, user_id):
+        return user_fullname(batch, user_id)
+
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] =  contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                    contact.getSalutation(), contact.getFullname())
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
+
+    def get_analysts(self, collection):
+        analyses = self.get_analyses_by(collection)
+        analysts = []
+        for analysis in analyses:
+            analyst = self.get_analyst_by_analysis(analysis)
+            if analyst in analysts:
+                continue
+            analysts.append(analyst)
+        return analysts

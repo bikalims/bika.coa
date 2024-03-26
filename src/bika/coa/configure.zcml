@@ -44,6 +44,7 @@
 
   <include package=".extenders" />
   <include package=".upgrade" />
+  <include package=".browser" />
 
 
 </configure>
