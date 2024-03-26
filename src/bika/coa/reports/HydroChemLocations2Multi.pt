@@ -198,16 +198,6 @@
     </style>
   </tal:css>
 
-  <!-- Unique specification error message start -->
-  <tal:spec_not_unique condition="python:not view.is_spec_unique(collection)">
-    <div>
-      <h1>  
-      All Samples must use the same specification for this COA
-      </h1>
-    </div>
-  </tal:spec_not_unique>
-  <!-- Unique specification error message end -->
-
   <!-- Samplepoint Location error message start -->
   <tal:render condition="python:not view.same_sample_point_location(collection)">
     <div>
@@ -216,9 +206,9 @@
   </tal:render>
   <!-- Samplepoint Location error message end -->
 
+  <tal:meets_conditions condition="python: view.same_sample_point_location(collection)">
 
   <!-- HEADER -->
-  <tal:meets_conditions condition="python: view.same_sample_point_location(collection) and view.is_spec_unique(collection)">
   <tal:render>
     <div class="row section-header no-gutters">
       <!-- Header Table -->
