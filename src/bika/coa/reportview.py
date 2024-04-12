@@ -1055,8 +1055,7 @@ class MultiReportView(MRV):
 
     def get_common_row_data_by_poc(self, collection, poc):
         model = collection[0]
-        all_analyses = self.get_analyses_by_poc(collection)
-        analyses = all_analyses.get(poc)
+        analyses = self.get_analyses_by(collection, poc=poc)
         common_data = []
         if not analyses:
             return
