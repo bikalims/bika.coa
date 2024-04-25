@@ -20,7 +20,7 @@ class MethodSchemaExtender(object):
             widget=BikaReferenceWidget(
                 label=_("Subcontracted to"),
                 size=20,
-                catalog_name='portal_catalog',
+                catalog_name='senaite_catalog_setup',
                 showOn=True,
                 search_fields=('Title'),
                 colModel=[
