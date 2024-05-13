@@ -303,6 +303,11 @@ class SingleReportView(SRV):
         sex = self.sex_mapping(sex)
         return age + " " + sex
 
+    def get_batch_labels(self, model):
+        batch = model.Batch
+        batch_labels = batch.BatchLabels
+        return ", ".join([i.title for i in batch_labels])
+
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
     """
