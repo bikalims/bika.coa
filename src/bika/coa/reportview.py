@@ -1179,7 +1179,7 @@ class MultiReportView(MRV):
             return False
         spls = []
         for spl in collection:
-            if getattr(spl.getSamplePointLocation, "getSamplePointLocation"):
+            if getattr(spl, "getSamplePointLocation"):
                 if spl.getSamplePointLocation():
                     spls.append(spl.getSamplePointLocation().Title())
         return len(set(spls)) == 1
