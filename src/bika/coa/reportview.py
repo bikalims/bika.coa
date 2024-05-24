@@ -1157,6 +1157,8 @@ class MultiReportView(MRV):
 
     def is_batch_unique(self, collection=None):
         samples = collection
+        # bug doesn't check if i.Batch could None and therefore throws
+        # NoneType error
         batches = [i.Batch.id for i in samples if getattr(i.Batch , "id", "")]
         return len(set(batches)) == 1
     
@@ -1175,7 +1177,11 @@ class MultiReportView(MRV):
         """
         if not self.is_batch_unique(collection):
             return False
-        spls = [i.getSamplePointLocation().Title() for i in collection if getattr(i , "getSamplePointLocation", "")]
+        spls = []
+        for spl in collection:
+            if getattr(spl.getSamplePointLocation, "getSamplePointLocation"):
+                if spl.getSamplePointLocation():
+                    spls.append(spl.getSamplePointLocation().Title())
         return len(set(spls)) == 1
 
     def get_order_number(self, collection=None):
