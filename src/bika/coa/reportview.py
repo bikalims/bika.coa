@@ -1182,6 +1182,9 @@ class MultiReportView(MRV):
             if getattr(spl, "getSamplePointLocation"):
                 if spl.getSamplePointLocation():
                     spls.append(spl.getSamplePointLocation().Title())
+        if not spl:
+            return True
+
         return len(set(spls)) == 1
 
     def get_order_number(self, collection=None):
