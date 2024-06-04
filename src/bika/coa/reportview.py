@@ -19,7 +19,6 @@ from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.utils import formatDecimalMark
-from bika.lims.utils import user_fullname
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -1532,7 +1531,7 @@ class MultiReportView(MRV):
         return portal_url + logo
 
     def get_batch_sampler(self, batch, user_id):
-        return user_fullname(batch, user_id)
+        return api.get_user_fullname(user_id)
 
     def get_analyst_by_analysis(self, analysis):
         analysis = api.get_object(analysis)
