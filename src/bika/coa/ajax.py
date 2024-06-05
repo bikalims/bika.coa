@@ -788,4 +788,4 @@ class AjaxPublishView(AP):
         """Returns the available templates
         """
         templates = api.get_registry_record("senaite.impress.templates")
-        return sorted([item for item in templates if 'bika' in item or 'testit' in item])
+        return sorted([item for item in templates if 'bika' in item or 'testit' in item or "cement" in item])
