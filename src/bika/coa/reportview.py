@@ -307,6 +307,17 @@ class SingleReportView(SRV):
         batch_labels = batch.BatchLabels
         return ", ".join([i.title for i in batch_labels])
 
+    def get_sample_methods(self, model):
+        analyses = self.get_analyses_by(model)
+        methods = [x.Method for x in analyses if x.Method]
+        sorted_methods = sorted(methods, key=lambda m: m.Title())
+        title_description_pair = []
+        for method in sorted_methods:
+            title = method.Title()
+            description = method.Description()
+            title_description_pair.append("{0} {1}".format(title, description))
+        return title_description_pair
+
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
     """
