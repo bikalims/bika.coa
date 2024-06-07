@@ -332,6 +332,29 @@ class SingleReportView(SRV):
             to_date =  self.to_localized_date(all_dates[-1])
         return [from_date, to_date]
 
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] =  contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                    contact.getSalutation(), contact.getFullname())
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
