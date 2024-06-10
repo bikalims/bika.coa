@@ -277,7 +277,6 @@ class SingleReportView(SRV):
 
         return verifier
 
-
     def is_analysis_accredited(self,analysis):
         if analysis.Accredited:
             return True
@@ -317,6 +316,45 @@ class SingleReportView(SRV):
             description = method.Description()
             title_description_pair.append("{0} {1}".format(title, description))
         return title_description_pair
+
+    def get_date_analysed(self, sample):
+        from_date = ""
+        to_date = ""
+        analyses = self.get_analyses_by(sample)
+        all_dates = []
+        for analysis in analyses:
+            date_captured = analysis.ResultCaptureDate
+            if date_captured:
+                all_dates.append(date_captured)
+        all_dates.sort()
+        if len(all_dates) > 0:
+            from_date =  self.to_localized_date(all_dates[0])
+            to_date =  self.to_localized_date(all_dates[-1])
+        return [from_date, to_date]
+
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] =  contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                    contact.getSalutation(), contact.getFullname())
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
