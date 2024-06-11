@@ -309,7 +309,8 @@ class SingleReportView(SRV):
     def get_sample_methods(self, model):
         analyses = self.get_analyses_by(model)
         methods = [x.Method for x in analyses if x.Method]
-        sorted_methods = sorted(methods, key=lambda m: m.Title())
+        unique_methods = {m.Title(): m for m in methods}.values()
+        sorted_methods = sorted(unique_methods, key=lambda m: m.Title())
         title_description_pair = []
         for method in sorted_methods:
             title = method.Title()
