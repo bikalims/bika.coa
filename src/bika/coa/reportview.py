@@ -176,6 +176,12 @@ class SingleReportView(SRV):
             return result.strftime("%Y-%m-%d")
         return ""
 
+    def get_result_capture_date(self, analysis):
+        result = analysis.ResultCaptureDate
+        if result:
+            return result.strftime("%d-%b-%y")
+        return ""
+
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
         sciformat = int(setup.getScientificNotationReport())
@@ -291,6 +297,9 @@ class SingleReportView(SRV):
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
 
+    def get_day_month_year_format(self, date):
+        return date.strftime("%d-%b-%y")
+
     def sex_mapping(self, sex):
         sex_dict = {"m": "male", "f":"female"}
         return sex_dict.get(sex)
@@ -329,8 +338,8 @@ class SingleReportView(SRV):
                 all_dates.append(date_captured)
         all_dates.sort()
         if len(all_dates) > 0:
-            from_date =  self.to_localized_date(all_dates[0])
-            to_date =  self.to_localized_date(all_dates[-1])
+            from_date =  all_dates[0].strftime("%d-%b-%y")
+            to_date =  all_dates[-1].strftime("%d-%b-%y")
         return [from_date, to_date]
 
     def get_analyst_by_analysis(self, analysis):
