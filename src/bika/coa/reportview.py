@@ -154,9 +154,7 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     return True, not in_shoulder
 
 
-class SingleReportView(SRV):
-    """View for Bika COA Single Reports
-    """
+class CommonReportView(object):
 
     def get_coa_number(self, model):
         kwargs = {'portal_type': 'ARReport', "dry_run": True}
@@ -165,70 +163,6 @@ class SingleReportView(SRV):
         num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split('-')[-1], num)
         return dry_run
-
-    def get_sampler_fullname(self, model):
-        obj = model.instance
-        return obj.getSamplerFullName()
-
-    def get_formatted_date(self, analysis):
-        result = analysis.ResultCaptureDate
-        if result:
-            return result.strftime("%Y-%m-%d")
-        return ""
-
-    def get_result_capture_date(self, analysis):
-        result = analysis.ResultCaptureDate
-        if result:
-            return result.strftime("%d-%b-%y")
-        return ""
-
-    def get_formatted_uncertainty(self, analysis):
-        setup = api.get_setup()
-        sciformat = int(setup.getScientificNotationReport())
-        decimalmark = setup.getDecimalMark()
-        uncertainty = format_uncertainty(
-            analysis.instance,
-            decimalmark=decimalmark,
-            sciformat=sciformat,
-        )
-        return "&plusmn; {}".format(uncertainty)
-
-    def get_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
-        )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
-        )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                 "accredited_symbol_url": accredited_symbol_url,}
-        return datum
-
-    def get_extended_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
-        )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
-        )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
-        )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,}
-        return datum
-
-    def get_toolbar_logo(self):
-        registry = getUtility(IRegistry)
-        portal_url = self.portal_url
-        try:
-            logo = registry["senaite.toolbar_logo"]
-        except (AttributeError, KeyError):
-            logo = LOGO
-        if not logo:
-            logo = LOGO
-        return portal_url + logo
 
     def get_coa_styles(self):
         registry = getUtility(IRegistry)
@@ -248,6 +182,85 @@ class SingleReportView(SRV):
         css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
         styles["logo_styles"] = " ".join(css)
         return styles
+
+    def get_formatted_uncertainty(self, analysis):
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        decimalmark = setup.getDecimalMark()
+        uncertainty = format_uncertainty(
+            analysis.instance,
+            decimalmark=decimalmark,
+            sciformat=sciformat,
+        )
+        return "&plusmn; {}".format(uncertainty)
+
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] =  contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                    contact.getSalutation(), contact.getFullname())
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
+
+    def get_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,}
+        return datum
+
+    def get_extended_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
+            self.portal_url
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        savcregistered_symbol_url = "{}/++resource++bika.coa.images/savcregistered.png".format(
+            self.portal_url
+        )
+        datum = {"outofrange_symbol_url": outofrange_symbol_url,
+                "subcontracted_symbol_url": subcontracted_symbol_url,
+                "accredited_symbol_url": accredited_symbol_url,
+                "savcregistered_symbol_url": savcregistered_symbol_url,}
+        return datum
+
+    def get_toolbar_logo(self):
+        registry = getUtility(IRegistry)
+        portal_url = self.portal_url
+        try:
+            logo = registry["senaite.toolbar_logo"]
+        except (AttributeError, KeyError):
+            logo = LOGO
+        if not logo:
+            logo = LOGO
+        return portal_url + logo
 
     def get_verifier_by_analysis(self, model):
         analysis = api.get_object(model)
@@ -297,6 +310,32 @@ class SingleReportView(SRV):
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
 
+    def get_tracking_id(self, tracking_id):
+        if not tracking_id:
+            return '-'
+        return tracking_id[:12]
+
+
+class SingleReportView(SRV, CommonReportView):
+    """View for Bika COA Single Reports
+    """
+
+    def get_sampler_fullname(self, model):
+        obj = model.instance
+        return obj.getSamplerFullName()
+
+    def get_formatted_date(self, analysis):
+        result = analysis.ResultCaptureDate
+        if result:
+            return result.strftime("%Y-%m-%d")
+        return ""
+
+    def get_result_capture_date(self, analysis):
+        result = analysis.ResultCaptureDate
+        if result:
+            return result.strftime("%d-%b-%y")
+        return ""
+
     def get_day_month_year_format(self, date):
         return date.strftime("%d-%b-%y")
 
@@ -342,31 +381,9 @@ class SingleReportView(SRV):
             to_date =  all_dates[-1].strftime("%d-%b-%y")
         return [from_date, to_date]
 
-    def get_analyst_by_analysis(self, analysis):
-        analysis = api.get_object(analysis)
-        actor = getTransitionUsers(analysis, "submit")
-        analyst = {"fullname": "", "email": "", "analyst": ""}
-        if not actor:
-            return analyst
-
-        user_name = actor[0] if actor else ""
-        user_obj = api.get_user(user_name)
-        contact = api.get_user_contact(user_obj)
-        if not contact:
-            return analyst
-
-        analyst["fullname"] = contact.getFullname()
-        analyst["email"] =  contact.getEmailAddress()
-        if contact.getSalutation():
-            analyst["analyst"] = "{}. {}".format(
-                    contact.getSalutation(), contact.getFullname())
-        else:
-            analyst["analyst"] = "{}".format(contact.getFullname())
-
-        return analyst
 
 
-class MultiReportView(MRV):
+class MultiReportView(MRV, CommonReportView):
     """View for Bika COA Multi Reports
     """
 
@@ -918,24 +935,6 @@ class MultiReportView(MRV):
     def get_datetime_string(self,num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
 
-    def get_extended_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
-        )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
-        )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
-        )
-        savcregistered_symbol_url = "{}/++resource++bika.coa.images/savcregistered.png".format(
-            self.portal_url
-        )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,
-                "savcregistered_symbol_url": savcregistered_symbol_url,}
-        return datum
     
     #------------------------GHill end---------------------------------------
 
@@ -967,19 +966,6 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
     
-    def get_formatted_uncertainty(self, analysis):
-        setup = api.get_setup()
-        sciformat = int(setup.getScientificNotationReport())
-        decimalmark = setup.getDecimalMark()
-        uncertainty = format_uncertainty(
-            analysis.instance,
-            decimalmark=decimalmark,
-            sciformat=sciformat,
-        )
-        if uncertainty:
-            return "&plusmn; {}".format(uncertainty)
-        return
-
     def get_formatted_specs_hydro(self, model, analysis):
         specs = analysis.getResultsRange()
         fs = ''
@@ -1250,17 +1236,6 @@ class MultiReportView(MRV):
             return collection[0].ClientOrderNumber
         return None
 
-    def is_analysis_method_subcontracted(self, analysis):
-        if analysis.Method:
-            if analysis.Method.Supplier:
-                return True
-        return False
-    
-    def is_analysis_accredited(self,analysis):
-        if analysis.Accredited:
-            return True
-        return False
-    
     def is_analysis_method_savcregistered(self, analysis):
         if analysis.Method:
             if getattr(analysis.Method,'SAVCRegistered',''):
@@ -1362,39 +1337,6 @@ class MultiReportView(MRV):
 
         return verifier
 
-    def get_verifier_by_analysis(self, model):
-        analysis = api.get_object(model)
-        actor = getTransitionUsers(analysis, "verify")
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtitle": "", "default_department": "",
-                    }
-        if not actor:
-            return verifier
-
-        user_name = actor[0] if actor else ""
-        user_obj = api.get_user(user_name)
-        roles = ploneapi.user.get_roles(username=user_name)
-        date_verified = self.to_localized_time(model.getDateVerified())
-        contact = api.get_user_contact(user_obj)
-        if not contact:
-            return verifier
-
-        verifier["fullname"] =  contact.getFullname()
-        verifier["role"] = roles[0]
-        # verifier["date_verified"] =  date_verified
-        verifier["email"] =  contact.getEmailAddress()
-        verifier["jobtitle"] = contact.getJobTitle()
-        if contact.getDefaultDepartment():
-            default_department = contact.getDefaultDepartment().Title()
-            verifier["default_department"] = default_department
-        if contact.getSalutation():
-            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
-        else:
-            verifier["verifier"] = "{}".format(contact.getFullname())
-        if contact.getSignature():
-            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
-
-        return verifier
 
     def get_lab_supervisor(self):
         laboratory = self.laboratory
@@ -1466,61 +1408,7 @@ class MultiReportView(MRV):
             has_additional_info = True
         return has_additional_info
 
-    def get_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
-        )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
-        )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
-        )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,}
-        return datum
 
-    def get_toolbar_logo(self):
-        registry = getUtility(IRegistry)
-        portal_url = self.portal_url
-        try:
-            logo = registry["senaite.toolbar_logo"]
-        except (AttributeError, KeyError):
-            logo = LOGO
-        if not logo:
-            logo = LOGO
-        return portal_url + logo
-
-    def to_localized_date(self, date):
-        return self.to_localized_time(date)[:10]
-
-    def get_coa_number(self):
-        kwargs = {'portal_type': 'ARReport', "dry_run": True}
-        coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
-        return dry_run
-
-    def get_coa_styles(self):
-        registry = getUtility(IRegistry)
-        styles = {}
-        try:
-            ac_style = registry["senaite.coa_logo_accredition_styles"]
-        except (AttributeError, KeyError):
-            styles["ac_styles"] = "max-height:68px;"
-        css = map(lambda ac_style: "{}:{};".format(*ac_style), ac_style.items())
-        css.append("max-width:200px;")
-        styles["ac_styles"] = " ".join(css)
-
-        try:
-            logo_style = registry["senaite.coa_logo_styles"]
-        except (AttributeError, KeyError):
-            styles["logo_styles"] = "height:15px;"
-        css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
-        styles["logo_styles"] = " ".join(css)
-        return styles
 
     def get_verifiers(self, collection):
         analyses = self.get_analyses_by(collection)
@@ -1624,8 +1512,3 @@ class MultiReportView(MRV):
                 continue
             analysts.append(analyst)
         return analysts
-
-    def get_tracking_id(self, tracking_id):
-        if not tracking_id:
-            return '-'
-        return tracking_id[:12]
