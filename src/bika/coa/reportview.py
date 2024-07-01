@@ -1624,3 +1624,8 @@ class MultiReportView(MRV):
                 continue
             analysts.append(analyst)
         return analysts
+
+    def get_tracking_id(self, tracking_id):
+        if not tracking_id:
+            return '-'
+        return tracking_id[:11]
