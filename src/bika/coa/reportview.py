@@ -315,6 +315,10 @@ class CommonReportView(object):
             return '-'
         return tracking_id[:12]
 
+    def get_tracking_id_two(self, tracking_id):
+        if len(self.get_tracking_id(tracking_id) > 12:
+            return tracking_id[12:]
+
 
 class SingleReportView(SRV, CommonReportView):
     """View for Bika COA Single Reports
