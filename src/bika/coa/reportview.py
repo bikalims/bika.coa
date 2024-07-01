@@ -1628,4 +1628,4 @@ class MultiReportView(MRV):
     def get_tracking_id(self, tracking_id):
         if not tracking_id:
             return '-'
-        return tracking_id[:11]
+        return tracking_id[:12]
