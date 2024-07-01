@@ -643,6 +643,15 @@ class MultiReportView(MRV, CommonReportView):
             all_sample_ids.append([i.get("id") for i in sample_analyses])
         return all_samples_with_analyses,all_sample_ids
 
+    def get_coa_number(self):
+        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        return dry_run
+
+
     def get_verified_dates(self,samples):
         verified_from = ""
         verified_to = ""
