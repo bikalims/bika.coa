@@ -288,7 +288,11 @@
                     <td class="label" i18n:translate="">Email Address</td>
                     <td class="field">
                       <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                        <div tal:content="contact/EmailAddress|nothing"/>
+                        <tal:email tal:condition="contact/EmailAddress|nothing"
+                                   tal:define="email contact/EmailAddress|nothing">
+                            <a tal:content="email"
+                               tal:attributes="href string:mailto:${email}"></a>
+                        </tal:email>
                       </tal:by_contact>
                     </td>
                   </tr>
@@ -301,7 +305,7 @@
                   <tr>
                     <td>
                       <!-- Laboratory Info -->
-                      <address class="laboratory-address text-right">
+                      <address style="margin-top: 0;" class="laboratory-address text-right">
                         <div class="lab-address">
                           <div class="lab-street">
                             <div tal:replace="laboratory/PhysicalAddress/address|nothing"></div>
@@ -315,9 +319,6 @@
                           <div class="lab-country">
                             <div tal:replace="laboratory/PhysicalAddress/country|nothing"></div>
                           </div>
-                        </div>
-                        <div class="lab-title">
-                          <div tal:replace="laboratory/EmailAddress|nothing"/>
                         </div>
                         <div class="lab-title">
                           <div tal:replace="laboratory/Phone|nothing"/>
@@ -639,7 +640,13 @@
                   <div class="font-weight-bold">
                     <span tal:content="manager/getFullname"></span>
                     <span tal:condition="manager/getEmailAddress">&nbsp;</span>
-                    (<span tal:content="manager/getEmailAddress"></span>)
+                    (<span>
+                        <tal:email tal:condition="manager/EmailAddress|nothing"
+                                   tal:define="email manager/EmailAddress|nothing">
+                            <a tal:content="email"
+                               tal:attributes="href string:mailto:${email}"></a>
+                        </tal:email>
+                    </span>)
                   </div>
                   <div>
                     <span tal:content="manager/JobTitle"></span>
