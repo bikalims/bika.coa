@@ -401,7 +401,7 @@
             <div class="table-row">
               <div class="table-header">Sample ID</div>
               <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-primary text-center"
+                <div class="table-cell font-weight-normal border-out text-center"
                       tal:content="model/Title"/>
               </tal:ar>
             </div>
