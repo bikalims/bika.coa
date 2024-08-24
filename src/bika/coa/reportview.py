@@ -168,7 +168,7 @@ class SingleReportView(SRV):
 
     def get_sampler_fullname(self, model):
         obj = model.instance
-        return obj.getSamplerFullName()
+        return obj.getSampler()
 
     def get_formatted_date(self, analysis):
         result = analysis.ResultCaptureDate
