@@ -245,9 +245,9 @@
 <div> <strong> Important documents and information </strong> </div> 
         <!-- First Row -->
           <tr>
-            <td class="label" i18n:translate="">Batch ID</td>
-            <td class='field'>
-              <div tal:content="batch/ClientBatchID"/>
+            <td class="label" colspan="4" style="width: 100%; white-space: nowrap;">
+              <strong>Batch ID:</strong>
+              <span tal:content="batch/ClientBatchID" style="display: inline-block; width: 100%; white-space: nowrap; font-weight: normal;"/>
             </td>
           </tr>
           <tr>
