@@ -249,34 +249,36 @@
 </strong>
 <hr class="solid" style="margin: 0; padding: 0;"> 
 <div> <strong> Important documents and information </strong> </div> 
-        <!-- First Row -->
-          <tr>
-            <td class="label" i18n:translate="">Batch ID</td>
-            <td class='field'>
-              <div tal:content="batch/ClientBatchID"/>
-            </td>
-          </tr>
-          <tr>
-            <td class="label" i18n:translate="">Batch Number</td>
-            <td class='field'>
-              <div tal:content="batch/getId"/>
-            </td>
-            <td class="label" i18n:translate="">Number of Samples Received</td>
-            <td class='field'>
-              <div tal:content="python:len(collection)"/>
-            </td>
-          </tr>
-        <!-- Second Row  -->
-          <tr>
-            <td class="label" i18n:translate="">Date Received</td>
-            <td class='field'>
-              <div tal:content="python:primarymodel.DateReceived and view.to_localized_time(primarymodel.DateReceived) or '-'"/>
-            </td>
-            <td class="label" i18n:translate="">Date Published</td>
-            <td class='field'>
-              <div tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)">
-            </td>
-          </tr>
+      <!-- First Row -->
+      <tr>
+        <td class="label" colspan="4" style="width: 100%; white-space: nowrap;">
+          <strong>Batch ID:</strong>
+          <span tal:content="batch/ClientBatchID" style="display: inline-block; width: 100%; white-space: nowrap; font-weight: normal;"/>
+        </td>
+      </tr>
+
+      <!-- Second Row -->
+      <tr>
+        <td class="label" i18n:translate="">Batch Number</td>
+        <td class='field'>
+          <div tal:content="batch/getId"/>
+        </td>
+        <td class="label" i18n:translate="">Number of Samples Received</td>
+        <td class='field'>
+          <div tal:content="python:len(collection)"/>
+        </td>
+      </tr>
+      
+      <!-- Third Row  -->
+      <tr>
+        <td class="label" i18n:translate="">Date Received</td>
+        <td class='field'>
+          <div tal:content="python:primarymodel.DateReceived and view.to_localized_time(primarymodel.DateReceived) or '-'"/>
+        </td>
+        <td class="label" i18n:translate="">Date Published</td>
+        <td class='field'>
+          <div tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)">
+        </td>
         </table>
         <hr class="solid" style="margin: 0; padding: 0;"> 
       </tal:render>
