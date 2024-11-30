@@ -1,3 +1,4 @@
+import json
 from DateTime import DateTime
 from plone import api as ploneapi
 from plone.registry.interfaces import IRegistry
@@ -148,6 +149,12 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
 
 class SingleReportView(SRV):
     """View for Bika COA Single Reports"""
+
+    def json_dumps(self, data):
+        return json.dumps(data)
+
+    def json_loads(self, data):
+        return json.loads(data)
 
     def get_coa_number(self, model):
         instance = model.instance
