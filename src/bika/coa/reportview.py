@@ -7,8 +7,7 @@ from zope.component._api import getAdapters
 from bika.coa import logger
 from bika.lims import api
 from bika.lims.api import _marker
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, \
-    IResultOutOfRange
+from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.interfaces import IDuplicateAnalysis
@@ -23,21 +22,24 @@ LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 
 def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     """
-    Taken from bika.lims.api.analysis is_out_of_range and inculded the 
+    Taken from bika.lims.api.analysis is_out_of_range and inculded the
     spec_type.
     :param spec_type: Specification type to be returned, it could the
     Specficification or PublicationSpecification type result_range
     """
     analysis = api.get_object(brain_or_object)
-    if not IAnalysis.providedBy(analysis) and \
-            not IReferenceAnalysis.providedBy(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+    if not IAnalysis.providedBy(analysis) and not IReferenceAnalysis.providedBy(
+        analysis
+    ):
+        api.fail(
+            "{} is not supported. Needs to be IAnalysis or "
+            "IReferenceAnalysis".format(repr(analysis))
+        )
 
     if result is _marker:
         result = api.safe_getattr(analysis, "getResult", None)
 
-    if result in [None, '']:
+    if result in [None, ""]:
         # Empty result
         return False, False
 
@@ -51,7 +53,7 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
         original_result = original.getResult()
 
         # Does original analysis have a valid result?
-        if original_result in [None, '']:
+        if original_result in [None, ""]:
             return False, False
 
         # Does original result type matches with duplicate result type?
@@ -102,9 +104,9 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     adapters = getAdapters((analysis,), IResultOutOfRange)
     for name, adapter in adapters:
         ret = adapter(result=result, specification=result_range)
-        if not ret or not ret.get('out_of_range', False):
+        if not ret or not ret.get("out_of_range", False):
             continue
-        if not ret.get('acceptable', True):
+        if not ret.get("acceptable", True):
             # Out of range + out of shoulders
             return True, True
         # Out of range, but in shoulders
@@ -145,8 +147,7 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
 
 
 class SingleReportView(SRV):
-    """View for Bika COA Single Reports
-    """
+    """View for Bika COA Single Reports"""
 
     def get_coa_number(self, model):
         instance = model.instance
@@ -227,8 +228,7 @@ class SingleReportView(SRV):
 
 
 class MultiReportView(MRV):
-    """View for Bika COA Multi Reports
-    """
+    """View for Bika COA Multi Reports"""
 
     def __init__(self, collection, request):
         logger.info("MultiReportView::__init__:collection={}".format(collection))
@@ -330,8 +330,7 @@ class MultiReportView(MRV):
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(
-            analyses_parameters, key=lambda item: item["method_id"])
+        items = sorted(analyses_parameters, key=lambda item: item["method_id"])
         return items
 
     def get_analyses_instruments(self, collection=None, poc=None, category=None):
@@ -342,12 +341,11 @@ class MultiReportView(MRV):
             for i, instrument in enumerate(instruments):
                 title = instrument.Title()
                 description = instrument.Description()
-                rec = {"description": '{}. {}'.format(title, description)}
+                rec = {"description": "{}. {}".format(title, description)}
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(
-            analyses_parameters, key=lambda item: item["description"])
+        items = sorted(analyses_parameters, key=lambda item: item["description"])
         return items
 
     def get_analyses_preparations(self, collection=None, poc=None, category=None):
@@ -378,12 +376,12 @@ class MultiReportView(MRV):
         return items
 
     def get_batch(self, collection=None):
-        if all([getattr(i.Batch , "id", '') for i in collection]):
+        if all([getattr(i.Batch, "id", "") for i in collection]):
             return collection[0].Batch.id
         return None
 
     def get_order_number(self, collection=None):
-        if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
+        if all([getattr(i, "ClientOrderNumber", "") for i in collection]):
             return collection[0].ClientOrderNumber
         return None
 
@@ -463,8 +461,8 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by([model])
         actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
-            return {"verifier": 'admin', "email": ""}
-            
+            return {"verifier": "admin", "email": ""}
+
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
@@ -474,13 +472,15 @@ class MultiReportView(MRV):
         if not contact:
             return verifier
 
-        verifier["fullname"] =  contact.getFullname()
-        verifier["role"] =  roles[0]
-        verifier["date_verified"] =  date_verified
-        verifier["email"] =  contact.getEmailAddress()
+        verifier["fullname"] = contact.getFullname()
+        verifier["role"] = roles[0]
+        verifier["date_verified"] = date_verified
+        verifier["email"] = contact.getEmailAddress()
 
         if contact.getSalutation():
-            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+            verifier["verifier"] = "{}. {}".format(
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
 
@@ -488,19 +488,22 @@ class MultiReportView(MRV):
 
     def get_publisher(self):
         publisher = {
-                "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "",}
+            "today": "{}".format(DateTime().strftime("%Y-%m-%d")),
+            "email": "",
+        }
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         if not user:
-            publisher["publisher"] = '{}'.format(current_user.id)
+            publisher["publisher"] = "{}".format(current_user.id)
             return publisher
 
-        publisher["email"] = '{}'.format(user.getEmailAddress())
+        publisher["email"] = "{}".format(user.getEmailAddress())
         if user.getSalutation():
-            publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
+            publisher["publisher"] = "{}. {}".format(
+                user.getSalutation(), user.getFullname()
+            )
         else:
-            publisher["publisher"] = '{}'.format(user.fullname)
+            publisher["publisher"] = "{}".format(user.fullname)
 
         return publisher
 
@@ -526,7 +529,6 @@ class MultiReportView(MRV):
             has_additional_info = True
         return has_additional_info
 
-
     def get_analyst(self, collection):
         model = collection[0]
         analyses = self.get_analyses_by([model])
@@ -539,15 +541,17 @@ class MultiReportView(MRV):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
+        subcontracted_symbol_url = (
+            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
         )
         accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,}
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "subcontracted_symbol_url": subcontracted_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+        }
         return datum
 
     def get_toolbar_logo(self):
