@@ -5,7 +5,7 @@ from .fields import ExtReferenceField
 from bika.lims.interfaces import IMethod
 from zope.component import adapts
 from zope.interface import implements
-from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
+from senaite.core.browser.widgets import ReferenceWidget as BikaReferenceWidget
 
 
 class MethodSchemaExtender(object):
@@ -20,7 +20,7 @@ class MethodSchemaExtender(object):
             widget=BikaReferenceWidget(
                 label=_("Subcontracted to"),
                 size=20,
-                catalog_name='portal_catalog',
+                catalog_name='senaite_catalog_setup',
                 showOn=True,
                 search_fields=('Title'),
                 colModel=[

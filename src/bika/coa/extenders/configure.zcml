@@ -2,13 +2,18 @@
         xmlns="http://namespaces.zope.org/zope"
         i18n_domain="bika.coa">
 
-  <includeDependencies package="." />
+    <includeDependencies package="." />
     <include package="archetypes.schemaextender"/>
 
-    <adapter name='bika.coa' factory=".arreport.ARReportSchemaExtender" />
-    <adapter name='bika.coa' factory=".method.MethodSchemaExtender" />
-    <adapter name='bika.coa' factory=".method.MethodSchemaModifier" />
+    <adapter name='bika.coa.arreport' factory=".arreport.ARReportSchemaExtender" />
+    <adapter name='bika.coa.method' factory=".method.MethodSchemaExtender" />
+    <adapter name='bika.coa.schemamodifier' factory=".method.MethodSchemaModifier" />
     <adapter name='bika.coa' factory=".analysisservice.AnalysisServiceSchemaModifier" />
-    <adapter name='bika.coa' factory=".batch.BatchSchemaExtender" />
+
+    <adapter name='bika.coa.batch' factory=".batch.BatchSchemaExtender" />
+    <adapter name='bika.coa.batch.schemamodifier'
+             provides="archetypes.schemaextender.interfaces.ISchemaModifier"
+             factory=".batch.BatchSchemaModifier" />
+
     <adapter name='bika.coa' factory=".analysisrequest.AnalysisRequestSchemaModifier" />
 </configure>

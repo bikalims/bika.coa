@@ -3,22 +3,6 @@
         xmlns:browser="http://namespaces.zope.org/browser"
         i18n_domain="bika.coa">
 
-  <!-- Reports listing view -->
-  <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="reports_listing"
-      class="bika.coa.browser.publish.reports_listing.ReportsListingView"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-      />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="published_results"
-      class="bika.coa.browser.analysisrequest.published_results.AnalysisRequestPublishedResults"
-      permission="senaite.core.permissions.ManageAnalysisRequests"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
 
   <!-- Ajax Publish View : ajax_publish -->
   <browser:page
@@ -26,7 +10,7 @@
       name="ajax_publish"
       class="bika.coa.ajax.AjaxPublishView"
       permission="zope.Public"
-      layer="senaite.impress.interfaces.ILayer"
+      layer="senaite.impress.interfaces.ISenaiteImpressLayer"
       />
 
   <!-- Ajax Publish View : ajax_templates -->
@@ -56,5 +40,9 @@
       layer="bika.lims.interfaces.IBikaLIMS"
       />
 
+  <!-- Template Finder Utility -->
+  <utility
+      provides="senaite.impress.interfaces.ITemplateFinder"
+      factory=".utils.TemplateFinder"/>
 
 </configure>

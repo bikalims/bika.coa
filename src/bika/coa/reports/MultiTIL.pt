@@ -18,6 +18,7 @@
           report_images python:view.get_report_images();
           styles python:view.get_coa_styles();">
 
+
   <!-- Custom Report Controls -->
   <div id="controls" class="noprint">
     <div i18n:translate="" class="text-secondary mb-2">Custom Report Options</div>
@@ -76,14 +77,17 @@
        margin-top: 10mm;
        height: 20mm;
        width: 100%;
-       text-align: left;
+       text-align: center;
        font-size: 9pt;
      }
      .report .section-footer #footer-line {
        width: 100%;
        height: 2mm;
-       border-top: 1px solid black;
+       border-top: 2px solid black;
      }
+     hr.solid {
+      border-top: 2px solid black;
+      }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -107,6 +111,7 @@
          font-size: 9pt;
          content: "<tal:t i18n:translate=''>Page</tal:t> " counter(page) " <tal:t i18n:translate=''>of</tal:t> " counter(pages);
      }
+     
     </style>
   </tal:css>
   
@@ -117,140 +122,224 @@
                       batch primarymodel/Batch;">
 
 <!--CoA Block CoA Block CoA Block CoA Block-->
- <div style="background-color:white;color:black;padding:5px;border:1px solid black;text-align: center;no-gutters;">
-  <div>Certificate of Analysis<strong name='coa_num' tal:content="batch/getId"/> </div>
+ <div style="background-color:white;color:black;padding:5px;border:2px solid black;text-align: center;no-gutters;">
+  <div>Certificate of Analysis<strong name='coa_num' tal:content='coa_num'/> </div>
  </div>
 <!-- /CoA Block CoA Block CoA Block CoA Block -->
 
-<div style="background-color:white;color:black;padding:5px;border-bottom:1px solid black;no-gutters;">
+<div style="background-color:white;color:black;padding:5px;no-gutters;">
 <table style="width:100%;">
   <tr>
 
-<!-- client detals -->
-    <td>
-     <div style="text-align:left;">
-      <tal:render condition="python:len(collection)>0"
-              define="primarymodel python:collection[0];">        
-                  <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                      <div tal:content="client/Name"/>
-                  </tal:by_client>
+  <!-- client details -->
+    <td style="width:33%; vertical-align:center;">
+        <div style="text-align:left;">
+            <tal:render condition="python:len(collection)>0"
+                define="primarymodel python:collection[0];">
+                
+                <div style="width:100%; word-wrap: break-word; overflow-wrap: break-word;">
+                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                        <div tal:content="client/Name"/>
+                    </tal:by_client>
 
-         <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-          <div tal:content="contact/Fullname"/>
-         </tal:by_contact>
+                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                        <div tal:content="client/PhysicalAddress/address"/>
+                        <div tal:content="client/PhysicalAddress/city"/>
+                        <div tal:content="client/PhysicalAddress/zip"/>
+                        <div tal:content="client/PhysicalAddress/state"/>
+                        <div tal:content="client/PhysicalAddress/country"/>
+                    </tal:by_client>
+                </div>
+                
+                <div style="width:100%; word-wrap: break-word; overflow-wrap: break-word;">
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                        <div tal:content="contact/Fullname"/>
+                    </tal:by_contact>
 
-         <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-          <div tal:content="client/PhysicalAddress/address"/>
-          <div tal:content="client/PhysicalAddress/city"/>
-          <div tal:content="client/PhysicalAddress/zip"/>
-          <div tal:content="client/PhysicalAddress/state"/>
-          <div tal:content="client/PhysicalAddress/country"/>
-         </tal:by_client>
+                    <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                        <div tal:content="contact/EmailAddress"/>
+                    </tal:by_contact>
+                </div>
 
-         <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-          <div tal:content="contact/EmailAddress"/>
-         </tal:by_contact>
-
-          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-           <div tal:content="client/Phone"/>
-          </tal:by_client>
-         
-       <div/>
-      </tal:render>
+                <div style="width:100%; word-wrap: break-word; overflow-wrap: break-word;">
+                    <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                        <div tal:content="client/Phone"/>
+                    </tal:by_client>
+                </div>
+            </tal:render>
+        </div>
     </td>
-<!--/ client details-->
+  <!-- /client details -->
 
-<!-- LOGO BLOCK -->
-
-    <td>
-        <div>
-        <img class="logo image-fluid" style="object-fit:contain;text-align: centre" 
-                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
-       </div>
+  <!-- LOGO BLOCK -->
+    <td style="width:34%; text-align:center; vertical-align:center;">
+      <div style="height: 100%; display: flex; justify-content: center; align-items: flex-start;">
+        <img class="logo image-fluid" style="object-fit:contain; vertical-align:top;" 
+          tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
+      </div>
     </td>
+    <!-- /LOGO BLOCK -->
 
-<!-- /LOGO BLOCK -->
+    <!-- /LOGO BLOCK -->
 
-<!-- Adress and accreditation block -->
-     <td>
-     <div style="text-align: left">
-              <div class="lab-title font-weight-bold">
+    <!-- Address and accreditation symbol block -->
+    <td style="width:33%; vertical-align:center;">
+        <div style="text-align: right">
+            <div class="lab-title font-weight-bold">
                 <div tal:replace="laboratory/title|nothing"/>
-              </div>
-              <div class="lab-address">
+            </div>
+            <div class="lab-address">
                 <div class="lab-street">
-                <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
-              </div>
-              <div class="lab-city">
-                <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
-              </div>
-              <div class="lab-zip">
-                <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
-              </div>
-              <div class="lab-state">
-                <div tal:replace="laboratory/PostalAddress/state|nothing"></div>
-              </div>
-              <div class="lab-country">
-                  <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
-              </div>
-     </div>
-     <div class="accreditation-logo" style="align:left"
+                    <div tal:replace="laboratory/PostalAddress/address|nothing"></div>
+                </div>
+                <div class="lab-city">
+                    <div tal:replace="laboratory/PostalAddress/city|nothing"></div>
+                </div>
+                <div class="lab-zip">
+                    <div tal:replace="laboratory/PostalAddress/zip|nothing"></div>
+                </div>
+                <div class="lab-state">
+                    <div tal:replace="laboratory/PostalAddress/state|nothing"></div>
+                </div>
+                <div class="lab-country">
+                    <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
+                </div>
+            </div>
+            <div class="accreditation-logo" style="align:left"
                  tal:define="accredited laboratory/LaboratoryAccredited;
                              accreditation_logo laboratory/AccreditationBodyLogo;"
                  tal:condition="accredited">
-              <img class="img-fluid"
-                   tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
-              <img class="img-fluid"
-                   tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
-     </div>
-     </td>
-</tr>
+                <img class="img-fluid"
+                     tal:condition="accreditation_logo"
+                     tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
+                <img class="img-fluid"
+                     tal:condition="not:accreditation_logo"
+                     tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
+            </div>
+        </div>
+    </td>
+    <!-- /Address and accreditation block -->
+
+  </tr>
 </table>
 </div>
+
 </tal:render>
 <!-- /Adress and accreditation block -->
   <!-- TEST IT LAB COA DETALS -->
       <tal:render condition="python:len(collection)>0"
               define="primarymodel python:collection[0];">  
 <div style="background-color:white;color:black;padding:5px;">
+
+<!-- Certificate of Analysis Table -->
+      <tal:render condition="python:len(collection)>0"
+                  define="primarymodel python:collection[0];
+                          batch primarymodel/Batch;
+                          publish python:view.get_publisher();
+                          verified_dates python: view.get_verified_dates(collection);
+                          analyzed_dates python: view.get_analyzed_dates(collection);">
+        <table class="table table-sm table-condensed ml-1">
+
+      <!-- Certificate of Analysis Table -->
+<hr class="solid" style="margin: 0; padding: 0;"> 
 <div> <strong> Important documents and information </strong> </div> 
-<br>
-<li>Results apply only to the sample as received and the items tested</li>
-<li>Reports shall not be reproduced except in full and with approval of the laboratory</li>
-<li>Results and information may be disclosed during routine assessments and audits</li>
-<li>Hold time and temperature after sampling may affect the validity of results for QM No. 7.2/TM-01 and QM No. 7.2/TM-02</li>
-<li>Uncertainty of measurement is available on request for all methods included in the SANAS Schedule of Accreditation</li>
-<li>The binary simple acceptance decision rule is applied with regard to <a href="https://www.testit-labs.co.za/wp-content/uploads/QM-No.-7.8-R-02-Decision-rule-and-statement-of-conformity.pdf"> statements of conformity</a> </li>
-<li>Results are reported against SANS241:2015 for drinking water, Revision of the General Authorisation to Section 39 of the NWA No 36 of 1998 for wastewater and SANBWA Bottled Water Standard for bottled water</li>
-<li>We respect your privacy and <a href="https://www.testit-labs.co.za/privacy-policy/>">personal information</a> </li>
-<li> <a href="https://www.testit-labs.co.za/terms-conditions/"> Terms and Conditions </a></li>
-<li>We welcome your <a href="https://www.testit-labs.co.za/contact-us/"> feedback</a> or <a href="https://www.testit-labs.co.za/contact-us/">get in touch</a> with us for queries or complaints</li>
-<li>Result Query: <a href="mailto:francois@testit-labs.co.za?subject=tal:content=batch/getId">Francois le Roux</a> Financial: <a href="sunet@testit-labs.co.za">Sunet van Biljon</a>Complaints: <a href="elsabe@testit-labs.co.za">Elsabe Botes</a> </li>
-<li>Outsourced or subcontracted tests are indicated per method</li>
-<li>  <span class="accredited-symbol text-success" tal:content="accredited_symbol"> </span> Included in the SANAS Schedule of Accreditation for this laboratory</li>
+        <!-- First Row -->
+          <tr>
+            <td class="label" colspan="4" style="width: 100%; white-space: nowrap;">
+              <strong>Batch ID:</strong>
+              <span tal:content="batch/ClientBatchID" style="display: inline-block; width: 100%; white-space: nowrap; font-weight: normal;"/>
+            </td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Batch Number</td>
+            <td class='field'>
+              <div tal:content="batch/getId"/>
+            </td>
+            <td class="label" i18n:translate="">Number of Samples Received</td>
+            <td class='field'>
+              <div tal:content="python:len(collection)"/>
+            </td>
+          </tr>
+        <!-- Second Row  -->
+          <tr>
+            <td class="label" i18n:translate="">Date Received</td>
+            <td class='field'>
+              <div tal:content="python:primarymodel.DateReceived and view.to_localized_time(primarymodel.DateReceived) or '-'"/>
+            </td>
+            <td class="label" i18n:translate="">Date Published</td>
+            <td class='field'>
+              <div tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)">
+            </td>
+          </tr>
+        </table>
+        <hr class="solid" style="margin: 0; padding: 0;"> 
+      </tal:render>
+<li>Results apply only to the sample as received and the specific items tested.</li>
+<li>Reports may not be reproduced, except in full and with prior approval from the laboratory.</li>
+<li>Results and related information may be disclosed during routine assessments and audits.</li>
+<li>The validity of results for QM No. 7.2/TM-01 and QM No. 7.2/TM-02 may be affected by the sample's hold time and temperature post-sampling.</li>
+<li>Uncertainty of measurement is available upon request for all methods listed in the SANAS Schedule of Accreditation.</li>
+<li>The binary simple acceptance decision rule is applied for <a href="https://www.testit-labs.co.za/wp-content/uploads/QM-No.-7.8-R-02-Decision-rule-and-statement-of-conformity.pdf">statements of conformity</a>.</li>
+<li>We respect your privacy. For more information on how we handle your personal data, please see our <a href="https://www.testit-labs.co.za/privacy-policy/">Privacy Policy</a>.</li>
+<li>For further information, please refer to our <a href="https://www.testit-labs.co.za/terms-conditions/">Terms and Conditions</a>.</li>
+<li>We value your feedback and welcome any questions or complaints. Please <a href="https://www.testit-labs.co.za/contact-us/">get in touch with us</a>.</li>
+<li>For result queries, contact <a href="mailto:francois@testit-labs.co.za?subject=tal:content=batch/getId">Francois le Roux</a>; for financial queries, contact <a href="mailto:sunet@testit-labs.co.za">Sunet van Biljon</a>; for complaints, contact <a href="mailto:elsabe@testit-labs.co.za">Elsabe Botes</a>.</li>
+<li>Tests that are outsourced or subcontracted are clearly indicated per method.</li>
+<li><span class="accredited-symbol text-success">★</span> Indicates results that are not included in the SANAS Schedule of Accreditation for this laboratory.</li>
 <li>Information provided by <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                       <a tal:content="client/Name"/>
-</tal:by_client>include and is not limited to Sample Type, Sampler, Publication Spesification, Date/Time Sampled.</li>
-<li>                           <span class="outofrange text-danger">
+</tal:by_client> includes, but is not limited to, the Sample Type, Sampler, Publication Specification, and Date/Time of Sampling.</li>
+<li>Results marked with the <span class="outofrange text-danger">
                                   <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                          </span> Result out of client specified range</li>
-<li>Outsourced or subcontracted tests indicated per method</li>
+                          </span> symbol indicate that the result is outside the client-specified range.</li>
 <br>
-<div> <strong>Date Published :</strong>  <span tal:content="python:view.to_localized_time(primarymodel.DatePublished or view.timestamp)"> </div> 
-<div>  <strong> Report authorized by Technical Signatory:</strong> <span tal:content="reporter/fullname|reporter/username"/>
-                    <tal:email tal:condition="reporter/email|nothing"
-                               tal:define="email reporter/email|nothing">
-                      (<a tal:content="email"
-                          tal:attributes="href string:mailto:${email}"></a>)
-                    </tal:email>
-   
-</div>
-<br>
-<div> <strong>Signature :</strong> </div>
-<br>
+<!-- Publisher -->
+<tal:render condition="python:True"
+            define="publish python:view.get_publisher();">
 
+  <div>
+    <strong> Report authorized by Technical Signatory:</strong> 
+    <div>
+      <!-- Signature image -->
+      <tal:define_email tal:define="email reporter/email|nothing">
+        <tal:email tal:condition="email">
+        </tal:email>
+
+        <!-- Conditional Link based on Email -->
+          <tal:signature_block>
+              <!-- If email matches Francois' email -->
+              <tal:frans_signature_link tal:condition="python:email == 'francois@testit-labs.co.za'">
+                  <a href="https://www.testit-labs.co.za/wp-content/uploads/FP-le-Roux-Signature.pdf" target="_blank">
+                      <img tal:attributes="src string:${publish/user_url}/Signature" style="height:80px; cursor:pointer;" />
+                  </a>
+              </tal:frans_signature_link>
+
+              <!-- If email matches Elsabe's email -->
+              <tal:elsabe_signature_link tal:condition="python:email == 'elsabe@testit-labs.co.za'">
+                  <a href="https://www.testit-labs.co.za/wp-content/uploads/E-Botes-Digital-Signature.pdf" target="_blank">
+                      <img tal:attributes="src string:${publish/user_url}/Signature" style="height:80px; cursor:pointer;" />
+                  </a>
+              </tal:elsabe_signature_link>
+
+              <!-- If email is neither Francois' nor Elsabe's email -->
+              <tal:invalid_report tal:condition="python:email != 'francois@testit-labs.co.za' and email != 'elsabe@testit-labs.co.za'">
+                  <p style="color: red; font-weight: bold;">THIS REPORT IS INVALID USER NOT AUTHORIZED TO SEND REPORT</p>
+              </tal:invalid_report>
+          </tal:signature_block>
+
+        <!-- Line under the signature -->
+        <hr style="border: 1px solid black; width: 25%; text-align: left; margin-left: 0;margin: 0;" />
+
+        <!-- Name and email under the line -->
+        <div style="text-align: left;">
+          <span tal:content="publish/publisher"></span><br>
+          <a tal:content="email"
+             tal:attributes="href string:mailto:${email}"></a>
+        </div>
+      </tal:define_email>
+    </div>
+  </div>
+</tal:render>
       <div class="clearfix"></div>
 <p style="page-break-after: always;"></p>
  </div>
@@ -282,42 +371,58 @@
   </tal:render>
 
   <!-- RESULTS -->
-  <tal:render condition="python:True"
-              define="model python:collection[0];
-                      batch model/Batch;
-                      client model/Client;
-                      reporter python:view.current_user;
-                      specification model/Specification;
-                      publication_specification model/PublicationSpecification;
-                      spec python:publication_specification or specification;">
+<tal:render condition="python:True"
+            define="model python:collection[0];
+                    batch model/Batch;
+                    reporter python:view.current_user;
+                    specification model/Specification;
+                    publication_specification model/PublicationSpecification;
+                    spec python:publication_specification or specification;">
     <tal:model repeat="model collection">
+
+
+
 
       <div class="row section-results no-gutters">
         <div class="w-100">
         <br>
 
  <div style="background-color:white;color:black;padding:5px;border:1px solid black;text-align: center;no-gutters;">
-  <div>Certificate of Analysis<strong name='coa_num' tal:content="batch/getId"/> </div>
+  <div>Certificate of Analysis<strong name='coa_num' tal:content='coa_num'/> </div>
+
  </div>
 <br>
 <h3 i18n:translate>Results for <span tal:content="python:model.ClientSampleID or '-'"/> (<a tal:content="model/getId">)</h3>
 
  <table class="table table-sm table-condensed small noborder w-100" style="font-size: 10px;text-align: left;">
-
   <tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sample Type</td>
      <td>
       <a tal:content="python:model.SampleTypeTitle or '-'"></a>
      </td>
-      <td class="logo" style="text-align: centre;text-align: top;" rowspan="8"><img tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/></td>
+      <td class="logo" style="text-align: centre;text-align: top;" rowspan="10"><img tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/></td>
   </tr>
 
-  <tr tal:condition="python:True">
+<tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sample Point</td>
     <td>
-      <a tal:content="python:model.SamplePointTitle or '-'"></a>
-     </td>
-  </tr>
+      <a tal:condition="python:model.SamplePointTitle" tal:content="python:model.SamplePointTitle"></a>
+      <a tal:condition="python:not model.SamplePointTitle" tal:content="python:model.ClientSampleID"></a>
+    </td>
+</tr>
+<tr tal:condition="python:model.SamplePoint and model.SamplePoint.Latitude and (model.SamplePoint.Latitude.get('degrees', 0) or model.SamplePoint.Latitude.get('minutes', 0) or model.SamplePoint.Latitude.get('seconds', 0))">
+    <td class="label" i18n:translate="">Sample Latitude</td>
+    <td>
+      <span tal:content="python:'%d° %d\' %.4f&quot; %s' % (int(float(model.SamplePoint.Latitude.get('degrees', 0) or 0)), int(float(model.SamplePoint.Latitude.get('minutes', 0) or 0)), float(model.SamplePoint.Latitude.get('seconds', 0) or 0.0), model.SamplePoint.Latitude.get('bearing', ''))"></span>
+    </td>
+</tr>
+
+<tr tal:condition="python:model.SamplePoint and model.SamplePoint.Longitude and (model.SamplePoint.Longitude.get('degrees', 0) or model.SamplePoint.Longitude.get('minutes', 0) or model.SamplePoint.Longitude.get('seconds', 0))">
+    <td class="label" i18n:translate="">Sample Longitude</td>
+    <td>
+      <span tal:content="python:'%d° %d\' %.4f&quot; %s' % (int(float(model.SamplePoint.Longitude.get('degrees', 0) or 0)), int(float(model.SamplePoint.Longitude.get('minutes', 0) or 0)), float(model.SamplePoint.Longitude.get('seconds', 0) or 0.0), model.SamplePoint.Longitude.get('bearing', ''))"></span>
+    </td>
+</tr>
 
   <tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sampled Date</td>
@@ -326,10 +431,10 @@
      </td>
   </tr>
 
-    <tr tal:condition="python:True">
+  <tr tal:condition="python:True">
     <td class="label" i18n:translate="">Sampler</td>
-    <td>
-      <a tal:content="python:model.Sampler or 'Sampled by client'" ></a>
+      <td>
+        <a tal:content="python:view.get_batch_sampler('',model.Sampler) or 'Sampled by client'" ></a>
      </td>
   </tr>
 
@@ -348,7 +453,7 @@
   </tr>
 
   <tr tal:condition="python:True">
-    <td class="label" i18n:translate="">Condition</td>
+    <td class="label" i18n:translate="">Condition Upon Receipt</td>
     <td>
       <a tal:content="model/SampleCondition/title|nothing"></a>
      </td>
@@ -426,7 +531,7 @@
                         <span class="text-success"
                               style="font-family:sans;"
                               tal:content="accredited_symbol"
-                              tal:condition="analysis/Accredited">
+                              tal:condition="not: analysis/Accredited">
                       <td class="text-left">
                         <span tal:condition="analysis/Method">
                           <span class="font-normal" tal:content="analysis/Method/ShortTitle|analysis/Method/Title"></span>
@@ -493,35 +598,16 @@
             </tal:poc>
         </div>
       </div>
-    </tal:model>
-    <p style="page-break-after: always;"></p>
-  </tal:render>
 
-  <!--  RESULTS INTERPRETATIONS -->
-  <tal:render condition="python:True">
-    <tal:model repeat="model collection">
-      <div class="row section-resultsinterpretation no-gutters"
-           tal:define="ris python:model.get_resultsinterpretation();
-                       has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-        <div class="" tal:condition="has_ri">
-          <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
-          <tal:ri repeat="ri ris">
-            <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-            <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-          </tal:ri>
-        </div>
+         <div> End of results for <span tal:content="python:model.ClientSampleID or 'the above sample'"/> (<a tal:content="model/getId">) </div>
+        <hr class="solid"> 
+         <p style="page-break-after: always;"></p>
+
+    </tal:model>
+      <div>
+        <th> <strong> END OF RESULTS </strong></th>
       </div>
-    </tal:model>
   </tal:render>
-
-  <div class="text-center">
- <th>
-  <strong>
-   END OF RESULTS
-  </strong>
-  <HR>
- </th>
-</div>
 
   <!-- QC RESULTS -->
   <!--<tal:render condition="python:True">
