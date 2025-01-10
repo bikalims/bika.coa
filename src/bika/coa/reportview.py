@@ -364,7 +364,28 @@ class SingleReportView(SRV):
             analyst["analyst"] = "{}".format(contact.getFullname())
 
         return analyst
+    
+    def get_mix_design(self):
+        batch = self.context
+        return batch.get_mix_design()
 
+    def get_mix_design_concrete(self):
+        mix_design = self.get_mix_design()
+        if not mix_design:
+            return None
+        return mix_design.get_mix_design_concrete()
+
+    def get_mix_design_mortar_paste(self):
+        mix_design = self.get_mix_design()
+        if not mix_design:
+            return None
+        query = {
+            "portal_type": "MixDesignMortarPaste",
+            "path": {"query": api.get_path(mix_design), },
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        if len(brains) == 1:
+            return api.get_object(brains[0])
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
