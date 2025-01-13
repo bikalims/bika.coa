@@ -62,6 +62,7 @@
      .report .font-size-100 { font-size: 100%; }
      .report .colon-after:after { content: ":"; }
      .report address { margin: 1rem 0; }
+     .report table { word-wrap:break-word; width:100%; table-layout:fixed;}
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
@@ -330,9 +331,9 @@
           <!-- Results table per PoC -->
           <table class="table table-sm table-condensed small">
               <tr>
-                <th colspan="4">Sample ID</th>
+                <th colspan="4" style="word-wrap:normal;">Sample ID</th>
                 <tal:ar repeat="model page">
-                  <th colspan="2" class="font-weight-normal" style="width:14%">
+                  <th colspan="2" class="font-weight-normal">
                     <div class="text-primary text-center"
                          tal:content="model/Title"/>
                   </th>
@@ -343,7 +344,7 @@
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         Client Sample ID
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
+                  <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                   </th>
                 </tal:ar>
@@ -353,7 +354,7 @@
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                         <div class="text-left">Sample Type</div>
                   </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
+                  <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center"
                            tal:content="python:model.SampleTypeTitle or '-'"/>
                   </th>
@@ -364,7 +365,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Sample Point</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
+                 <th colspan="2" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
                 </th>
@@ -375,7 +376,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Sampled</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
+                 <th colspan="2" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
                 </th>
@@ -386,7 +387,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Received</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder" style="width:14%">
+                 <th colspan="2" class="font-weight-normal text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
                 </th>
@@ -397,7 +398,7 @@
                 <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
                     <div class="text-left">Date Verified</div>
                 </th>
-                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none; width:14%">
+                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none;">
                     <div class="text-center"
                          tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
                 </th>
