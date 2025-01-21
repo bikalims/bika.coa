@@ -389,6 +389,22 @@ class SingleReportView(SRV):
         if len(brains) == 1:
             return api.get_object(brains[0])
 
+    def get_mix_materials(self, model):
+        uids = self.get_mix_material_uids(model)
+        if not uids:
+            return
+        mix_material_objs = [api.get_object_by_uid(x) for x in uids]
+        return mix_material_objs
+
+    def get_mix_material_uids(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return
+        mix_material_uids = mix_design.mix_materials
+        if mix_material_uids:
+            return mix_material_uids
+        return
+
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports
     """
