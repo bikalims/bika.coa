@@ -371,8 +371,8 @@ class SingleReportView(SRV):
             return batch.get_mix_design()
         return
 
-    def get_mix_design_concrete(self):
-        mix_design = self.get_mix_design()
+    def get_mix_design_concrete(self, model):
+        mix_design = self.get_mix_design(model)
         if not mix_design:
             return None
         return mix_design.get_mix_design_concrete()
