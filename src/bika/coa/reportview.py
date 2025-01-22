@@ -26,6 +26,12 @@ from senaite.core.api import geo
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
+try:
+    from senaite.timeseries.utils import format_timeseries
+except Exception:
+    pass
+
+
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
 
@@ -384,7 +390,7 @@ class SingleReportView(SRV):
             analyst["analyst"] = "{}".format(contact.getFullname())
 
         return analyst
-    
+
     def get_mix_design(self, model):
         batch = model.Batch
         if batch:
@@ -403,11 +409,20 @@ class SingleReportView(SRV):
             return None
         query = {
             "portal_type": "MixDesignMortarPaste",
-            "path": {"query": api.get_path(mix_design), },
+            "path": {
+                "query": api.get_path(mix_design),
+            },
         }
         brains = api.search(query, SETUP_CATALOG)
         if len(brains) == 1:
             return api.get_object(brains[0])
+
+    def get_timeseries_result(self, model, analysis):
+        """Return formatted result"""
+        result = model.get_formatted_result(analysis)
+        formatted = format_timeseries(analysis, result)
+        return formatted
+
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports"""
