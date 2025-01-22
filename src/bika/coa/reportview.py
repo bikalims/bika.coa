@@ -389,6 +389,14 @@ class SingleReportView(SRV):
         if len(brains) == 1:
             return api.get_object(brains[0])
 
+    def get_mix_type(self, model):
+        mix_design = self.get_mix_design(model)
+        mix_type = mix_design.mix_type
+        if not mix_type:
+            return
+        mix_type_obj = api.get_object_by_uid(mix_type)
+        return mix_type_obj.title
+
     def get_mix_materials(self, model):
         uids = self.get_mix_material_uids(model)
         if not uids:
