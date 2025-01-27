@@ -1,3 +1,4 @@
+import json
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from plone import api as ploneapi
@@ -11,9 +12,7 @@ from bika.coa.vocabulary import SEXES
 
 from bika.lims import api
 from bika.lims.api import _marker
-from bika.lims.interfaces import IAnalysis
-from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
@@ -27,6 +26,12 @@ from senaite.core.api import geo
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
+try:
+    from senaite.timeseries.utils import format_timeseries
+except Exception:
+    pass
+
+
 LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
 
@@ -39,15 +44,18 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     Specficification or PublicationSpecification type result_range
     """
     analysis = api.get_object(brain_or_object)
-    if not IAnalysis.providedBy(analysis) and \
-            not IReferenceAnalysis.providedBy(analysis):
-        api.fail("{} is not supported. Needs to be IAnalysis or "
-                 "IReferenceAnalysis".format(repr(analysis)))
+    if not IAnalysis.providedBy(analysis) and not IReferenceAnalysis.providedBy(
+        analysis
+    ):
+        api.fail(
+            "{} is not supported. Needs to be IAnalysis or "
+            "IReferenceAnalysis".format(repr(analysis))
+        )
 
     if result is _marker:
         result = api.safe_getattr(analysis, "getResult", None)
 
-    if result in [None, '']:
+    if result in [None, ""]:
         # Empty result
         return False, False
 
@@ -61,7 +69,7 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
         original_result = original.getResult()
 
         # Does original analysis have a valid result?
-        if original_result in [None, '']:
+        if original_result in [None, ""]:
             return False, False
 
         # Does original result type matches with duplicate result type?
@@ -112,9 +120,9 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     adapters = getAdapters((analysis,), IResultOutOfRange)
     for name, adapter in adapters:
         ret = adapter(result=result, specification=result_range)
-        if not ret or not ret.get('out_of_range', False):
+        if not ret or not ret.get("out_of_range", False):
             continue
-        if not ret.get('acceptable', True):
+        if not ret.get("acceptable", True):
             # Out of range + out of shoulders
             return True, True
         # Out of range, but in shoulders
@@ -155,15 +163,20 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
 
 
 class SingleReportView(SRV):
-    """View for Bika COA Single Reports
-    """
+    """View for Bika COA Single Reports"""
+
+    def json_dumps(self, data):
+        return json.dumps(data)
+
+    def json_loads(self, data):
+        return json.loads(data)
 
     def get_coa_number(self, model):
-        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        kwargs = {"portal_type": "ARReport", "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
 
     def get_sampler_fullname(self, model):
@@ -200,23 +213,27 @@ class SingleReportView(SRV):
         accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                 "accredited_symbol_url": accredited_symbol_url,}
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+        }
         return datum
 
     def get_extended_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
+        subcontracted_symbol_url = (
+            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
         )
         accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,}
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "subcontracted_symbol_url": subcontracted_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+        }
         return datum
 
     def get_toolbar_logo(self):
@@ -252,9 +269,15 @@ class SingleReportView(SRV):
     def get_verifier_by_analysis(self, model):
         analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtitle": "", "default_department": "",
-                    }
+        verifier = {
+            "fullname": "",
+            "role": "",
+            "email": "",
+            "verifier": "",
+            "signature": "",
+            "jobtitle": "",
+            "default_department": "",
+        }
         if not actor:
             return verifier
 
@@ -266,24 +289,26 @@ class SingleReportView(SRV):
         if not contact:
             return verifier
 
-        verifier["fullname"] =  contact.getFullname()
+        verifier["fullname"] = contact.getFullname()
         verifier["role"] = roles[0]
-        verifier["date_verified"] =  date_verified
-        verifier["email"] =  contact.getEmailAddress()
+        verifier["date_verified"] = date_verified
+        verifier["email"] = contact.getEmailAddress()
         verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
             default_department = contact.getDefaultDepartment().Title()
             verifier["default_department"] = default_department
         if contact.getSalutation():
-            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+            verifier["verifier"] = "{}. {}".format(
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
         if contact.getSignature():
-            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
+            verifier["signature"] = "{}/Signature".format(contact.absolute_url())
 
         return verifier
 
-    def is_analysis_accredited(self,analysis):
+    def is_analysis_accredited(self, analysis):
         if analysis.Accredited:
             return True
         return False
@@ -301,7 +326,7 @@ class SingleReportView(SRV):
         return date.strftime("%d-%b-%y")
 
     def sex_mapping(self, sex):
-        sex_dict = {"m": "male", "f":"female"}
+        sex_dict = {"m": "male", "f": "female"}
         return sex_dict.get(sex)
 
     def output_sex_and_age(self, model):
@@ -338,8 +363,8 @@ class SingleReportView(SRV):
                 all_dates.append(date_captured)
         all_dates.sort()
         if len(all_dates) > 0:
-            from_date =  all_dates[0].strftime("%d-%b-%y")
-            to_date =  all_dates[-1].strftime("%d-%b-%y")
+            from_date = all_dates[0].strftime("%d-%b-%y")
+            to_date = all_dates[-1].strftime("%d-%b-%y")
         return [from_date, to_date]
 
     def get_analyst_by_analysis(self, analysis):
@@ -356,19 +381,75 @@ class SingleReportView(SRV):
             return analyst
 
         analyst["fullname"] = contact.getFullname()
-        analyst["email"] =  contact.getEmailAddress()
+        analyst["email"] = contact.getEmailAddress()
         if contact.getSalutation():
             analyst["analyst"] = "{}. {}".format(
-                    contact.getSalutation(), contact.getFullname())
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             analyst["analyst"] = "{}".format(contact.getFullname())
 
         return analyst
 
+    def get_mix_design(self, model):
+        batch = model.Batch
+        if batch:
+            return batch.get_mix_design()
+        return
+
+    def get_mix_design_concrete(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return None
+        return mix_design.get_mix_design_concrete()
+
+    def get_mix_design_mortar_paste(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return None
+        query = {
+            "portal_type": "MixDesignMortarPaste",
+            "path": {
+                "query": api.get_path(mix_design),
+            },
+        }
+        brains = api.search(query, SETUP_CATALOG)
+        if len(brains) == 1:
+            return api.get_object(brains[0])
+
+    def get_timeseries_result(self, model, analysis):
+        """Return formatted result"""
+        result = model.get_formatted_result(analysis)
+        formatted = format_timeseries(analysis, result)
+        return formatted
+
+    def get_mix_type(self, model):
+        mix_design = self.get_mix_design(model)
+        mix_type = mix_design.mix_type
+        if not mix_type:
+            return
+        mix_type_obj = api.get_object_by_uid(mix_type)
+        return mix_type_obj.title
+
+    def get_mix_materials(self, model):
+        uids = self.get_mix_material_amount_uids(model)
+        if not uids:
+            return
+        mix_material_amount_objs = [api.get_object_by_uid(x) for x in uids]
+        mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
+        return mix_material_objs
+
+    def get_mix_material_amount_uids(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return
+        mix_material_amount_uids = mix_design.mix_materials
+        if mix_material_amount_uids:
+            return mix_material_amount_uids
+        return
 
 class MultiReportView(MRV):
-    """View for Bika COA Multi Reports
-    """
+    """View for Bika COA Multi Reports"""
 
     def __init__(self, collection, request):
         logger.info("MultiReportView::__init__:collection={}".format(collection))
@@ -406,8 +487,7 @@ class MultiReportView(MRV):
         return pages
 
     def get_pages_aqua_culture(self, category_model, sample_model=None):
-        """
-        """
+        """ """
         data = {}
         num_per_page = 5
         pages = []
@@ -500,13 +580,20 @@ class MultiReportView(MRV):
         return unique_data
 
     def get_common_row_data_updated(self, collection, poc, category):
-        """ A version of get_common_row_data that includes
-            the accreditation icon and verifier column """
+        """A version of get_common_row_data that includes
+        the accreditation icon and verifier column"""
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-",False, ""]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                False,
+                "",
+            ]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
             datum[5] = verifier.get("verifier", "-")
@@ -526,27 +613,37 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-    #---------------------------------- Z labs start ------------------------------------------
-    def get_methods_data(self,collection):
+    # ---------------------------------- Z labs start ------------------------------------------
+    def get_methods_data(self, collection):
         analyses = self.get_analyses_by(collection)
         methods = {}
         for analysis in analyses:
-            if analysis.Method: #add variable to analysis.method.Title, try not to pass 80 characters on a line.
+            if (
+                analysis.Method
+            ):  # add variable to analysis.method.Title, try not to pass 80 characters on a line.
                 if analysis.Method.Title() not in methods.keys():
-                    methods[analysis.Method.Title()] = [analysis.Method.Title(),analysis.Title(),analysis.Method.description]
+                    methods[analysis.Method.Title()] = [
+                        analysis.Method.Title(),
+                        analysis.Title(),
+                        analysis.Method.description,
+                    ]
                 elif analysis.Title() not in methods[analysis.Method.Title()][1]:
-                    methods[analysis.Method.Title()][1] = methods[analysis.Method.Title()][1] +", "+ analysis.Title()
+                    methods[analysis.Method.Title()][1] = (
+                        methods[analysis.Method.Title()][1] + ", " + analysis.Title()
+                    )
         return methods
 
-    def get_zlabs_formatting(self,samples):
-        analysis_services,body = self.get_zlabs_body()
+    def get_zlabs_formatting(self, samples):
+        analysis_services, body = self.get_zlabs_body()
         extra_column = False
-        sample_data = self.get_zlabs_analysis_request(samples,analysis_services,extra_column)
+        sample_data = self.get_zlabs_analysis_request(
+            samples, analysis_services, extra_column
+        )
         if sample_data:
             removal_keys = self.get_index_of_columns_to_be_removed(sample_data)
-        body,sample_data = self.remove_empty_services(body,sample_data,removal_keys)
-        return [body,sample_data]
-    
+        body, sample_data = self.remove_empty_services(body, sample_data, removal_keys)
+        return [body, sample_data]
+
     def get_zlabs_body(self):
         eligible_analysis_services = api.get_setup().bika_analysisservices.values()
         analysis_Ids_list = ["Analysis"]
@@ -560,69 +657,79 @@ class MultiReportView(MRV):
             else:
                 methods_list.append("")
             if self.is_analysis_accredited(analysis_service):
-                analysis_Ids_list.append(analysis_service.Title()+"accredited")
+                analysis_Ids_list.append(analysis_service.Title() + "accredited")
             else:
                 analysis_Ids_list.append(analysis_service.Title())
             unit_list.append(analysis_service.getUnit())
-        
+
         final_body_rows = [
-            analysis_Ids_list,methods_list,unit_list,]
-        return eligible_analysis_services,final_body_rows
+            analysis_Ids_list,
+            methods_list,
+            unit_list,
+        ]
+        return eligible_analysis_services, final_body_rows
 
-    def zlabs_is_accredited(self,service_title):
+    def zlabs_is_accredited(self, service_title):
         if "accredited" in service_title:
-            return [True,service_title.replace("accredited","")]
-        return [False,service_title]
+            return [True, service_title.replace("accredited", "")]
+        return [False, service_title]
 
-    
-    def get_zlabs_analysis_request(self,samples,analysis_services,extra_column):
-        sorted_samples = sorted(samples, key=lambda x:x.ClientSampleID)
+    def get_zlabs_analysis_request(self, samples, analysis_services, extra_column):
+        sorted_samples = sorted(samples, key=lambda x: x.ClientSampleID)
         sample_data = []
-        sample_analyses,sample_analyses_ids = self.get_sample_analyses(sorted_samples) #The first entry is the sample and the rest are the analyses of those samples
-        for indx,sample in enumerate(sample_analyses):
+        sample_analyses, sample_analyses_ids = self.get_sample_analyses(
+            sorted_samples
+        )  # The first entry is the sample and the rest are the analyses of those samples
+        for indx, sample in enumerate(sample_analyses):
             sample_results = [sample[0].ClientSampleID]
             if extra_column:
                 sample_results.append(sample[0].id)
             for analysis_service in analysis_services:
                 if analysis_service.getKeyword() in sample_analyses_ids[indx]:
-                    sample_results.append(sample[sample_analyses_ids[indx].index(analysis_service.getKeyword())].getFormattedResult(html=False))
+                    sample_results.append(
+                        sample[
+                            sample_analyses_ids[indx].index(
+                                analysis_service.getKeyword()
+                            )
+                        ].getFormattedResult(html=False)
+                    )
                 else:
                     sample_results.append("")
             sample_data.append(sample_results)
         return sample_data
-    
-    def get_index_of_columns_to_be_removed(self,sample_data):
+
+    def get_index_of_columns_to_be_removed(self, sample_data):
         removal_keys = []
         for indx in range(len(sample_data[0])):
             if indx > 0:
                 column = [i[indx] for i in sample_data if len(i) > 1]
-                if all('' == s or s is None for s in column):
+                if all("" == s or s is None for s in column):
                     removal_keys.append(indx)
         return removal_keys
-    
-    def remove_empty_services(self,body,analyses,removal_keys):
-        sorted_removal_keys = sorted(removal_keys,reverse=True)
-        for indx,item in enumerate(analyses):
+
+    def remove_empty_services(self, body, analyses, removal_keys):
+        sorted_removal_keys = sorted(removal_keys, reverse=True)
+        for indx, item in enumerate(analyses):
             if len(item) > 1:
                 for rem_key in sorted_removal_keys:
                     analyses[indx].pop(rem_key)
-        for indx2,item2 in enumerate(body):
+        for indx2, item2 in enumerate(body):
             if len(item2) > 1:
                 for rem_key in sorted_removal_keys:
                     body[indx2].pop(rem_key)
         return body, analyses
 
-    def get_sample_analyses(self,samples):
+    def get_sample_analyses(self, samples):
         all_samples_with_analyses = []
         all_sample_ids = []
         for sample in samples:
             sample_analyses = sample.Analyses
-            sample_analyses.insert(0,sample)
+            sample_analyses.insert(0, sample)
             all_samples_with_analyses.append(sample_analyses)
             all_sample_ids.append([i.get("id") for i in sample_analyses])
-        return all_samples_with_analyses,all_sample_ids
+        return all_samples_with_analyses, all_sample_ids
 
-    def get_verified_dates(self,samples):
+    def get_verified_dates(self, samples):
         verified_from = ""
         verified_to = ""
         all_dates = []
@@ -637,9 +744,9 @@ class MultiReportView(MRV):
         if len(all_dates) == 1:
             verified_from = self.to_localized_date(all_dates[0])
             verified_to = self.to_localized_date(all_dates[0])
-        return [verified_from,verified_to]
+        return [verified_from, verified_to]
 
-    def get_analyzed_dates(self,samples):
+    def get_analyzed_dates(self, samples):
         analyzed_from = ""
         analyzed_to = ""
         all_dates = []
@@ -650,14 +757,14 @@ class MultiReportView(MRV):
                     all_dates.append(date_analyzed)
         all_dates.sort()
         if len(all_dates) > 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
-            analyzed_to = all_dates[-1].strftime('%d/%m/%Y')
+            analyzed_from = all_dates[0].strftime("%d/%m/%Y")
+            analyzed_to = all_dates[-1].strftime("%d/%m/%Y")
         if len(all_dates) == 1:
-            analyzed_from = all_dates[0].strftime('%d/%m/%Y')
-            analyzed_to = all_dates[0].strftime('%d/%m/%Y')
-        return [analyzed_from,analyzed_to]
+            analyzed_from = all_dates[0].strftime("%d/%m/%Y")
+            analyzed_to = all_dates[0].strftime("%d/%m/%Y")
+        return [analyzed_from, analyzed_to]
 
-    def within_uncertainty(self,result,min,max):
+    def within_uncertainty(self, result, min, max):
         try:
             float_result = float(result)
         except ValueError:
@@ -670,12 +777,12 @@ class MultiReportView(MRV):
             float_max = float(max)
         except ValueError:
             float_max = None
-        if all(res is not None for res in [float_result,float_min,float_max]):
+        if all(res is not None for res in [float_result, float_min, float_max]):
             if float_result >= float_min and float_result <= float_max:
                 return "Pass"
         return "Fail"
 
-    def qc_analyses_data(self,qc):
+    def qc_analyses_data(self, qc):
         analysis_service_uid = qc.getAnalysisService().UID()
         ref_results = qc.getReferenceResults()
         for res in ref_results:
@@ -683,10 +790,10 @@ class MultiReportView(MRV):
                 result = res.get("result")
                 min = res.get("min")
                 max = res.get("max")
-                return [result,min,max]
-        return ["","",""]
-    
-    def is_unique_qc(self,qc):
+                return [result, min, max]
+        return ["", "", ""]
+
+    def is_unique_qc(self, qc):
         if len(qc_list) == 0:
             qc_list.append(qc)
         else:
@@ -696,11 +803,11 @@ class MultiReportView(MRV):
                 qc_list.append(qc)
         return True
 
-    def reference_definition_titles(self,samples):
+    def reference_definition_titles(self, samples):
         final_titles = ""
         titles = []
         for sample in samples:
-            qcs = sample.getQCAnalyses(['verified', 'published'])
+            qcs = sample.getQCAnalyses(["verified", "published"])
             for qc in qcs:
                 if qc.getReferenceDefinition():
                     title = qc.getReferenceDefinition().Title()
@@ -710,7 +817,7 @@ class MultiReportView(MRV):
             final_titles = final_titles + ", " + Title
         return final_titles
 
-    def get_date_string(self,num_date):
+    def get_date_string(self, num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
 
     # ----------------zlabs end-------------------------------------------------
@@ -718,12 +825,22 @@ class MultiReportView(MRV):
     # -----------------------Imx begin---------------------------------------
 
     def get_common_row_data_imex(self, collection, poc, category, spec):
-        """ A version of get_common_row_data for Imex """
+        """A version of get_common_row_data for Imex"""
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, "", "", "", ""]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                False,
+                "",
+                "",
+                "",
+                "",
+            ]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
             if spec:
@@ -810,9 +927,9 @@ class MultiReportView(MRV):
                 all_keywords = all_keywords + names + ", "
             return [False, all_keywords]
 
-    #-----------------------Imx end-----------------------------------------
+    # -----------------------Imx end-----------------------------------------
 
-    #------------------------GHill begin-------------------------------------
+    # ------------------------GHill begin-------------------------------------
 
     def get_pages_long_names(self, options):
         if options.get("orientation", "") == "portrait":
@@ -861,9 +978,16 @@ class MultiReportView(MRV):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-",
-                        model.get_formatted_unit(analysis), "-",
-                        False, False, False, "-"]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                False,
+                False,
+                False,
+                "-",
+            ]
             if analysis.Method:
                 datum[1] = analysis.Method.Title()
             datum[4] = self.is_analysis_accredited(analysis)
@@ -891,9 +1015,16 @@ class MultiReportView(MRV):
         common_data = []
         for analysis in analyses:
             if analysis.getSortKey():
-                datum = [analysis.Title(), "-",
-                         model.get_formatted_unit(analysis), "-",
-                         False, False, False, "-"]
+                datum = [
+                    analysis.Title(),
+                    "-",
+                    model.get_formatted_unit(analysis),
+                    "-",
+                    False,
+                    False,
+                    False,
+                    "-",
+                ]
                 if analysis.Method:
                     datum[1] = analysis.Method.Title()
                 datum[4] = self.is_analysis_accredited(analysis)
@@ -914,40 +1045,55 @@ class MultiReportView(MRV):
                 common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
-    
-    def get_datetime_string(self,num_date):
-        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year()) + " " + str(num_date.Time()[:5])
+
+    def get_datetime_string(self, num_date):
+        return (
+            str(num_date.day())
+            + " "
+            + num_date.Month()
+            + " "
+            + str(num_date.year())
+            + " "
+            + str(num_date.Time()[:5])
+        )
 
     def get_extended_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
+        subcontracted_symbol_url = (
+            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
         )
         accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        savcregistered_symbol_url = "{}/++resource++bika.coa.images/savcregistered.png".format(
-            self.portal_url
+        savcregistered_symbol_url = (
+            "{}/++resource++bika.coa.images/savcregistered.png".format(self.portal_url)
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,
-                "savcregistered_symbol_url": savcregistered_symbol_url,}
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "subcontracted_symbol_url": subcontracted_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+            "savcregistered_symbol_url": savcregistered_symbol_url,
+        }
         return datum
-    
-    #------------------------GHill end---------------------------------------
 
-    #------------------------Hydro begin-------------------------------------
+    # ------------------------GHill end---------------------------------------
+
+    # ------------------------Hydro begin-------------------------------------
     def get_common_row_data_hydro(self, collection, poc, category):
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-",
-                        model.get_formatted_unit(analysis), "-",
-                        False, "-"]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                False,
+                "-",
+            ]
             if analysis.Method:
                 datum[1] = analysis.Method.Title()
             datum[4] = self.is_analysis_method_subcontracted(analysis)
@@ -966,7 +1112,7 @@ class MultiReportView(MRV):
             common_data.append(datum)
         unique_data = self.uniquify_items(common_data)
         return unique_data
-    
+
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
         sciformat = int(setup.getScientificNotationReport())
@@ -982,21 +1128,21 @@ class MultiReportView(MRV):
 
     def get_formatted_specs_hydro(self, model, analysis):
         specs = analysis.getResultsRange()
-        fs = ''
+        fs = ""
         precision = analysis.getPrecision()
         if not precision:
             precision = 0
         precision_formatting = "{:." + str(precision) + "f}"
-        if specs.get('min', None) and specs.get('max', None):
-            min_val = precision_formatting.format(float(specs['min']))
-            max_val = precision_formatting.format(float(specs['max']))
-            fs = '(%s - %s)' % (min_val, max_val)
-        elif specs.get('min', None):
-            min_val = precision_formatting.format(float(specs['min']))
-            fs = '> %s' % min_val
-        elif specs.get('max', None):
-            max_val = precision_formatting.format(float(specs['max']))
-            fs = '< %s' % max_val
+        if specs.get("min", None) and specs.get("max", None):
+            min_val = precision_formatting.format(float(specs["min"]))
+            max_val = precision_formatting.format(float(specs["max"]))
+            fs = "(%s - %s)" % (min_val, max_val)
+        elif specs.get("min", None):
+            min_val = precision_formatting.format(float(specs["min"]))
+            fs = "> %s" % min_val
+        elif specs.get("max", None):
+            max_val = precision_formatting.format(float(specs["max"]))
+            fs = "< %s" % max_val
         return formatDecimalMark(fs, model.decimal_mark)
 
     def dates_sampled_same_day(self, collection=None):
@@ -1009,18 +1155,18 @@ class MultiReportView(MRV):
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
 
-    def same_sample_point_location(self,collection=None):
+    def same_sample_point_location(self, collection=None):
         sample_point_locations = [i.getSamplePointLocation() for i in collection]
         return len(set(sample_point_locations)) == 1
 
-    def matching_analysis_in_spec(self,analysis,result_range):
-        return analysis.getKeyword() == result_range['keyword']
+    def matching_analysis_in_spec(self, analysis, result_range):
+        return analysis.getKeyword() == result_range["keyword"]
 
-    def any_matching_analysis_in_spec(self,analysis,spec):
+    def any_matching_analysis_in_spec(self, analysis, spec):
         analysis_match = False
         result_ranges = spec.getResultsRange()
         for result_range in result_ranges:
-            if analysis.getKeyword() == result_range['keyword']:
+            if analysis.getKeyword() == result_range["keyword"]:
                 analysis_match = True
         return analysis_match
 
@@ -1052,14 +1198,14 @@ class MultiReportView(MRV):
             pages.append(new_page)
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
-    
-    def get_location_address(self,location):
-        address = location.getAddress()[0].get('address')
-        city = location.getAddress()[0].get('city')
-        country = location.getAddress()[0].get('country')
+
+    def get_location_address(self, location):
+        address = location.getAddress()[0].get("address")
+        city = location.getAddress()[0].get("city")
+        country = location.getAddress()[0].get("country")
         if not (address or city or country):
             return
-        return "{0}, {1}, {2}".format(address,city,country)
+        return "{0}, {1}, {2}".format(address, city, country)
 
     # ------------------------Hydro end--------------------------------------
 
@@ -1075,21 +1221,30 @@ class MultiReportView(MRV):
                 all_dates.append(date_captured)
         all_dates.sort()
         if len(all_dates) > 0:
-            from_date =  self.to_localized_date(all_dates[0])
-            to_date =  self.to_localized_date(all_dates[-1])
+            from_date = self.to_localized_date(all_dates[0])
+            to_date = self.to_localized_date(all_dates[-1])
         return [from_date, to_date]
 
     def get_common_row_data_cannabis(self, collection, poc, category):
-        """ A version of get_common_row_data for Cannabis """
+        """A version of get_common_row_data for Cannabis"""
         model = collection[0]
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", False, False, "", ""]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                False,
+                False,
+                "",
+                "",
+            ]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = self.is_analysis_accredited(analysis)
             datum[5] = self.is_analysis_method_subcontracted(analysis)
-            specification  = analysis.getSpecification()
+            specification = analysis.getSpecification()
             publication_specification = analysis.getPublicationSpecification()
             spec = publication_specification or specification
             if spec:
@@ -1160,8 +1315,7 @@ class MultiReportView(MRV):
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(
-            analyses_parameters, key=lambda item: item["method_id"])
+        items = sorted(analyses_parameters, key=lambda item: item["method_id"])
         return items
 
     def get_analyses_instruments(self, collection=None, poc=None, category=None):
@@ -1172,12 +1326,11 @@ class MultiReportView(MRV):
             for i, instrument in enumerate(instruments):
                 title = instrument.Title()
                 description = instrument.Description()
-                rec = {"description": '{}. {}'.format(title, description)}
+                rec = {"description": "{}. {}".format(title, description)}
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(
-            analyses_parameters, key=lambda item: item["description"])
+        items = sorted(analyses_parameters, key=lambda item: item["description"])
         return items
 
     def get_analyses_preparations(self, collection=None, poc=None, category=None):
@@ -1208,18 +1361,17 @@ class MultiReportView(MRV):
         return items
 
     def get_batch(self, collection=None):
-        if all([getattr(i.Batch , "id", '') for i in collection]):
+        if all([getattr(i.Batch, "id", "") for i in collection]):
             return collection[0].Batch.id
         return None
-    
 
     def is_batch_unique(self, collection=None):
         samples = collection
         # bug doesn't check if i.Batch could None and therefore throws
         # NoneType error
-        batches = [i.Batch.id for i in samples if getattr(i.Batch , "id", "")]
+        batches = [i.Batch.id for i in samples if getattr(i.Batch, "id", "")]
         return len(set(batches)) == 1
-    
+
     def is_batch_unique_2(self, collection=None):
         batches = []
         for sample in collection:
@@ -1231,8 +1383,7 @@ class MultiReportView(MRV):
         return len(batches) == 1
 
     def is_sps_unique(self, collection=None):
-        """Checks for unique sample points in a batch
-        """
+        """Checks for unique sample points in a batch"""
         if not self.is_batch_unique(collection):
             return False
         spls = []
@@ -1246,7 +1397,7 @@ class MultiReportView(MRV):
         return len(set(spls)) == 1
 
     def get_order_number(self, collection=None):
-        if all([getattr(i, "ClientOrderNumber", '') for i in collection]):
+        if all([getattr(i, "ClientOrderNumber", "") for i in collection]):
             return collection[0].ClientOrderNumber
         return None
 
@@ -1255,15 +1406,15 @@ class MultiReportView(MRV):
             if analysis.Method.Supplier:
                 return True
         return False
-    
-    def is_analysis_accredited(self,analysis):
+
+    def is_analysis_accredited(self, analysis):
         if analysis.Accredited:
             return True
         return False
-    
+
     def is_analysis_method_savcregistered(self, analysis):
         if analysis.Method:
-            if getattr(analysis.Method,'SAVCRegistered',''):
+            if getattr(analysis.Method, "SAVCRegistered", ""):
                 return True
         return False
 
@@ -1339,8 +1490,8 @@ class MultiReportView(MRV):
         if analyses:
             actor = getTransitionUsers(analyses[0].getObject(), "verify")
         if not actor:
-            return {"verifier": '', "email": ""}
-            
+            return {"verifier": "", "email": ""}
+
         user_name = actor[0] if actor else ""
         user_obj = api.get_user(user_name)
         roles = ploneapi.user.get_roles(username=user_name)
@@ -1350,13 +1501,15 @@ class MultiReportView(MRV):
         if not contact:
             return verifier
 
-        verifier["fullname"] =  contact.getFullname()
+        verifier["fullname"] = contact.getFullname()
         verifier["role"] = roles[0]
-        verifier["date_verified"] =  date_verified
-        verifier["email"] =  contact.getEmailAddress()
+        verifier["date_verified"] = date_verified
+        verifier["email"] = contact.getEmailAddress()
 
         if contact.getSalutation():
-            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+            verifier["verifier"] = "{}. {}".format(
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
 
@@ -1365,9 +1518,15 @@ class MultiReportView(MRV):
     def get_verifier_by_analysis(self, model):
         analysis = api.get_object(model)
         actor = getTransitionUsers(analysis, "verify")
-        verifier = {"fullname": "", "role": "", "email": "", "verifier": "",
-                    "signature": "", "jobtitle": "", "default_department": "",
-                    }
+        verifier = {
+            "fullname": "",
+            "role": "",
+            "email": "",
+            "verifier": "",
+            "signature": "",
+            "jobtitle": "",
+            "default_department": "",
+        }
         if not actor:
             return verifier
 
@@ -1379,33 +1538,38 @@ class MultiReportView(MRV):
         if not contact:
             return verifier
 
-        verifier["fullname"] =  contact.getFullname()
+        verifier["fullname"] = contact.getFullname()
         verifier["role"] = roles[0]
         # verifier["date_verified"] =  date_verified
-        verifier["email"] =  contact.getEmailAddress()
+        verifier["email"] = contact.getEmailAddress()
         verifier["jobtitle"] = contact.getJobTitle()
         if contact.getDefaultDepartment():
             default_department = contact.getDefaultDepartment().Title()
             verifier["default_department"] = default_department
         if contact.getSalutation():
-            verifier["verifier"] = "{}. {}".format(contact.getSalutation(), contact.getFullname())
+            verifier["verifier"] = "{}. {}".format(
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
         if contact.getSignature():
-            verifier["signature"] = '{}/Signature'.format(contact.absolute_url())
+            verifier["signature"] = "{}/Signature".format(contact.absolute_url())
 
         return verifier
 
     def get_lab_supervisor(self):
         laboratory = self.laboratory
         contact = laboratory.getSupervisor()
-        supervisor = {"fullname": "", "supervisor": "",
-                      "signature": "", "jobtitle": "",
-                     }
+        supervisor = {
+            "fullname": "",
+            "supervisor": "",
+            "signature": "",
+            "jobtitle": "",
+        }
         if not contact:
             return supervisor
 
-        supervisor["fullname"] =  contact.getFullname()
+        supervisor["fullname"] = contact.getFullname()
         supervisor["jobtitle"] = contact.getJobTitle()
         if contact.getSalutation():
             salutation = contact.getSalutation()
@@ -1414,28 +1578,32 @@ class MultiReportView(MRV):
         else:
             supervisor["supervisor"] = "{}".format(contact.getFullname())
         if contact.getSignature():
-            supervisor["signature"] = '{}/Signature'.format(contact.absolute_url())
+            supervisor["signature"] = "{}/Signature".format(contact.absolute_url())
 
         return supervisor
 
-
     def get_publisher(self):
         publisher = {
-                "today":"{}".format(DateTime().strftime("%Y-%m-%d")),
-                "email": "", "jobtitle": "", "publisher_job": "",}
+            "today": "{}".format(DateTime().strftime("%Y-%m-%d")),
+            "email": "",
+            "jobtitle": "",
+            "publisher_job": "",
+        }
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
         if not user:
-            publisher["publisher"] = '{}'.format(current_user.id)
+            publisher["publisher"] = "{}".format(current_user.id)
             return publisher
 
-        publisher["email"] = '{}'.format(user.getEmailAddress())
-        publisher["jobtitle"] =  user.getJobTitle()
+        publisher["email"] = "{}".format(user.getEmailAddress())
+        publisher["jobtitle"] = user.getJobTitle()
         if user.getSalutation():
-            publisher["publisher"] = '{}. {}'.format(user.getSalutation(), user.getFullname())
+            publisher["publisher"] = "{}. {}".format(
+                user.getSalutation(), user.getFullname()
+            )
         else:
-            publisher["publisher"] = '{}'.format(user.getFullname())
+            publisher["publisher"] = "{}".format(user.getFullname())
         fullname = publisher["publisher"]
         jobtitle = publisher["jobtitle"]
         publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
@@ -1466,19 +1634,29 @@ class MultiReportView(MRV):
             has_additional_info = True
         return has_additional_info
 
+    def get_analyst(self, collection):
+        model = collection[0]
+        analyses = self.get_analyses_by([model])
+        actor = getTransitionUsers(analyses[0], "submit")
+        user = actor[0] if actor else ""
+        user = api.get_user(user)
+        return user.fullname
+
     def get_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
             self.portal_url
         )
-        subcontracted_symbol_url = "{}/++resource++bika.coa.images/subcontracted.png".format(
-            self.portal_url
+        subcontracted_symbol_url = (
+            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
         )
         accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        datum = {"outofrange_symbol_url": outofrange_symbol_url,
-                "subcontracted_symbol_url": subcontracted_symbol_url,
-                "accredited_symbol_url": accredited_symbol_url,}
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "subcontracted_symbol_url": subcontracted_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+        }
         return datum
 
     def get_toolbar_logo(self):
@@ -1496,11 +1674,11 @@ class MultiReportView(MRV):
         return self.to_localized_time(date)[:10]
 
     def get_coa_number(self):
-        kwargs = {'portal_type': 'ARReport', "dry_run": True}
+        kwargs = {"portal_type": "ARReport", "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split('-')[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split('-')[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split('-')[-1], num)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
 
     def get_coa_styles(self):
@@ -1576,8 +1754,7 @@ class MultiReportView(MRV):
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(
-            analyses_parameters, key=lambda item: item["method_id"])
+        items = sorted(analyses_parameters, key=lambda item: item["method_id"])
         return items
 
     def get_footer_logo(self):
@@ -1610,10 +1787,11 @@ class MultiReportView(MRV):
             return analyst
 
         analyst["fullname"] = contact.getFullname()
-        analyst["email"] =  contact.getEmailAddress()
+        analyst["email"] = contact.getEmailAddress()
         if contact.getSalutation():
             analyst["analyst"] = "{}. {}".format(
-                    contact.getSalutation(), contact.getFullname())
+                contact.getSalutation(), contact.getFullname()
+            )
         else:
             analyst["analyst"] = "{}".format(contact.getFullname())
 
@@ -1631,5 +1809,5 @@ class MultiReportView(MRV):
 
     def get_tracking_id(self, tracking_id):
         if not tracking_id:
-            return '-'
+            return "-"
         return tracking_id[:12]
