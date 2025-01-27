@@ -400,7 +400,7 @@ class SingleReportView(SRV):
     def get_mix_material_amounts(self, model):
         uids = self.get_mix_material_amount_uids(model)
         if not uids:
-            return
+            return []
         mix_material_amount_objs = [api.get_object_by_uid(x) for x in uids]
         return mix_material_amount_objs
 
