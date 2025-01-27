@@ -398,19 +398,20 @@ class SingleReportView(SRV):
         return mix_type_obj.title
 
     def get_mix_materials(self, model):
-        uids = self.get_mix_material_uids(model)
+        uids = self.get_mix_material_amount_uids(model)
         if not uids:
             return
-        mix_material_objs = [api.get_object_by_uid(x) for x in uids]
+        mix_material_amount_objs = [api.get_object_by_uid(x) for x in uids]
+        mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
         return mix_material_objs
 
-    def get_mix_material_uids(self, model):
+    def get_mix_material_amount_uids(self, model):
         mix_design = self.get_mix_design(model)
         if not mix_design:
             return
-        mix_material_uids = mix_design.mix_materials
-        if mix_material_uids:
-            return mix_material_uids
+        mix_material_amount_uids = mix_design.mix_materials
+        if mix_material_amount_uids:
+            return mix_material_amount_uids
         return
 
 class MultiReportView(MRV):
