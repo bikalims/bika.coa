@@ -397,8 +397,8 @@ class SingleReportView(SRV):
             return batch.get_mix_design()
         return
 
-    def get_mix_design_concrete(self):
-        mix_design = self.get_mix_design()
+    def get_mix_design_concrete(self, model):
+        mix_design = self.get_mix_design(model)
         if not mix_design:
             return None
         return mix_design.get_mix_design_concrete()
@@ -422,6 +422,56 @@ class SingleReportView(SRV):
         result = model.get_formatted_result(analysis)
         formatted = format_timeseries(analysis, result)
         return formatted
+
+    def get_mix_type(self, model):
+        mix_design = self.get_mix_design(model)
+        mix_type = mix_design.mix_type
+        if not mix_type:
+            return
+        mix_type_obj = api.get_object_by_uid(mix_type)
+        return mix_type_obj.title
+
+    def get_mix_material_amounts(self, model):
+        uids = self.get_mix_material_amount_uids(model)
+        if not uids:
+            return []
+        mix_material_amount_objs = [api.get_object_by_uid(x) for x in uids]
+        return mix_material_amount_objs
+
+    def get_mix_material_amount_uids(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return
+        mix_material_amount_uids = mix_design.mix_materials
+        if mix_material_amount_uids:
+            return mix_material_amount_uids
+        return
+
+    def get_mix_material_row_data(self, model):
+        row_data = []
+        mix_material_amount_objs = self.get_mix_material_amounts(model)
+        mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
+        for row_num, mix_mat_amount in enumerate(mix_material_amount_objs):
+            mat_type_uid = mix_material_objs[row_num].material_type
+            if mat_type_uid:
+                mat_type = api.get_object_by_uid(mat_type_uid[0])
+            else:
+                mat_type = ""
+
+            mat_class = ""
+            if mat_type:
+                mat_class_uid = mat_type.material_class
+                if mat_class_uid:
+                    mat_class = api.get_object_by_uid(mat_class_uid[0]).title
+
+            if mat_type:
+                mat_type = mat_type.title
+
+            title = mix_material_objs[row_num].title
+            specific_gravity = mix_material_objs[row_num].specific_gravity
+            amount = mix_mat_amount.amounts
+            row_data.append([mat_class, mat_type, title, specific_gravity, amount])
+        return row_data
 
 
 class MultiReportView(MRV):
