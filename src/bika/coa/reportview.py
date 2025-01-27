@@ -461,7 +461,7 @@ class SingleReportView(SRV):
                 mat_type = [mat_type_obj.title, mat_type_url]
 
             mat_class = ""
-            if mat_type_obj:
+            if mat_type:
                 mat_class_uid = mat_type_obj.material_class
                 if mat_class_uid:
                     mat_class_obj = api.get_object_by_uid(mat_class_uid[0])
