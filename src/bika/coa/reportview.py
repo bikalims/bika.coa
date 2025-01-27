@@ -397,8 +397,8 @@ class SingleReportView(SRV):
             return batch.get_mix_design()
         return
 
-    def get_mix_design_concrete(self):
-        mix_design = self.get_mix_design()
+    def get_mix_design_concrete(self, model):
+        mix_design = self.get_mix_design(model)
         if not mix_design:
             return None
         return mix_design.get_mix_design_concrete()
@@ -423,6 +423,30 @@ class SingleReportView(SRV):
         formatted = format_timeseries(analysis, result)
         return formatted
 
+    def get_mix_type(self, model):
+        mix_design = self.get_mix_design(model)
+        mix_type = mix_design.mix_type
+        if not mix_type:
+            return
+        mix_type_obj = api.get_object_by_uid(mix_type)
+        return mix_type_obj.title
+
+    def get_mix_materials(self, model):
+        uids = self.get_mix_material_amount_uids(model)
+        if not uids:
+            return
+        mix_material_amount_objs = [api.get_object_by_uid(x) for x in uids]
+        mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
+        return mix_material_objs
+
+    def get_mix_material_amount_uids(self, model):
+        mix_design = self.get_mix_design(model)
+        if not mix_design:
+            return
+        mix_material_amount_uids = mix_design.mix_materials
+        if mix_material_amount_uids:
+            return mix_material_amount_uids
+        return
 
 class MultiReportView(MRV):
     """View for Bika COA Multi Reports"""
