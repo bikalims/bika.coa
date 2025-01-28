@@ -401,7 +401,21 @@ class SingleReportView(SRV):
         mix_design = self.get_mix_design(model)
         if not mix_design:
             return None
-        return mix_design.get_mix_design_concrete()
+        query = {
+            "portal_type": "MixDesignConcrete",
+            "path": {
+                "query": api.get_path(mix_design),
+            },
+        }
+        brains = api.search(query, SETUP_CATALOG)
+
+        # Don't display concrete tables when creating a mortar mix
+        mix_type = api.get_object_by_uid(mix_design.mix_type).title
+        if mix_type != "Concrete":
+            return None
+
+        if len(brains) == 1:
+            return api.get_object(brains[0])
 
     def get_mix_design_mortar_paste(self, model):
         mix_design = self.get_mix_design(model)
@@ -414,6 +428,12 @@ class SingleReportView(SRV):
             },
         }
         brains = api.search(query, SETUP_CATALOG)
+
+        # Don't display mortar tables when creating a concrete mix
+        mix_type = api.get_object_by_uid(mix_design.mix_type).title
+        if mix_type not in ["Mortar", "Paste"]:
+            return None
+
         if len(brains) == 1:
             return api.get_object(brains[0])
 
@@ -452,25 +472,29 @@ class SingleReportView(SRV):
         mix_material_amount_objs = self.get_mix_material_amounts(model)
         mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
         for row_num, mix_mat_amount in enumerate(mix_material_amount_objs):
+
             mat_type_uid = mix_material_objs[row_num].material_type
+            mat_type = ""
             if mat_type_uid:
-                mat_type = api.get_object_by_uid(mat_type_uid[0])
-            else:
-                mat_type = ""
+                mat_type_obj = api.get_object_by_uid(mat_type_uid[0])
+                mat_type_url = mat_type_obj.absolute_url()
+                mat_type = [mat_type_obj.title, mat_type_url]
 
             mat_class = ""
             if mat_type:
-                mat_class_uid = mat_type.material_class
+                mat_class_uid = mat_type_obj.material_class
                 if mat_class_uid:
-                    mat_class = api.get_object_by_uid(mat_class_uid[0]).title
-
-            if mat_type:
-                mat_type = mat_type.title
+                    mat_class_obj = api.get_object_by_uid(mat_class_uid[0])
+                    mat_class_url = mat_class_obj.absolute_url()
+                    mat_class = [mat_class_obj.title, mat_class_url]
 
             title = mix_material_objs[row_num].title
+            mix_material_url = mix_material_objs[row_num].absolute_url()
+            mix_material_title = [title, mix_material_url]
+
             specific_gravity = mix_material_objs[row_num].specific_gravity
             amount = mix_mat_amount.amounts
-            row_data.append([mat_class, mat_type, title, specific_gravity, amount])
+            row_data.append([mat_class, mat_type, mix_material_title, specific_gravity, amount])
         return row_data
 
 
