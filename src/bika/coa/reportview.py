@@ -401,7 +401,21 @@ class SingleReportView(SRV):
         mix_design = self.get_mix_design(model)
         if not mix_design:
             return None
-        return mix_design.get_mix_design_concrete()
+        query = {
+            "portal_type": "MixDesignConcrete",
+            "path": {
+                "query": api.get_path(mix_design),
+            },
+        }
+        brains = api.search(query, SETUP_CATALOG)
+
+        # Don't display concrete tables when creating a mortar mix
+        mix_type = api.get_object_by_uid(mix_design.mix_type).title
+        if mix_type != "Concrete":
+            return None
+
+        if len(brains) == 1:
+            return api.get_object(brains[0])
 
     def get_mix_design_mortar_paste(self, model):
         mix_design = self.get_mix_design(model)
@@ -414,6 +428,12 @@ class SingleReportView(SRV):
             },
         }
         brains = api.search(query, SETUP_CATALOG)
+
+        # Don't display mortar tables when creating a concrete mix
+        mix_type = api.get_object_by_uid(mix_design.mix_type).title
+        if mix_type not in ["Mortar", "Paste"]:
+            return None
+
         if len(brains) == 1:
             return api.get_object(brains[0])
 
