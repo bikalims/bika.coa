@@ -1200,6 +1200,16 @@ class MultiReportView(MRV):
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
 
+    def verified_on_same_day(self, collection=None):
+        datetimes = [i.getDateVerified() for i in collection]
+        dates_verified = [v.Date() if v else None for v in datetimes]
+        return len(set(dates_verified)) == 1
+
+    def published_on_same_day(self, collection=None):
+        datetimes = [i.getDatePublished() for i in collection]
+        dates_published = [v.Date() if v else None for v in datetimes]
+        return len(set(dates_published)) == 1
+
     def dates_received_same_day(self, collection=None):
         datetimes = [i.DateReceived for i in collection]
         dates = [v.Date() for v in datetimes]

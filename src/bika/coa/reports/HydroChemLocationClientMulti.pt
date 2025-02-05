@@ -198,8 +198,25 @@
   </tal:render>
   <!-- Samplepoint Location error message end -->
 
+  <!-- Different Verified dates error message start -->
+  <tal:render condition="python: not view.verified_on_same_day(collection)">
+    <div>
+      <h1> Samples have not been verified on the same day </h1>
+    </div>
+  </tal:render>
+  <!-- Different Verified Dates error message end -->
+
+  <!-- Different Published dates error message start -->
+  <tal:render condition="python: not view.published_on_same_day(collection)">
+    <div>
+      <h1> Samples have not been published on the same day </h1>
+    </div>
+  </tal:render>
+  <!-- Different Published dates error message end -->
+
+
   <!-- HEADER -->
-  <tal:meets_conditions condition="python: view.same_sample_point_location(collection)">
+  <tal:meets_conditions condition="python: view.same_sample_point_location(collection) and view.verified_on_same_day(collection) and view.published_on_same_day(collection)">
   <tal:render>
     <div class="row section-header no-gutters">
       <!-- Header Table -->
