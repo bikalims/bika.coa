@@ -356,27 +356,6 @@
       </div>
     </tal:render>
 
-    <!-- Location mini table -->
-    <tal:render define="primarysample python:collection[0];
-                        samplepointlocation python:primarysample.getSamplePointLocation();"
-                condition="samplepointlocation">
-        <div class="div-table" style="width:100%; margin-bottom: 1rem;">
-            <div class="table-row">
-                <div class="table-header-address">Location</div>
-                <div class="table-cell-address" tal:content="python:samplepointlocation.Title() or ''"/>
-                <div class="table-header-address">Address</div>
-                <div class="table-cell-address" tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
-            </div>
-            <div class="table-row">
-                <div class="table-header-address">Date Received</div>
-                <div class="table-cell-address" tal:content="python:primarysample.DateReceived and view.to_localized_date(primarysample.DateReceived) or '-'"/>
-                <div class="table-header-address">Date Verified</div>
-                <div class="table-cell-address" tal:content="python:primarysample.getDateVerified() and view.to_localized_date(primarysample.getDateVerified()) or '-'"/>
-            </div>
-        </div>
-        <br />
-    </tal:render>
-
 
 <!-- Results start -->
 
