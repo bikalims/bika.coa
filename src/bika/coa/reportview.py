@@ -1259,6 +1259,35 @@ class MultiReportView(MRV):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
+    def get_pages_dynamic(self, options, port_num, land_num):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = port_num
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = land_num
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = port_num
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
     def get_location_address(self, location):
         address = location.getAddress()[0].get("address")
         city = location.getAddress()[0].get("city")
