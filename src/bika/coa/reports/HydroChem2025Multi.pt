@@ -290,7 +290,9 @@
                       <div class="cell-bg">Contact</div>
                     </td>
                     <td class="field">
-                        <div tal:content="string:${coa_num}"/>
+                      <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                        <div tal:content="contact/Fullname|nothing"/>
+                      </tal:by_contact>
                     </td>
                   </tr>
                   <!-- Tel Number -->
@@ -298,8 +300,10 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Telephone</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                    <td class="field">
+                      <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
                         <div tal:condition="contact" tal:content="contact/Phone|nothing"/>
+                      </tal:by_contact>
                     </td>
                   </tr>
                   <!-- Email Address -->
@@ -307,12 +311,14 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Email</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                    <td class="field">
+                      <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
                         <tal:email tal:condition="contact/EmailAddress|nothing"
                                    tal:define="email contact/EmailAddress|nothing">
                             <a tal:content="email"
                                tal:attributes="href string:mailto:${email}"></a>
                         </tal:email>
+                      </tal:by_contact>
                     </td>
                   </tr>
                 </table>
@@ -336,8 +342,8 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Lab</div>
                     </td>
-                    <td class="field" tal:define="client python:view.group_items_by('Client', collection)">
-                        <div tal:condition="client" tal:content="client/Name|nothing"/>
+                    <td class="field">
+                            <div tal:replace="laboratory/title|nothing"/>
                     </td>
                   </tr>
                   <!-- Tel Number -->
@@ -345,8 +351,9 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Address</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <div tal:condition="contact" tal:content="contact/Phone|nothing"/>
+                    <td class="field">
+                              <span tal:replace="laboratory/PhysicalAddress/address|nothing"/>
+                              <span tal:replace="laboratory/PhysicalAddress/city|nothing"/>
                     </td>
                   </tr>
                   <!-- Email Address -->
@@ -354,12 +361,8 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Email Address</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                    <td class="field">
+                        <div tal:replace="laboratory/EmailAddress|nothing"/>
                     </td>
                   </tr>
                   <tr>
@@ -367,47 +370,33 @@
                       <div class="cell-bg">Telephone</div>
                     </td>
                     <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                      <div tal:replace="laboratory/Phone|nothing"/>
                     </td>
                   </tr>
                   <tr>
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Date Received</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                    <td class="field">
+                      <div tal:content="python:primarymodel.DateReceived and view.to_localized_date(primarymodel.DateReceived) or '-'"/>
                     </td>
                   </tr>
                   <tr>
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Date Verified</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                    <td class="field">
+                      <span tal:content="python:primarymodel.getDateVerified() and view.to_localized_date(primarymodel.getDateVerified()) or '-'"/>
                     </td>
                   </tr>
                   <tr>
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Publisher</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                    <td class="field">
+                      <tal:render define="publish python:view.get_publisher();">
+                          <span tal:content="publish/publisher_job"/>
+                      </tal:render>
                     </td>
                   </tr>
                   <tr>
@@ -415,11 +404,7 @@
                       <div class="cell-bg">Date Published</div>
                     </td>
                     <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                      <div tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp) or '-'"/>
                     </td>
                   </tr>
                 </table>
@@ -435,7 +420,9 @@
                       <div class="cell-bg">Client</div>
                     </td>
                     <td class="field">
-                        <div tal:content="string:${coa_num}"/>
+                      <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                          <div tal:replace="client/Name|nothing"></div>
+                      </tal:by_client>
                     </td>
                   </tr>
                   <!-- Client Name(s) -->
@@ -443,8 +430,8 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Client Reference</div>
                     </td>
-                    <td class="field" tal:define="client python:view.group_items_by('Client', collection)">
-                        <div tal:condition="client" tal:content="client/Name|nothing"/>
+                    <td class="field">
+                          <div tal:replace="primarymodel/ClientReference|nothing"></div>
                     </td>
                   </tr>
                   <!-- Tel Number -->
@@ -452,8 +439,12 @@
                     <td class="label no-padding" i18n:translate="">
                       <div class="cell-bg">Location</div>
                     </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <div tal:condition="contact" tal:content="contact/Phone|nothing"/>
+                    <td class="field">
+                        <tal:render define="primarysample python:collection[0];
+                                            samplepointlocation python:primarysample.getSamplePointLocation();"
+                                    condition="samplepointlocation">
+                        <div tal:content="python:samplepointlocation.Title() or ''"/>
+                        </tal:render>
                     </td>
                   </tr>
                   <!-- Email Address -->
@@ -462,11 +453,11 @@
                       <div class="cell-bg">Address</div>
                     </td>
                     <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                        <tal:email tal:condition="contact/EmailAddress|nothing"
-                                   tal:define="email contact/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
+                        <tal:render define="primarysample python:collection[0];
+                                            samplepointlocation python:primarysample.getSamplePointLocation();"
+                                    condition="samplepointlocation">
+                            <span tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
+                        </tal:render>
                     </td>
                   </tr>
                   <tr>
