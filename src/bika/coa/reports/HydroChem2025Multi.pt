@@ -274,7 +274,11 @@
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                <table class="table table-sm table-condensed">
+                <table class="table table-sm table-condensed table-bordered">
+            <colgroup>
+              <col style="width:50%"/>
+              <col style="width:50%"/>
+            </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
                     <td class="label no-padding " i18n:translate="">
@@ -325,7 +329,7 @@
               </td>
               <td style="border:none;" class="align-top pl-2" rowspan="2">
                 <!-- Right Table -->
-                <table class="table table-sm table-condensed ml-1"
+                <table class="table table-sm table-condensed ml-1 table-bordered"
                       tal:define="laboratory python:view.laboratory;">
                   <col style="width:35%"/>
                   <col style="width:65%"/>
@@ -413,7 +417,11 @@
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                <table class="table table-sm table-condensed">
+                <table class="table table-sm table-condensed table-bordered">
+                    <colgroup>
+                      <col style="width:50%"/>
+                      <col style="width:50%"/>
+                    </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
                     <td class="label no-padding" i18n:translate="">
@@ -458,12 +466,6 @@
                                     condition="samplepointlocation">
                             <span tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
                         </tal:render>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="label no-padding" i18n:translate="">
-                    </td>
-                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
                     </td>
                   </tr>
                 </table>
