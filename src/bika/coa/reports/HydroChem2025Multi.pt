@@ -67,6 +67,19 @@
      .report address { margin: 1rem 0; }
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
+     .report td.no-padding {
+      padding: 0 !important;
+      background-clip: content-box; /* <---- */
+      box-shadow: inset 0 0 0 1px #f0f0f0;
+    }
+
+    td.no-padding > div.cell-bg {
+      width: 100%;
+      height: 100%;
+      background-color: #f0f0f0;
+      box-sizing: border-box;
+      padding: .3rem;
+    }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
      .report .border-out { border-right: 1px solid #999; border-left: 1px solid #999;}
@@ -165,6 +178,7 @@
       width: 23mm;
     }
 
+
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
@@ -238,45 +252,53 @@
           <!-- Client Info -->
           <table class="table table-sm table-condensed">
             <colgroup>
+              <col style="width:60%"/>
               <col style="width:40%"/>
-              <col style="width:40%"/>
-              <!-- Accreditation Logo -->
-              <col style="width: 20%">
             </colgroup>
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                <table class="table table-sm table-condensed">
+                <table class="table table-sm table-condensed table-bordered">
+            <colgroup>
+              <col style="width:50%"/>
+              <col style="width:50%"/>
+            </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
-                    <td class="label" i18n:translate="">Contact</td>
+                    <td class="label no-padding " i18n:translate="">
+                      <div class="cell-bg">Certificate Number</div>
+                    </td>
+                    <td class="field">
+                        <div tal:content="string:${coa_num}"/>
+                    </td>
+                  </tr>
+                  <!-- Client Name(s) -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Contact</div>
+                    </td>
                     <td class="field">
                       <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
                         <div tal:content="contact/Fullname|nothing"/>
                       </tal:by_contact>
                     </td>
                   </tr>
-                  <!-- Client Name(s) -->
-                  <tr>
-                    <td class="label" i18n:translate="">Client</td>
-                    <td class="field">
-                      <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                        <div tal:content="client/Name|nothing"/>
-                      </tal:by_client>
-                    </td>
-                  </tr>
                   <!-- Tel Number -->
                   <tr>
-                    <td class="label" i18n:translate="">Tel #</td>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Telephone</div>
+                    </td>
                     <td class="field">
                       <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
-                        <div tal:content="contact/Phone|nothing"/>
+                        <div tal:condition="contact" tal:content="contact/Phone|nothing"/>
                       </tal:by_contact>
                     </td>
                   </tr>
                   <!-- Email Address -->
                   <tr>
-                    <td class="label" i18n:translate="">Email Address</td>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Email</div>
+                    </td>
                     <td class="field">
                       <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
                         <tal:email tal:condition="contact/EmailAddress|nothing"
@@ -289,36 +311,145 @@
                   </tr>
                 </table>
               </td>
-              <td style="border:none;" class="align-top pl-2">
+              <td style="border:none;" class="align-top pl-2" rowspan="2">
                 <!-- Right Table -->
-                <table class="table table-sm table-condensed ml-1"
+                <table class="table table-sm table-condensed ml-1 table-bordered"
                       tal:define="laboratory python:view.laboratory;">
+                  <col style="width:35%"/>
+                  <col style="width:65%"/>
                   <tr>
-                    <td>
-                      <!-- Laboratory Info -->
-                      <address style="margin-top: 0;" class="laboratory-address text-right">
-                        <div class="lab-address">
-                          <div class="lab-street">
-                            <div tal:replace="laboratory/PhysicalAddress/address|nothing"></div>
-                          </div>
-                          <span class="lab-zip">
-                            <div tal:replace="laboratory/PhysicalAddress/zip|nothing"></div>
-                          </span>
-                          <span class="lab-city">
-                            <div tal:replace="laboratory/PhysicalAddress/city|nothing"></div>
-                          </span>
-                          <div class="lab-country">
-                            <div tal:replace="laboratory/PhysicalAddress/country|nothing"></div>
-                          </div>
-                        </div>
-                        <div class="lab-title">
-                          <div tal:replace="laboratory/Phone|nothing"/>
-                        </div>
-                        <div class="lab-url">
-                          <a tal:attributes="href laboratory/LabURL"
-                            tal:content="laboratory/LabURL"></a>
-                        </div>
-                      </address>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Page</div>
+                    </td>
+                    <td class="field">
+                        <div tal:content="string:${coa_num}"/>
+                    </td>
+                  </tr>
+                  <!-- Client Name(s) -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Lab</div>
+                    </td>
+                    <td class="field">
+                            <div tal:replace="laboratory/title|nothing"/>
+                    </td>
+                  </tr>
+                  <!-- Tel Number -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Address</div>
+                    </td>
+                    <td class="field">
+                              <span tal:replace="laboratory/PhysicalAddress/address|nothing"/>
+                              <span tal:replace="laboratory/PhysicalAddress/city|nothing"/>
+                    </td>
+                  </tr>
+                  <!-- Email Address -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Email Address</div>
+                    </td>
+                    <td class="field">
+                        <div tal:replace="laboratory/EmailAddress|nothing"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Telephone</div>
+                    </td>
+                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:replace="laboratory/Phone|nothing"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Date Received</div>
+                    </td>
+                    <td class="field">
+                      <div tal:content="python:primarymodel.DateReceived and view.to_localized_date(primarymodel.DateReceived) or '-'"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Date Verified</div>
+                    </td>
+                    <td class="field">
+                      <span tal:content="python:primarymodel.getDateVerified() and view.to_localized_date(primarymodel.getDateVerified()) or '-'"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Publisher</div>
+                    </td>
+                    <td class="field">
+                      <tal:render define="publish python:view.get_publisher();">
+                          <span tal:content="publish/publisher_job"/>
+                      </tal:render>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Date Published</div>
+                    </td>
+                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                      <div tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp) or '-'"/>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="border:none;" class="align-top pr-2">
+                <!-- Left Table -->
+                <table class="table table-sm table-condensed table-bordered">
+                    <colgroup>
+                      <col style="width:50%"/>
+                      <col style="width:50%"/>
+                    </colgroup>
+                  <!-- Contact Name(s) -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Client</div>
+                    </td>
+                    <td class="field">
+                      <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                          <div tal:replace="client/Name|nothing"></div>
+                      </tal:by_client>
+                    </td>
+                  </tr>
+                  <!-- Client Name(s) -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Client Reference</div>
+                    </td>
+                    <td class="field">
+                          <div tal:replace="primarymodel/ClientReference|nothing"></div>
+                    </td>
+                  </tr>
+                  <!-- Tel Number -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Location</div>
+                    </td>
+                    <td class="field">
+                        <tal:render define="primarysample python:collection[0];
+                                            samplepointlocation python:primarysample.getSamplePointLocation();"
+                                    condition="samplepointlocation">
+                        <div tal:content="python:samplepointlocation.Title() or ''"/>
+                        </tal:render>
+                    </td>
+                  </tr>
+                  <!-- Email Address -->
+                  <tr>
+                    <td class="label no-padding" i18n:translate="">
+                      <div class="cell-bg">Address</div>
+                    </td>
+                    <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                        <tal:render define="primarysample python:collection[0];
+                                            samplepointlocation python:primarysample.getSamplePointLocation();"
+                                    condition="samplepointlocation">
+                            <span tal:content="python:view.get_location_address(samplepointlocation) or ''"/>
+                        </tal:render>
                     </td>
                   </tr>
                 </table>
