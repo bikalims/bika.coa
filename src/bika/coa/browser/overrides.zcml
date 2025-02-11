@@ -45,4 +45,10 @@
       provides="senaite.impress.interfaces.ITemplateFinder"
       factory=".utils.TemplateFinder"/>
 
+  <!-- HTML/PDF Publisher Utility -->
+  <utility
+      provides="senaite.impress.interfaces.IPublisher"
+      factory=".utils.Publisher"
+      />
+
 </configure>

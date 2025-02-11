@@ -322,7 +322,7 @@
                       <div class="cell-bg">Page</div>
                     </td>
                     <td class="field">
-                        <div tal:content="string:${coa_num}"/>
+                        <div>1/number_of_pages</div>
                     </td>
                   </tr>
                   <!-- Client Name(s) -->
