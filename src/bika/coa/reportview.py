@@ -1200,6 +1200,16 @@ class MultiReportView(MRV):
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
 
+    def verified_on_same_day(self, collection=None):
+        datetimes = [i.getDateVerified() for i in collection]
+        dates_verified = [v.Date() if v else None for v in datetimes]
+        return len(set(dates_verified)) == 1
+
+    def published_on_same_day(self, collection=None):
+        datetimes = [i.getDatePublished() for i in collection]
+        dates_published = [v.Date() if v else None for v in datetimes]
+        return len(set(dates_published)) == 1
+
     def dates_received_same_day(self, collection=None):
         datetimes = [i.DateReceived for i in collection]
         dates = [v.Date() for v in datetimes]
@@ -1228,6 +1238,35 @@ class MultiReportView(MRV):
         else:
             logger.error("get_pages: orientation unknown")
             num_per_page = 3
+        logger.info(
+            "get_pages: col len = {}; num_per_page = {}".format(
+                len(self.collection), num_per_page
+            )
+        )
+        pages = []
+        new_page = []
+        for idx, col in enumerate(self.collection):
+            if idx % num_per_page == 0:
+                if len(new_page):
+                    pages.append(new_page)
+                    logger.info("New page len = {}".format(len(new_page)))
+                new_page = [col]
+                continue
+            new_page.append(col)
+
+        if len(new_page) > 0:
+            pages.append(new_page)
+            logger.info("Last page len = {}".format(len(new_page)))
+        return pages
+
+    def get_pages_dynamic(self, options, port_num, land_num):
+        if options.get("orientation", "") == "portrait":
+            num_per_page = port_num
+        elif options.get("orientation", "") == "landscape":
+            num_per_page = land_num
+        else:
+            logger.error("get_pages: orientation unknown")
+            num_per_page = port_num
         logger.info(
             "get_pages: col len = {}; num_per_page = {}".format(
                 len(self.collection), num_per_page
