@@ -178,6 +178,11 @@
       width: 23mm;
     }
 
+    .remarks-block {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -777,13 +782,15 @@
     </tal:render>
 
     <!-- REMARKS -->
-    <tal:render condition="python:True">
+    <tal:render condition="python:True"
+                define="primarymodel python:collection[0];
+                        batch primarymodel/Batch;">
+
       <tal:model repeat="model collection">
-        <div class="row section-remarks no-gutters" tal:condition="model/Remarks">
+        <div class="row section-remarks no-gutters" tal:condition="batch">
           <div class="">
-            <h2 i18n:translate>Remarks for <span tal:replace="model/getId"/></h2>
-            <div class="text-info" tal:repeat="remark model/Remarks">
-                <div class="text-info" tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])"></div>
+            <div class="remarks-block">
+                <div tal:content="structure batch/COARemarks"></div>
             </div>
 	  </div>
           <br />
