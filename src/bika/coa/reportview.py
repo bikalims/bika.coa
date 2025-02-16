@@ -1215,9 +1215,32 @@ class MultiReportView(MRV):
         dates = [v.Date() for v in datetimes]
         return len(set(dates)) == 1
 
+    def is_orientation_landscape(self, options):
+        orientation =  options.get("orientation", None)
+        orientation =  options.get("orientation", None)
+        template = options.get("report_optios", {}).get("template", None)
+        if not template:
+            template = api.get_registry_record(
+                "senaite.impress.default_template")
+        hydro_template = 'bika.coa:HydroChem2025Multi.pt'
+        if orientation == "landscape" and template == hydro_template:
+            return True
+        return False
+
     def same_sample_point_location(self, collection=None):
         sample_point_locations = [i.getSamplePointLocation() for i in collection]
         return len(set(sample_point_locations)) == 1
+
+    def meets_hydrochem_conditions(self, collection=None, **kwargs):
+        if not self.same_sample_point_location(collection):
+            return False
+        if not self.verified_on_same_day(collection):
+            return False
+        if not self.published_on_same_day(collection):
+            return False
+        if not self.is_orientation_landscape(kwargs):
+            return False
+        return True
 
     def matching_analysis_in_spec(self, analysis, result_range):
         return analysis.getKeyword() == result_range["keyword"]

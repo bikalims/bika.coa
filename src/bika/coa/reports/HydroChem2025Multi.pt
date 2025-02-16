@@ -233,9 +233,20 @@
   </tal:render>
   <!-- Different Published dates error message end -->
 
+  <!-- Landscape error -->
+  <tal:render condition="python: not view.is_orientation_landscape(options)">
+    <div>
+      <h2>The selected report can only be rendered in Landscape orientation(mode)!</h2>
+      <p>To show the report, please change the orientation to Landscape on the
+      report rendering options
+      </p>
+    </div>
+  </tal:render>
+  <!-- Different Published dates error message end -->
+
 
   <!-- HEADER -->
-  <tal:meets_conditions condition="python: view.same_sample_point_location(collection) and view.verified_on_same_day(collection) and view.published_on_same_day(collection)">
+  <tal:meets_conditions condition="python: view.meets_hydrochem_conditions(collection, **options)">
   <tal:render>
     <div class="row section-header no-gutters">
       <!-- Header Table -->
