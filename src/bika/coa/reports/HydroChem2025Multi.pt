@@ -251,7 +251,7 @@
     <div class="row section-header no-gutters">
       <!-- Header Table -->
       <div>
-          <img class="logo image-fluid" style="max-width: 100%; height: auto;"
+          <img name="coa_num" class="logo image-fluid" style="max-width: 100%; height: auto;"
                 src = "++resource++bika.coa.images/HydroChemBanner.jpeg"/>
       </div>
     </div>
