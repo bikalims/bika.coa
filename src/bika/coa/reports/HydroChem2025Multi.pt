@@ -119,6 +119,10 @@
       width: auto;
     }
 
+    .span-two-rows {
+    grid-row: span 2; /* Spans 2 rows */
+    }
+
     .table-row {
       display: table-row;
     }
@@ -147,6 +151,14 @@
       border-top: 1px solid #ccc;
       width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
     }   
+
+    .table-cell-category {
+      display: table-cell;
+      padding-top : 4px;
+      padding-bottom : 4px;
+      border-top: 1px solid #ccc;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+    }
 
     .table-header-date {
       display: table-cell;
@@ -644,70 +656,33 @@
           <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
           <div class="div-table small" style="margin:0;">
             <div class="table-row">
-              <div class="table-header">Sample ID</div>
+              <div class="table-header">Compound/Analyte</div>
               <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="model/Title"/>
+                <div class="table-cell font-weight-normal border-out text-center">
+                      <span tal:content="model/Title"/>
+                </div>
               </tal:ar>
             </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Client Sample ID</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.ClientSampleID or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Date Sampled</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">Sample Type</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.SampleTypeTitle or '-'"/>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header noborder">Specification</div>
-              <tal:ar repeat="model page">
-                <tal:spec_values tal:define="specification model/Specification;
-                                  publication_specification model/PublicationSpecification;
-                                  spec python:publication_specification or specification;">
-                  <div class="table-cell font-weight-normal text-center border-out">
-                      <div class="text-center"
-                          tal:condition="spec"
-                          tal:content="python:spec.Title() or '-'"/>
-                      <div class="text-center"
-                          tal:condition="not:spec"
-                          tal:content="python:'-'"/>
-                  </div>
-                </tal:spec_values>
-              </tal:ar>
-            </div>
-            <div class="table-row">
-              <div class="table-header" class="noborder">System</div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal border-out text-center"
-                      tal:content="python:model.SamplePointTitle or '-'"/>
-              </tal:ar>
-            </div>
-	</div>
-	<div class="div-table small">
+	      </div>
+	      <div class="div-table small">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="table-cell-lower font-weight-bold">
+                <div class="table-cell-category font-weight-bold">
                   <span tal:content="category/Title"/>
                 </div>
-		<div class="table-cell-lower font-weight-bold text-center">Unit</div>
+		        <div class="table-cell-lower font-weight-bold text-center">Unit</div>
                 <tal:results repeat="model page">
                   <div class="table-cell-lower font-weight-bold text-center border-lft">Result</div>
-		  <div class="table-cell-lower font-weight-bold text-center border-rite">(Min-Max)</div>
+		          <div class="table-cell-lower font-weight-bold text-center border-rite">(Min-Max)</div>
                 </tal:results>
               </div>
+<!--
+              <div class="table-row">
+                <div class="table-cell-category font-weight-bold">
+                  <span tal:content="category/Title"/>
+                </div>
+              </div>
+-->
               <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                       tal:repeat="row_data python:common_row_data">
                 <div class="table-cell-lower text-secondary">
