@@ -51,7 +51,13 @@
 
   <tal:css>
     <style type="text/css">
-     .report * { font: 9pt; }
+     @font-face {
+     font-family: 'Aptos';
+     font-style: normal;
+     font-weight: normal;
+     src: url('++resource++bika.coa.static/webfonts/Aptos/Aptos.ttf') format('ttf');
+     }
+     .report * {font: 9pt; }
      .report h1 { font-size: 140%; }
      .report h2 { font-size: 120%; }
      .report h3 { font-size: 110%; }
@@ -59,7 +65,7 @@
      .report .alnleft { text-align: left; }
      .report .alncenter { text-align: center; }
      .report .padtop { padding-top:1em; }
-     .report { font-family: TitilliumText22L-Regular; }
+     .report { font-family: Aptos; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
      .report .font-size-100 { font-size: 100%; }
