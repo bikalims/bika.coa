@@ -1242,6 +1242,17 @@ class MultiReportView(MRV):
             return False
         return True
 
+    def hydro_get_poc_title(self, poc, analyses_by_poc):
+        poc_title = self.points_of_capture.get(poc)
+        if poc_title:
+            poc_title = poc_title.replace("Analyses", "Results")
+        lab = analyses_by_poc.get("lab")
+        field = analyses_by_poc.get("field")
+        if not field and lab:
+            return "Results"
+        else:
+            return poc_title
+
     def matching_analysis_in_spec(self, analysis, result_range):
         return analysis.getKeyword() == result_range["keyword"]
 
