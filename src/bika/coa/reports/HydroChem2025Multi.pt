@@ -771,17 +771,14 @@
     <tal:render condition="python:True"
                 define="primarymodel python:collection[0];
                         batch primarymodel/Batch;">
-
-      <tal:model repeat="model collection">
-        <div class="row section-remarks no-gutters" tal:condition="batch">
-          <div class="">
-            <div class="remarks-block">
-                <div tal:content="structure batch/COARemarks"></div>
-            </div>
-	  </div>
-          <br />
+      <div class="row section-remarks no-gutters" tal:condition="python:batch and batch.get('COARemarks', '')">
+        <div class="">
+          <div class="remarks-block">
+              <div tal:content="structure batch/COARemarks"></div>
+          </div>
         </div>
-      </tal:model>
+        <br />
+      </div>
     </tal:render>
 
     <!-- ATTACHMENTS -->
