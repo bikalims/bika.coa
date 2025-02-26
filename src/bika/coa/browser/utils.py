@@ -58,9 +58,13 @@ class Publisher(Pu):
         del html
         del document
         # NOTE: Rerun now that we have number_of_pages HACK!!!
-        tag = old_html.find("div", text=lambda x: x and "number_of_pages" in x)
-        if tag:
+        tags = old_html.find_all("div", text=lambda x: x and "number_of_pages" in x)
+        for tag in tags:
             tag.string = tag.text.replace("number_of_pages", number_of_pages)
+
+        tag = old_html.find("div", text=lambda x: x and "last" in x)
+        if tag:
+            tag.string = tag.text.replace("last", number_of_pages)
 
         # ensure we have plain html and not a BS4 node
         html = self.to_html(old_html)

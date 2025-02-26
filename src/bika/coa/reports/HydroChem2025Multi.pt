@@ -647,7 +647,7 @@
                           <div class="cell-bg">Page</div>
                         </td>
                         <td class="field">
-                            <div>page_num/number_of_pages</div>
+                            <div>2/number_of_pages</div>
                         </td>
                       </tr>
                     <!-- Contact -->
@@ -686,6 +686,7 @@
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
+
 
 
 
@@ -953,7 +954,7 @@
                           <div class="cell-bg">Page</div>
                         </td>
                         <td class="field">
-                            <div>page_num/number_of_pages</div>
+                            <div>last/number_of_pages</div>
                         </td>
                       </tr>
                     <!-- Contact -->
