@@ -70,13 +70,13 @@
      .report td.no-padding {
       padding: 0 !important;
       background-clip: content-box; /* <---- */
-      box-shadow: inset 0 0 0 1px #f0f0f0;
+      box-shadow: inset 0 0 0 1px #d9d9d9;
     }
 
     td.no-padding > div.cell-bg {
       width: 100%;
       height: 100%;
-      background-color: #f0f0f0;
+      background-color: #d9d9d9;
       box-sizing: border-box;
       padding: .3rem;
     }
@@ -132,7 +132,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       font-weight: bold;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
     }
 
@@ -140,7 +140,7 @@
       display: table-cell;
       padding-top : 4px;
       padding-bottom : 4px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width:  <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
     }
 
@@ -148,7 +148,7 @@
       display: table-cell;
       padding-top : 4px;
       padding-bottom : 4px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
     }   
 
@@ -156,7 +156,7 @@
       display: table-cell;
       padding-top : 4px;
       padding-bottom : 4px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
     }
 
@@ -164,14 +164,14 @@
       display: table-cell;
       padding: 4px;
       font-weight: bold;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width: 25mm;
     }
 
     .table-cell-date {
       display: table-cell;
       padding: 1px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width: 25mm;
     }
 
@@ -179,19 +179,19 @@
       display: table-cell;
       padding: 4px;
       font-weight: bold;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width: 23mm;
     }
 
     .table-cell-address {
       display: table-cell;
       padding: 1px;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid #b7b7b7;
       width: 23mm;
     }
 
     .remarks-block {
-    border: 1px solid #ccc;
+    border: 1px solid #b7b7b7;
     padding: 10px;
     margin: 10px 0;
     }
@@ -203,6 +203,16 @@
     .page-break {
       page-break-after: always;
       display: block; /* Ensure it's not inline */
+    }
+    .color-setup {
+      color: #434343;
+    }
+    .header-colour-bg {
+      background-color: #7f2346;
+      color: white;
+    }
+    .cell-colour-bg {
+      background-color: #d9d9d9;
     }
 
      <tal:block condition="python:content_width and content_height">
@@ -302,11 +312,11 @@
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                <table class="table table-sm table-condensed table-bordered">
-            <colgroup>
-              <col style="width:50%"/>
-              <col style="width:50%"/>
-            </colgroup>
+                <table class="color-setup table table-sm table-condensed table-bordered">
+                  <colgroup>
+                    <col style="width:50%"/>
+                    <col style="width:50%"/>
+                  </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
                     <td class="label no-padding " i18n:translate="">
@@ -357,7 +367,7 @@
               </td>
               <td style="border:none;" class="align-top pl-2" rowspan="2">
                 <!-- Right Table -->
-                <table class="table table-sm table-condensed ml-1 table-bordered"
+                <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
                       tal:define="laboratory python:view.laboratory;">
                   <col style="width:35%"/>
                   <col style="width:65%"/>
@@ -445,7 +455,7 @@
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                <table class="table table-sm table-condensed table-bordered">
+                <table class="color-setup table table-sm table-condensed table-bordered">
                     <colgroup>
                       <col style="width:50%"/>
                       <col style="width:50%"/>
@@ -585,7 +595,7 @@
               <tr>
                 <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
-                  <table class="table table-sm table-condensed table-bordered">
+                  <table class="color-setup table table-sm table-condensed table-bordered">
                     <colgroup>
                       <col style="width:50%"/>
                       <col style="width:50%"/>
@@ -627,7 +637,7 @@
                 </td>
                 <td style="border:none;" class="align-top pl-2" rowspan="2">
                 <!-- Right Table -->
-                  <table class="table table-sm table-condensed ml-1 table-bordered"
+                  <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
                         tal:define="laboratory python:view.laboratory;">
                     <col style="width:35%"/>
                     <col style="width:65%"/>
@@ -688,17 +698,17 @@
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1 i18n:translate="">Sample Information</h1>
-          <div style="margin-bottom: 10px;" class="div-table small">
+          <div style="margin-bottom: 10px;" class="color-setup div-table small">
               <div class="table-row">
-                <div class="table-header">Sample ID</div>
+                <div class="header-colour-bg table-header">Sample ID</div>
                 <tal:ar repeat="model page">
-                  <div class="table-cell font-weight-normal text-center">
+                  <div class="header-colour-bg table-cell font-weight-normal text-center">
                          <span tal:content="model/Title"/>
                   </div>
                 </tal:ar>
               </div>
               <div class="table-row noborder" style="border:none !important">
-                <div class="table-header noborder">
+                <div class="cell-colour-bg table-header noborder">
                         Client Sample ID
                 </div>
                 <tal:ar repeat="model page">
@@ -708,7 +718,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="table-header noborder">
+                <div class="cell-colour-bg table-header noborder">
                     <span>Date Sampled</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -718,7 +728,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="table-header noborder">
+                <div class="cell-colour-bg table-header noborder">
                       <span>Sample Type</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -728,7 +738,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="table-header noborder">
+                <div class="cell-colour-bg table-header noborder">
                     <span>Sample Point</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -738,7 +748,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="table-header noborder">
+                <div class="cell-colour-bg table-header noborder">
                     <span>Specification</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -773,7 +783,7 @@
         <tal:poc tal:repeat="poc analyses_by_poc">
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
           <div class="div-table small" style="margin:0;">
-            <div class="table-row">
+            <div class="header-colour-bg table-row">
               <div class="table-header">Compound/Analyte</div>
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal border-out text-center">
@@ -782,16 +792,16 @@
               </tal:ar>
             </div>
 	      </div>
-	      <div class="div-table small">
+	      <div class="color-setup div-table small">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="table-cell-category font-weight-bold">
+                <div class="cell-colour-bg table-cell-category font-weight-bold">
                   <span tal:content="category/Title"/>
                 </div>
-		        <div class="table-cell-lower font-weight-bold text-center">Unit</div>
+		        <div class="cell-colour-bg table-cell-lower font-weight-bold text-center">Unit</div>
                 <tal:results repeat="model page">
-                  <div class="table-cell-lower font-weight-bold text-center border-lft">Result</div>
-		          <div class="table-cell-lower font-weight-bold text-center border-rite">(Min-Max)</div>
+                  <div class="cell-colour-bg table-cell-lower font-weight-bold text-center border-lft">Result</div>
+		          <div class="cell-colour-bg table-cell-lower font-weight-bold text-center border-rite">(Min-Max)</div>
                 </tal:results>
               </div>
 <!--
