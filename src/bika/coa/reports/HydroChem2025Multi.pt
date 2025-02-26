@@ -289,7 +289,7 @@
     <div class="content row section-header no-gutters">
       <!-- Header Table -->
       <div>
-          <img name="coa_num" class="logo image-fluid" style="max-width: 100%; height: auto;"
+          <img class="logo image-fluid" style="max-width: 100%; height: auto;"
                 src = "++resource++bika.coa.images/HydroChemBanner.jpeg"/>
       </div>
     </div>
@@ -323,7 +323,7 @@
                       <div class="cell-bg">Certificate Number</div>
                     </td>
                     <td class="field">
-                        <div tal:content="string:${coa_num}"/>
+                        <div name="coa_num"  tal:content="string:${coa_num}"/>
                     </td>
                   </tr>
                   <!-- Client Name(s) -->
