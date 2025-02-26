@@ -200,22 +200,11 @@
       float: right;
     }
 
-    .header-information {
-      position: fixed;
-      width: 100%;
-      top: 0;
-      z-index: 10;
-    }
-
     .page-break {
-      page-break-before: always;
+      page-break-after: always;
       display: block; /* Ensure it's not inline */
     }
-/*
-    .content {
-        margin-top:80px;
-    }
-*/
+
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
@@ -230,9 +219,8 @@
        max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
      }
      </tal:block>
-     @page {
-        margin-top: 60px;
 
+     @page {
        @bottom-right {
          vertical-align: top;
          margin-top: 2mm;
@@ -246,9 +234,6 @@
          content: "Certificate of Analysis";
        }
      }
-    @page:first {
-        margin-top: 0;
-    }
     </style>
   </tal:css>
 
@@ -524,7 +509,7 @@
 
     <!-- Legend start -->
     <tal:render>
-      <div class="row section-info no-gutters" style = "margin-bottom: 30px; page-break-after: always;">
+      <div class="row section-info no-gutters" style="margin-bottom: 30px;">
         <div class="w-100">
           <div style="width: 100%; height: 3px; background-color: maroon; margin-bottom: 10px;"></div>
           <div>
@@ -558,7 +543,7 @@
 
     <!-- ALERTS -->
     <tal:render condition="python:True">
-      <div class="row section-alerts no-gutters">
+      <div class="page-break row section-alerts no-gutters">
         <div class="w-100">
           <tal:model repeat="model collection">
             <div class="alert alert-danger" tal:condition="model/is_invalid">
@@ -581,10 +566,11 @@
       </div>
     </tal:render>
 
+
   <!-- PAGE HEADER -->
   <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
     <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
-      <div class="header-information">
+      <div>
         <div class="row section-info no-gutters">
           <div>
             <img class="stick-right" style="max-width: 30%; height: auto;"
@@ -651,7 +637,7 @@
                           <div class="cell-bg">Page</div>
                         </td>
                         <td class="field">
-                            <div>1/number_of_pages</div>
+                            <div>page_num/number_of_pages</div>
                         </td>
                       </tr>
                     <!-- Contact -->
@@ -694,6 +680,7 @@
 
 
 <tal:page tal:repeat="page pages">
+
   <!-- Sample Information-->
   <tal:render condition="python:True"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
@@ -877,7 +864,7 @@
         </tal:poc>
     </tal:render>
  </tal:page>
- <h3 class="text-center">
+ <h3 class="text-center page-break">
      The results marked
                     <span class="outofrange text-danger">
                          <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
@@ -886,6 +873,115 @@
  </h3>
 <!-- Results end -->
 
+  <!-- PAGE HEADER -->
+  <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
+    <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
+      <div>
+        <div class="row section-info no-gutters">
+          <div>
+            <img class="stick-right" style="max-width: 30%; height: auto;"
+                  src = "++resource++bika.coa.images/HydroChemHeader.png"/>
+          </div>
+          <div class="w-100">
+            <table class="table table-sm table-condensed">
+              <colgroup>
+                  <col style="width:60%"/>
+                  <col style="width:40%"/>
+              </colgroup>
+              <tr>
+                <td style="border:none;" class="align-top pr-2">
+                <!-- Left Table -->
+                  <table class="table table-sm table-condensed table-bordered">
+                    <colgroup>
+                      <col style="width:50%"/>
+                      <col style="width:50%"/>
+                    </colgroup>
+                    <!-- Certificate Number -->
+                      <tr>
+                        <td class="label no-padding " i18n:translate="">
+                          <div class="cell-bg">Certificate Number</div>
+                        </td>
+                        <td class="field">
+                            <div tal:content="string:${coa_num}"/>
+                        </td>
+                      </tr>
+                    <!-- Client Name(s) -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Client</div>
+                        </td>
+                        <td class="field">
+                          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                              <div tal:replace="client/Name|nothing"></div>
+                          </tal:by_client>
+                        </td>
+                      </tr>
+                    <!-- Location -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Location</div>
+                        </td>
+                        <td class="field">
+                            <tal:render define="primarysample python:collection[0];
+                                                samplepointlocation python:primarysample.getSamplePointLocation();"
+                                        condition="samplepointlocation">
+                            <div tal:content="python:samplepointlocation.Title() or ''"/>
+                            </tal:render>
+                        </td>
+                      </tr>
+                  </table>
+                </td>
+                <td style="border:none;" class="align-top pl-2" rowspan="2">
+                <!-- Right Table -->
+                  <table class="table table-sm table-condensed ml-1 table-bordered"
+                        tal:define="laboratory python:view.laboratory;">
+                    <col style="width:35%"/>
+                    <col style="width:65%"/>
+                    <!-- Page Number -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Page</div>
+                        </td>
+                        <td class="field">
+                            <div>page_num/number_of_pages</div>
+                        </td>
+                      </tr>
+                    <!-- Contact -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Lab</div>
+                        </td>
+                        <td class="field">
+                                <div tal:replace="laboratory/title|nothing"/>
+                        </td>
+                      </tr>
+                    <!-- Email Address -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Email Address</div>
+                        </td>
+                        <td class="field">
+                            <div tal:replace="laboratory/EmailAddress|nothing"/>
+                        </td>
+                      </tr>
+                    <!-- Tel Number -->
+                      <tr>
+                        <td class="label no-padding" i18n:translate="">
+                          <div class="cell-bg">Telephone</div>
+                        </td>
+                        <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                          <div tal:replace="laboratory/Phone|nothing"/>
+                        </td>
+                      </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </tal:render>
+  <!-- /PAGE HEADER -->
 
     <!--  RESULTS INTERPRETATIONS -->
     <tal:render condition="python:True">
