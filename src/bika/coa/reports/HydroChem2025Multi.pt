@@ -521,7 +521,7 @@
     <tal:render>
       <div class="row section-info no-gutters" style="margin-bottom: 30px;">
         <div class="w-100">
-          <div style="width: 100%; height: 3px; background-color: maroon; margin-bottom: 10px;"></div>
+          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
           <div>
             <div>
               <h2 i18n:translate="">Legend</h2>
@@ -545,7 +545,7 @@
                 </p>
             </div>
           </div>
-          <div style="width: 100%; height: 3px; background-color: maroon; margin-top: -10px;"></div>
+          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-top: -10px;"></div>
         </div>
       </div>
     </tal:render>
@@ -701,7 +701,7 @@
         <h1 i18n:translate="">Sample Information</h1>
           <div style="margin-bottom: 10px;" class="color-setup div-table small">
               <div class="table-row">
-                <div class="header-colour-bg table-header">Sample ID</div>
+                <div class="header-colour-bg table-header" style="padding-left: 10px;">Sample ID</div>
                 <tal:ar repeat="model page">
                   <div class="header-colour-bg table-cell font-weight-normal text-center">
                          <span tal:content="model/Title"/>
@@ -709,7 +709,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder" style="border:none !important">
-                <div class="cell-colour-bg table-header noborder">
+                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
                         Client Sample ID
                 </div>
                 <tal:ar repeat="model page">
@@ -719,7 +719,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="cell-colour-bg table-header noborder">
+                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
                     <span>Date Sampled</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -729,7 +729,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="cell-colour-bg table-header noborder">
+                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
                       <span>Sample Type</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -739,7 +739,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="cell-colour-bg table-header noborder">
+                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
                     <span>Sample Point</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -749,7 +749,7 @@
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="cell-colour-bg table-header noborder">
+                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
                     <span>Specification</span>
                 </div>
                 <tal:ar repeat="model page">
@@ -785,7 +785,7 @@
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
           <div class="div-table small" style="margin:0;">
             <div class="header-colour-bg table-row">
-              <div class="table-header">Compound/Analyte</div>
+              <div class="table-header" style="padding-left: 10px;">Compound/Analyte</div>
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal border-out text-center">
                       <span tal:content="model/Title"/>
@@ -796,7 +796,7 @@
 	      <div class="color-setup div-table small">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="cell-colour-bg table-cell-category font-weight-bold">
+                <div class="cell-colour-bg table-cell-category font-weight-bold" style="padding-left: 10px;">
                   <span tal:content="category/Title"/>
                 </div>
 		        <div class="cell-colour-bg table-cell-lower font-weight-bold text-center">Unit</div>
@@ -814,7 +814,7 @@
 -->
               <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                       tal:repeat="row_data python:common_row_data">
-                <div class="table-cell-lower text-secondary">
+                <div class="table-cell-lower text-secondary" style="padding-left: 10px;">
                   <span tal:condition="python: row_data[4]">
                     <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                   </span>
@@ -1073,42 +1073,30 @@
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
       <div class="row section-signatures no-gutters">
         <div class="w-100">
-          <table class="table table-sm table-condensed" style="border-bottom: 3px solid #7f2346">
-            <tr style="border-top: 3px solid #7f2346;">
-                <td i18n:translate=""
-                  style="border-top: 3px solid #7f2346;
-                         border-right:1px solid #d9d9d9;
-                         ">
+          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
+          <table class="table table-sm table-condensed noborder">
+            <tr>
+                <td i18n:translate="">
                   <div class="font-weight-bold">
                   Managers Responsible
                   </div>
                 </td>
-                <td i18n:translate=""
-                 style="border-top: 3px solid #7f2346;
-                        border-left:1px solid #d9d9d9;
-                        border-right:1px solid #d9d9d9;
-                        ">
+                <td i18n:translate="">
                 </td>
-                <td i18n:translate="" style="border-top: 3px solid #7f2346;">
+                <td i18n:translate="">
                 </td>
             </tr>
             <tr>
               <tal:manager repeat="manager managers">
-                <td style="border-top: 1px solid #d9d9d9;
-                           border-right:1px solid #d9d9d9;
-                        ">
+                <td>
                   <div class="">
                     <span tal:content="manager/getFullname"></span>
                   </div>
                 </td>
-                <td style="border-top: 1px solid #d9d9d9;
-                           border-right:1px solid #d9d9d9;
-                           border-bottom:3px solid #7f2346;
-                ">
+                <td>
                     <span tal:content="manager/JobTitle"></span>
                 </td>
-                <td style="border-bottom:3px solid #7f2346;
-                           ">
+                <td>
                     <tal:email tal:condition="manager/EmailAddress|nothing"
                                tal:define="email manager/EmailAddress|nothing">
                         <a tal:content="email"
@@ -1118,6 +1106,7 @@
               </tal:manager>
             </tr>
           </table>
+          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px; margin-top: -10px; "></div>
         </div>
       </div>
     </tal:responsibles>
