@@ -875,6 +875,7 @@
         </tal:poc>
     </tal:render>
  </tal:page>
+ <div class="page-break"></div>
 <!-- Results end -->
 
   <!-- PAGE HEADER -->
