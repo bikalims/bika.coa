@@ -243,6 +243,12 @@
          font-size: 8pt;
          content: "Certificate of Analysis";
        }
+       @bottom-center {
+         vertical-align: top;
+         margin-top: 2mm;
+         font-size: 8pt;
+         content: "HydroChem";
+       }
      }
     </style>
   </tal:css>
