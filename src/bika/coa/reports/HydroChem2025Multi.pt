@@ -144,6 +144,15 @@
       width:  <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
     }
 
+    .table-cell-padded {
+      display: table-cell;
+      padding-top : 4px;
+      padding-bottom : 4px;
+      padding-left : 8mm;
+      border-top: 1px solid #b7b7b7;
+      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width / (len(pages[0]) + 1))-8)"/>;/*-8 from the padding-left amount*/
+    }
+
     .table-cell-lower {
       display: table-cell;
       padding-top : 4px;
@@ -710,7 +719,7 @@
               <div class="table-row">
                 <div class="header-colour-bg table-header" style="padding-left: 10px;">Sample ID</div>
                 <tal:ar repeat="model page">
-                  <div class="header-colour-bg table-cell font-weight-normal text-center">
+                  <div class="header-colour-bg table-cell-padded font-weight-normal">
                          <span tal:content="model/Title"/>
                   </div>
                 </tal:ar>
@@ -720,7 +729,7 @@
                         Client Sample ID
                 </div>
                 <tal:ar repeat="model page">
-                  <div class="table-cell font-weight-normal text-center noborder label font-weight-bold">
+                  <div class="table-cell-padded font-weight-normal noborder label font-weight-bold">
                       <span tal:content="python:model.ClientSampleID or '-'"/>
                   </div>
                 </tal:ar>
@@ -730,7 +739,7 @@
                     <span>Date Sampled</span>
                 </div>
                 <tal:ar repeat="model page">
-                 <div class="table-cell font-weight-normal text-center noborder">
+                 <div class="table-cell-padded font-weight-normal noborder">
                     <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
                 </div>
                 </tal:ar>
@@ -740,7 +749,7 @@
                       <span>Sample Type</span>
                 </div>
                 <tal:ar repeat="model page">
-                  <div class="table-cell font-weight-normal text-center noborder">
+                  <div class="table-cell-padded font-weight-normal noborder">
                       <span tal:content="python:model.SampleTypeTitle or '-'"/>
                   </div>
                 </tal:ar>
@@ -750,7 +759,7 @@
                     <span>Sample Point</span>
                 </div>
                 <tal:ar repeat="model page">
-                 <div class="table-cell font-weight-normal text-center noborder">
+                 <div class="table-cell-padded font-weight-normal  noborder">
                     <span tal:content="python:model.SamplePointTitle or '-'"/>
                 </div>
                 </tal:ar>
@@ -763,7 +772,7 @@
                 <tal:spec_values tal:define="specification model/Specification;
                                   publication_specification model/PublicationSpecification;
                                   spec python:publication_specification or specification;">
-                 <div class="table-cell font-weight-normal text-center noborder">
+                 <div class="table-cell-padded font-weight-normal noborder">
                   <span>
                       <span
                           tal:condition="spec"
