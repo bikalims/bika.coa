@@ -1072,18 +1072,6 @@
       </div>
     </tal:render>
 
-     <tal:render define="publish python:view.get_publisher();
-                        primarymodel python:collection[0];
-                        Verifier python:view.get_verifier(collection)">
-      <div class="table">
-          <div class="table-row">
-              <div class="table-header-date">Publisher</div>
-              <div class="table-cell-date" tal:content="publish/publisher"/>
-              <div class="table-header-date">Date Published</div>
-              <div class="table-cell-date" tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
-          </div>
-      </div>
-    </tal:render>
 
   <!--  SIGNATURES -->
   <tal:render condition="python:True">
@@ -1091,6 +1079,19 @@
       <div class="row section-signatures no-gutters">
         <div class="w-100">
           <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
+          <tal:render define="publish python:view.get_publisher();
+                             primarymodel python:collection[0];
+                             Verifier python:view.get_verifier(collection)">
+           <div class="table">
+               <div class="table-row">
+                   <div class="table-header-date">Publisher</div>
+                   <div class="table-cell-date" tal:content="publish/publisher"/>
+                   <div class="table-header-date">Date Published</div>
+                   <div class="table-cell-date"
+                       tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
+               </div>
+           </div>
+          </tal:render>
           <table class="table table-sm table-condensed noborder">
             <tr>
                 <td i18n:translate="">
