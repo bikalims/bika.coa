@@ -148,9 +148,9 @@
       display: table-cell;
       padding-top : 4px;
       padding-bottom : 4px;
-      padding-left : 8mm;
+      padding-left : 9mm;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width / (len(pages[0]) + 1))-8)"/>;/*-8 from the padding-left amount*/
+      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
     }
 
     .table-cell-lower {
