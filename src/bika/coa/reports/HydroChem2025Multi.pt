@@ -875,13 +875,6 @@
         </tal:poc>
     </tal:render>
  </tal:page>
- <h3 class="text-center page-break">
-     The results marked
-                    <span class="outofrange text-danger">
-                         <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                   </span>
-      are outside of the acceptable limits
- </h3>
 <!-- Results end -->
 
   <!-- PAGE HEADER -->
