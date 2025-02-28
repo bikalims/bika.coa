@@ -314,8 +314,8 @@
                 <!-- Left Table -->
                 <table class="color-setup table table-sm table-condensed table-bordered">
                   <colgroup>
-                    <col style="width:50%"/>
-                    <col style="width:50%"/>
+                    <col style="width:30%"/>
+                    <col style="width:70%"/>
                   </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
@@ -457,8 +457,8 @@
                 <!-- Left Table -->
                 <table class="color-setup table table-sm table-condensed table-bordered">
                     <colgroup>
-                      <col style="width:50%"/>
-                      <col style="width:50%"/>
+                      <col style="width:30%"/>
+                      <col style="width:70%"/>
                     </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
