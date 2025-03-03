@@ -158,6 +158,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
+      border-bottom: 1px solid #b7b7b7;
       width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
     }   
 
@@ -175,6 +176,14 @@
       font-weight: bold;
       border-top: 1px solid #b7b7b7;
       width: 25mm;
+    }
+
+    .add-bottom-border {
+      border-bottom: 1px solid #b7b7b7;
+    }
+
+    .add-right-border {
+      border-right: 1px solid #b7b7b7;
     }
 
     .table-cell-date {
@@ -729,9 +738,16 @@
                         Client Sample ID
                 </div>
                 <tal:ar repeat="model page">
-                  <div class="table-cell-padded font-weight-normal noborder label font-weight-bold">
-                      <span tal:content="python:model.ClientSampleID or '-'"/>
-                  </div>
+                    <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                            <span tal:content="python:model.ClientSampleID or '-'"/>
+                        </div>
+                    </tal:is_last_sample>
+                    <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder">
+                            <span tal:content="python:model.ClientSampleID or '-'"/>
+                        </div>
+                    </tal:is_not_last_sample>
                 </tal:ar>
               </div>
               <div class="table-row noborder">
@@ -739,9 +755,16 @@
                     <span>Date Sampled</span>
                 </div>
                 <tal:ar repeat="model page">
-                 <div class="table-cell-padded font-weight-normal noborder">
-                    <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
-                </div>
+                    <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                            <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+                        </div>
+                    </tal:is_last_sample>
+                    <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder">
+                            <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+                        </div>
+                    </tal:is_not_last_sample>
                 </tal:ar>
               </div>
               <div class="table-row noborder">
@@ -749,9 +772,16 @@
                       <span>Sample Type</span>
                 </div>
                 <tal:ar repeat="model page">
-                  <div class="table-cell-padded font-weight-normal noborder">
-                      <span tal:content="python:model.SampleTypeTitle or '-'"/>
-                  </div>
+                    <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                            <span tal:content="python:model.SampleTypeTitle or '-'"/>
+                        </div>
+                    </tal:is_last_sample>
+                    <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder">
+                            <span tal:content="python:model.SampleTypeTitle or '-'"/>
+                        </div>
+                    </tal:is_not_last_sample>
                 </tal:ar>
               </div>
               <div class="table-row noborder">
@@ -759,29 +789,51 @@
                     <span>Sample Point</span>
                 </div>
                 <tal:ar repeat="model page">
-                 <div class="table-cell-padded font-weight-normal  noborder">
-                    <span tal:content="python:model.SamplePointTitle or '-'"/>
-                </div>
+                    <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                            <span tal:content="python:model.SamplePointTitle or '-'"/>
+                        </div>
+                    </tal:is_last_sample>
+                    <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                        <div class="table-cell-padded font-weight-normal  noborder">
+                            <span tal:content="python:model.SamplePointTitle or '-'"/>
+                        </div>
+                    </tal:is_not_last_sample>
                 </tal:ar>
               </div>
               <div class="table-row noborder">
-                <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
+                <div class="cell-colour-bg table-header noborder add-bottom-border" style="padding-left: 10px;">
                     <span>Specification</span>
                 </div>
                 <tal:ar repeat="model page">
                 <tal:spec_values tal:define="specification model/Specification;
                                   publication_specification model/PublicationSpecification;
-                                  spec python:publication_specification or specification;">
-                 <div class="table-cell-padded font-weight-normal noborder">
-                  <span>
-                      <span
-                          tal:condition="spec"
-                          tal:content="python:spec.Title() or '-'"/>
-                      <span
-                          tal:condition="not:spec"
-                          tal:content="python:'-'"/>
-                  </span>
-                 </div>
+                                  spec python:publication_specification or specification;
+                                  last_sample python: view.is_last_sample(page, model);">
+                    <tal:is_last_sample tal:condition="python: last_sample">
+                        <div class="table-cell-padded font-weight-normal noborder add-bottom-border add-right-border">
+                        <span>
+                            <span
+                                tal:condition="spec"
+                                tal:content="python:spec.Title() or '-'"/>
+                            <span
+                                tal:condition="not:spec"
+                                tal:content="python:'-'"/>
+                        </span>
+                        </div>
+                    </tal:is_last_sample>
+                    <tal:is_not_last_sample tal:condition="python: not last_sample">
+                        <div class="table-cell-padded font-weight-normal noborder add-bottom-border">
+                        <span>
+                            <span
+                                tal:condition="spec"
+                                tal:content="python:spec.Title() or '-'"/>
+                            <span
+                                tal:condition="not:spec"
+                                tal:content="python:'-'"/>
+                        </span>
+                        </div>
+                    </tal:is_not_last_sample>
                 </tal:spec_values>
                 </tal:ar>
               </div>

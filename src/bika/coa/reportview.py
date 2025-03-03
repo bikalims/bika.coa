@@ -1227,6 +1227,14 @@ class MultiReportView(MRV):
             return True
         return False
 
+    def is_last_sample(self, models, model):
+        index = models.index(model)
+        models_length = len(models)
+        if index == models_length - 1:
+            return True
+        else:
+            return False
+
     def same_sample_point_location(self, collection=None):
         sample_point_locations = [i.getSamplePointLocation() for i in collection]
         return len(set(sample_point_locations)) == 1
