@@ -321,16 +321,16 @@
           <!-- Client Info -->
           <table class="table table-sm table-condensed">
             <colgroup>
-              <col style="width:60%"/>
-              <col style="width:40%"/>
+              <col style="width:50%"/>
+              <col style="width:50%"/>
             </colgroup>
             <tr>
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
                 <table class="color-setup table table-sm table-condensed table-bordered">
                   <colgroup>
-                    <col style="width:30%"/>
-                    <col style="width:70%"/>
+                    <col style="width:32%"/>
+                    <col style="width:68%"/>
                   </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
@@ -472,8 +472,8 @@
                 <!-- Left Table -->
                 <table class="color-setup table table-sm table-condensed table-bordered">
                     <colgroup>
-                      <col style="width:30%"/>
-                      <col style="width:70%"/>
+                      <col style="width:32%"/>
+                      <col style="width:68%"/>
                     </colgroup>
                   <!-- Contact Name(s) -->
                   <tr>
