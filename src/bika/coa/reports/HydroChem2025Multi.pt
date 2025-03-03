@@ -82,9 +82,9 @@
     }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
-     .report .border-out { border-right: 1px solid #999; border-left: 1px solid #999;}
-     .report .border-lft { border-left: 1px solid #999;}
-     .report .border-rite { border-right: 1px solid #999;}
+     .report .border-out { border-right: 1px solid #b7b7b7; border-left: 1px solid #b7b7b7;}
+     .report .add-left-border { border-left: 1px solid #b7b7b7;}
+     .report .add-right-border { border-right: 1px solid #b7b7b7;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo { max-height: 200px; margin-bottom: 10px }
@@ -180,10 +180,6 @@
 
     .add-bottom-border {
       border-bottom: 1px solid #b7b7b7;
-    }
-
-    .add-right-border {
-      border-right: 1px solid #b7b7b7;
     }
 
     .table-cell-date {
@@ -855,7 +851,7 @@
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
           <div class="div-table small" style="margin:0;">
             <div class="header-colour-bg table-row">
-              <div class="table-header" style="padding-left: 10px;">Compound/Analyte</div>
+              <div class="table-header add-left-border" style="padding-left: 10px;">Compound/Analyte</div>
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal border-out text-center">
                       <span tal:content="model/Title"/>
@@ -866,25 +862,18 @@
 	      <div class="color-setup div-table small">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
-                <div class="cell-colour-bg table-cell-category font-weight-bold" style="padding-left: 10px;">
+                <div class="cell-colour-bg table-cell-category add-left-border font-weight-bold" style="padding-left: 10px;">
                   <span tal:content="category/Title"/>
                 </div>
 		        <div class="cell-colour-bg table-cell-lower font-weight-bold text-center">Unit</div>
                 <tal:results repeat="model page">
-                  <div class="cell-colour-bg table-cell-lower font-weight-bold text-center border-lft">Result</div>
-		          <div class="cell-colour-bg table-cell-lower font-weight-bold text-center border-rite">(Min-Max)</div>
+                  <div class="cell-colour-bg table-cell-lower font-weight-bold text-center add-left-border">Result</div>
+		          <div class="cell-colour-bg table-cell-lower font-weight-bold text-center add-right-border">(Min-Max)</div>
                 </tal:results>
               </div>
-<!--
-              <div class="table-row">
-                <div class="table-cell-category font-weight-bold">
-                  <span tal:content="category/Title"/>
-                </div>
-              </div>
--->
               <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_green(page, poc=poc, category=category)"
                       tal:repeat="row_data python:common_row_data">
-                <div class="table-cell-lower text-secondary" style="padding-left: 10px;">
+                <div class="table-cell-lower text-secondary add-left-border" style="padding-left: 10px;">
                   <span tal:condition="python: row_data[4]">
                     <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                   </span>
@@ -903,7 +892,7 @@
                 <tal:results repeat="model page">
                   <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
                     <tal:analysis tal:repeat="analysis analyses">
-                      <div class="table-cell-lower text-center border-lft"
+                      <div class="table-cell-lower text-center add-left-border"
                               tal:define="result python:model.get_formatted_result(analysis);
                                           verified python:analysis.review_state in ['published', 'verified']">
                         <span class="font-weight-normal"
@@ -922,18 +911,18 @@
                       </div>
                       <tal:has_specs tal:define="spec python:view.get_formatted_specs_hydro(model, analysis)">
                         <tal:spec_in_analysis tal:condition="spec">
-                          <div class="table-cell-lower text-center border-rite">
+                          <div class="table-cell-lower text-center add-right-border">
 		            <span tal:content="structure spec"/>
                           </div>
                         </tal:spec_in_analysis>
                         <tal:no_spec tal:condition="not:spec">
-                          <div class="table-cell-lower text-center border-rite"></div>
+                          <div class="table-cell-lower text-center add-right-border"></div>
                         </tal:no_spec>
                       </tal:has_specs>
                     </tal:analysis>
                     <tal:analysis condition="not:analyses">
-                      <div class='table-cell-lower border-lft'></div>
-                      <div class='table-cell-lower border-rite'></div>
+                      <div class='table-cell-lower add-left-border'></div>
+                      <div class='table-cell-lower add-right-border'></div>
                     </tal:analysis>
                   </tal:analyses>
                 </tal:results>
