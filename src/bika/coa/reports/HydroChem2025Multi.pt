@@ -1069,14 +1069,124 @@
     <tal:render condition="python:True"
                 define="primarymodel python:collection[0];
                         batch primarymodel/Batch;">
-      <div class="row section-remarks no-gutters" tal:condition="python:batch and batch.get('COARemarks', '')">
-        <div class="">
-          <div class="remarks-block">
-              <div tal:content="structure batch/COARemarks"></div>
+        <tal:has_remarks condition="python: batch and batch.get('COARemarks', '')">
+            <div class="row section-remarks no-gutters page-break">
+                <div class="remarks-block">
+                    <div tal:content="structure batch/COARemarks"></div>
+                </div>
+            </div>
+
+
+      <!-- PAGE HEADER -->
+        <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
+          <div>
+            <div class="row section-info no-gutters">
+              <div>
+                <img class="stick-right" style="max-width: 30%; height: auto;"
+                      src = "++resource++bika.coa.images/HydroChemHeader.png"/>
+              </div>
+              <div class="w-100">
+                <table class="table table-sm table-condensed">
+                  <colgroup>
+                      <col style="width:60%"/>
+                      <col style="width:40%"/>
+                  </colgroup>
+                  <tr>
+                    <td style="border:none;" class="align-top pr-2">
+                    <!-- Left Table -->
+                      <table class="color-setup table table-sm table-condensed table-bordered">
+                        <colgroup>
+                          <col style="width:50%"/>
+                          <col style="width:50%"/>
+                        </colgroup>
+                        <!-- Certificate Number -->
+                          <tr>
+                            <td class="label no-padding " i18n:translate="">
+                              <div class="cell-bg">Certificate Number</div>
+                            </td>
+                            <td class="field">
+                                <div tal:content="string:${coa_num}"/>
+                            </td>
+                          </tr>
+                        <!-- Client Name(s) -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Client</div>
+                            </td>
+                            <td class="field">
+                              <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
+                                  <div tal:replace="client/Name|nothing"></div>
+                              </tal:by_client>
+                            </td>
+                          </tr>
+                        <!-- Location -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Location</div>
+                            </td>
+                            <td class="field">
+                                <tal:render define="primarysample python:collection[0];
+                                                    samplepointlocation python:primarysample.getSamplePointLocation();"
+                                            condition="samplepointlocation">
+                                <div tal:content="python:samplepointlocation.Title() or ''"/>
+                                </tal:render>
+                            </td>
+                          </tr>
+                      </table>
+                    </td>
+                    <td style="border:none;" class="align-top pl-2" rowspan="2">
+                    <!-- Right Table -->
+                      <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
+                            tal:define="laboratory python:view.laboratory;">
+                        <col style="width:35%"/>
+                        <col style="width:65%"/>
+                        <!-- Page Number -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Page</div>
+                            </td>
+                            <td class="field">
+                                <div>remarks_table_paging/number_of_pages</div>
+                            </td>
+                          </tr>
+                        <!-- Contact -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Lab</div>
+                            </td>
+                            <td class="field">
+                                    <div tal:replace="laboratory/title|nothing"/>
+                            </td>
+                          </tr>
+                        <!-- Email Address -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Email Address</div>
+                            </td>
+                            <td class="field">
+                                <div tal:replace="laboratory/EmailAddress|nothing"/>
+                            </td>
+                          </tr>
+                        <!-- Tel Number -->
+                          <tr>
+                            <td class="label no-padding" i18n:translate="">
+                              <div class="cell-bg">Telephone</div>
+                            </td>
+                            <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
+                              <div tal:replace="laboratory/Phone|nothing"/>
+                            </td>
+                          </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
           </div>
-        </div>
-        <br />
-      </div>
+        </tal:render>
+  <!-- /PAGE HEADER -->
+
+        </tal:has_remarks>
     </tal:render>
 
     <!-- ATTACHMENTS -->

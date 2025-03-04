@@ -62,9 +62,19 @@ class Publisher(Pu):
         for tag in tags:
             tag.string = tag.text.replace("number_of_pages", number_of_pages)
 
+        has_remarks_table = False
+        tag = old_html.find("div", text=lambda x: x and "remarks_table_paging" in x)
+        if tag:
+            tag.string = tag.text.replace("remarks_table_paging", number_of_pages)
+            has_remarks_table = True
+
         tag = old_html.find("div", text=lambda x: x and "last" in x)
         if tag:
-            tag.string = tag.text.replace("last", number_of_pages)
+            if has_remarks_table:
+                tag.string = tag.text.replace("last", str(int(number_of_pages) - 1))
+            else:
+                tag.string = tag.text.replace("last", number_of_pages)
+
 
         # ensure we have plain html and not a BS4 node
         html = self.to_html(old_html)
