@@ -14,6 +14,7 @@
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
+          content_width python: content_width + 10;
           pages python:view.get_pages_dynamic(options, 4, 4);
           report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
@@ -204,6 +205,14 @@
       width: 23mm;
     }
 
+    .info-col {
+      width: <tal:t replace="python:'{:.2f}mm'.format(0.5*content_width)"/>;
+    }
+
+    .full-width {
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width)"/>;
+    }
+
     .remarks-block {
     border: 1px solid #b7b7b7;
     padding: 10px;
@@ -245,6 +254,8 @@
      </tal:block>
 
      @page {
+       margin-left: 15mm;
+       margin-right: 14mm;
        @bottom-right {
          vertical-align: top;
          margin-top: 2mm;
@@ -309,7 +320,7 @@
     <div class="content row section-header no-gutters">
       <!-- Header Table -->
       <div>
-          <img class="logo image-fluid" style="max-width: 100%; height: auto;"
+          <img class="logo image-fluid full-width" style="height: auto;"
                 src = "++resource++bika.coa.images/HydroChemBanner.jpeg"/>
       </div>
     </div>
@@ -322,12 +333,12 @@
                         batch primarymodel/Batch;">
                 
       <div class="row section-info no-gutters">
-        <div class="w-100">
+        <div class="full-width">
           <!-- Client Info -->
           <table class="table table-sm table-condensed">
             <colgroup>
-              <col style="width:50%"/>
-              <col style="width:50%"/>
+              <col class="info-col"/>
+              <col class="info-col"/>
             </colgroup>
             <tr>
               <td style="border:none;" class="align-top pr-2">
@@ -540,8 +551,8 @@
     <!-- Legend start -->
     <tal:render>
       <div class="row section-info no-gutters" style="margin-bottom: 30px;">
-        <div class="w-100">
-          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
+        <div class="full-width">
+          <div style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
           <div>
             <div>
               <h2 i18n:translate="">Legend</h2>
@@ -574,7 +585,7 @@
     <!-- ALERTS -->
     <tal:render condition="python:True">
       <div class="page-break row section-alerts no-gutters">
-        <div class="w-100">
+        <div class="full-width">
           <tal:model repeat="model collection">
             <div class="alert alert-danger" tal:condition="model/is_invalid">
               <h2 class="alert-heading"><span tal:replace="model/getId"/></h2>
@@ -606,7 +617,7 @@
             <img class="stick-right" style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
-          <div class="w-100">
+          <div class="full-width">
             <table class="table table-sm table-condensed">
               <colgroup>
                   <col style="width:60%"/>
@@ -716,7 +727,7 @@
   <tal:render condition="python:True"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
-    <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
+    <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
     <div class="row section-results no-gutters">
       <div class="w-100">
         <h1 i18n:translate="">Sample Information</h1>
@@ -846,7 +857,7 @@
                         categories_by_poc python:view.get_categories_by_poc(collection)">
       <!-- Point of Captures -->
 
-        <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
+        <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
         <tal:poc tal:repeat="poc analyses_by_poc">
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
           <div class="div-table small" style="margin:0;">
@@ -934,7 +945,7 @@
         </tal:poc>
     </tal:render>
  </tal:page>
- <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
+ <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
  <div class="page-break"></div>
 <!-- Results end -->
 
@@ -947,7 +958,7 @@
             <img class="stick-right" style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
-          <div class="w-100">
+          <div class="full-width">
             <table class="table table-sm table-condensed">
               <colgroup>
                   <col style="width:60%"/>
@@ -1070,22 +1081,22 @@
                 define="primarymodel python:collection[0];
                         batch primarymodel/Batch;">
         <tal:has_remarks condition="python: batch and batch.get('COARemarks', '')">
-            <div class="row section-remarks no-gutters page-break">
+            <div class="row section-remarks no-gutters full-width page-break">
                 <div class="remarks-block">
                     <div tal:content="structure batch/COARemarks"></div>
                 </div>
             </div>
 
 
-      <!-- PAGE HEADER -->
+      <!-- PAGE HEADER inside a remarks tal (it's supposed to be that way) -->
         <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
           <div>
-            <div class="row section-info no-gutters">
+            <div class="full-width row section-info no-gutters">
               <div>
                 <img class="stick-right" style="max-width: 30%; height: auto;"
                       src = "++resource++bika.coa.images/HydroChemHeader.png"/>
               </div>
-              <div class="w-100">
+              <div class="full-width">
                 <table class="table table-sm table-condensed">
                   <colgroup>
                       <col style="width:60%"/>
@@ -1191,7 +1202,7 @@
 
     <!-- ATTACHMENTS -->
     <tal:render condition="python:True">
-      <div class="row section-attachments no-gutters">
+      <div class="full-width row section-attachments no-gutters">
         <tal:model repeat="model collection">
           <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
             <h2 i18n:translate=""
@@ -1237,8 +1248,8 @@
   <tal:render condition="python:True">
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
       <div class="row section-signatures no-gutters">
-          <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
-          <div class="w-50">
+          <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
+          <div class="info-col">
           <tal:render define="publish python:view.get_publisher();
                              primarymodel python:collection[0];
                              Verifier python:view.get_verifier(collection)">
@@ -1296,7 +1307,7 @@
             </tr>
           </table>
          </div>
-         <div style="width: 100%; height: 3px; background-color: #7f2346; margin-bottom: 10px; margin-top: -10px; "></div>
+         <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px; margin-top: -10px; "></div>
       </div>
     </tal:responsibles>
   </tal:render>
