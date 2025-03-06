@@ -14,7 +14,7 @@
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
           content_height options/content_height|nothing;
-          content_width python: content_width + 10;
+          content_width python: content_width + 25;
           pages python:view.get_pages_dynamic(options, 4, 4);
           report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
@@ -254,12 +254,13 @@
      </tal:block>
 
      @page {
-       margin-left: 15mm;
-       margin-right: 14mm;
+       margin-left: 7mm;
+       margin-right: 2mm;
        @bottom-right {
          vertical-align: top;
          margin-top: 2mm;
          font-size: 8pt;
+         margin-right: 7mm;
          content: " Page "counter(page) " <tal:t i18n:translate=''> of </tal:t> " counter(pages);
        }
        @bottom-left {
