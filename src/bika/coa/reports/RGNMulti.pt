@@ -355,25 +355,6 @@
                 </tr>
               </table>
             </td>
-            <td style="border:none;" class="align-top pl-2">
-              <table class="table table-sm table-condensed ml-1">
-                <tr>
-                  <td>
-            <div class="accreditation-logo text-left"
-                 tal:define="accredited laboratory/LaboratoryAccredited;
-                             accreditation_logo laboratory/AccreditationBodyLogo;"
-                 tal:condition="accredited">
-              <img class="img-fluid"
-                   tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
-              <img class="img-fluid"
-                   tal:condition="not:accreditation_logo"
-                   tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
-            </div>
-                  </td>
-                </tr>
-              </table>
-          </td>
           </tr>
         </table>
       </div>
@@ -572,6 +553,23 @@
     </tal:render>
 
 <!-- Results end -->
+
+  <!-- DISCREETER -->
+  <tal:render condition="python:True"
+              define="laboratory python:view.laboratory;">
+    <div class="row section-discreeter no-gutters">
+      <div class="w-100 text-muted font-weight-normal small">
+        <div class="discreeter-outofrange">
+          <span class="outofrange text-danger">
+              <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+          </span>
+          <span i18n:translate="">Result out of specified range.</span>
+        </div>
+      </div>
+    </div>
+  </tal:render>
+
+
     <!--  RESULTS INTERPRETATIONS -->
     <tal:render condition="python:True">
       <tal:model repeat="model collection">
@@ -700,38 +698,7 @@
     </tal:responsibles>
   </tal:render>
 
-    <tal:render>
-      <h1> End of Certificate </h1>
-      <p tal:content="string:This document shall not be reproduced except in full, without written approval of ${laboratory/title|nothing}"/>
-    </tal:render>
 
-    <!-- Legend start -->
-    <tal:render>
-      <div>
-          <div>
-            <h2 i18n:translate="">Legend</h2>
-          </div>
-          <div>
-            <p i18n:translate=""><span><img tal:attributes="src python:report_images['subcontracted_symbol_url']"/></span>These methods have been subcontracted to an approved laboratory.</p>
-          </div>
-          <div>
-            <p i18n:translate=""><span><img tal:attributes="src python:report_images['outofrange_symbol_url']"/></span>Result does not comply with the cited specification</p>
-          </div>
-          <div>
-            <p i18n:translate=""> <b>NA</b> Not Applicable</p>
-          </div>
-          <div>
-            <p i18n:translate="">All analyses were carried out at our premises at <span tal:content="laboratory/PhysicalAddress/address|nothing"></span></p>
-          </div>
-          <div>
-            <p i18n:translate="">Analysis results relate only to the samples tested.</p>
-          </div>
-          <div>
-            <p i18n:translate="">Test results are at a <span tal:content="string: ${laboratory/Confidence|nothing}%"></span> confidence level.</p>
-          </div>
-        </div>
-    </tal:render>
-    <!-- Legend end -->
 
     <!-- CUSTOM FOOTER -->
     <tal:render condition="python:footer">
