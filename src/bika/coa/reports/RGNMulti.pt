@@ -602,6 +602,46 @@
       </tal:model>
     </tal:render>
 
+  <!--  SIGNATURES -->
+  <tal:render condition="python:True">
+    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
+      <div class="row section-signatures no-gutters">
+        <div class="w-100">
+          <h1 i18n:translate="">Managers Responsible</h1>
+          <table class="table table-sm table-condensed">
+            <tr>
+              <tal:manager repeat="manager managers">
+                <td style="border:none">
+                  <div>
+                    <img tal:condition="manager/getSignature"
+                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
+                  </div>
+                  <div class="font-weight-bold">
+                    <span tal:content="manager/getFullname"></span>
+                    <span tal:condition="manager/getEmailAddress">&nbsp;</span>
+                    (<span>
+                        <tal:email tal:condition="manager/EmailAddress|nothing"
+                                   tal:define="email manager/EmailAddress|nothing">
+                            <a tal:content="email"
+                               tal:attributes="href string:mailto:${email}"></a>
+                        </tal:email>
+                    </span>)
+                  </div>
+                  <div>
+                    <span tal:content="manager/JobTitle"></span>
+                  </div>
+                  <div>
+                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
+                  </div>
+                </td>
+              </tal:manager>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </tal:responsibles>
+  </tal:render>
+
     <!-- ATTACHMENTS -->
     <tal:render condition="python:True">
       <div class="row section-attachments no-gutters">
@@ -657,46 +697,6 @@
           </div>
       </div>
     </tal:render>
-
-  <!--  SIGNATURES -->
-  <tal:render condition="python:True">
-    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
-      <div class="row section-signatures no-gutters">
-        <div class="w-100">
-          <h1 i18n:translate="">Managers Responsible</h1>
-          <table class="table table-sm table-condensed">
-            <tr>
-              <tal:manager repeat="manager managers">
-                <td style="border:none">
-                  <div>
-                    <img tal:condition="manager/getSignature"
-                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
-                  </div>
-                  <div class="font-weight-bold">
-                    <span tal:content="manager/getFullname"></span>
-                    <span tal:condition="manager/getEmailAddress">&nbsp;</span>
-                    (<span>
-                        <tal:email tal:condition="manager/EmailAddress|nothing"
-                                   tal:define="email manager/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
-                    </span>)
-                  </div>
-                  <div>
-                    <span tal:content="manager/JobTitle"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
-                  </div>
-                </td>
-              </tal:manager>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </tal:responsibles>
-  </tal:render>
 
 
 
