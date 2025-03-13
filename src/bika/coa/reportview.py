@@ -1217,13 +1217,12 @@ class MultiReportView(MRV):
 
     def is_orientation_landscape(self, options):
         orientation =  options.get("orientation", None)
-        orientation =  options.get("orientation", None)
         template = options.get("report_optios", {}).get("template", None)
         if not template:
             template = api.get_registry_record(
                 "senaite.impress.default_template")
-        hydro_template = 'bika.coa:HydroChem2025Multi.pt'
-        if orientation == "landscape" and template == hydro_template:
+        hydro_template = 'bika.coa:HydroChem2025'
+        if orientation == "landscape" and hydro_template in template:
             return True
         return False
 
