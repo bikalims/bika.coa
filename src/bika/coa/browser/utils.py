@@ -69,7 +69,13 @@ class Publisher(Pu):
         has_remarks_table = False
         tag = old_html.find("div", class_=lambda x: x and "remarks-block" in x)
         if tag:
-            has_remarks_table = True
+            tag_length = len(tag.get_text(strip=True))
+            paragraph_count = len(tag.find_all("p"))
+            if paragraph_count:
+                paragraph_count = paragraph_count - 1
+            total_count = tag_length + paragraph_count*400
+            if total_count > 1750:
+                has_remarks_table = True
 
         tag = old_html.find("div", text=lambda x: x and "last" in x)
         if tag:

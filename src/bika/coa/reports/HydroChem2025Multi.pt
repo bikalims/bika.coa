@@ -1096,46 +1096,30 @@
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
       <div class="row section-signatures no-gutters">
           <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
-          <div class="info-col">
+          <div class="full-width">
           <tal:render define="publish python:view.get_publisher();
                              primarymodel python:collection[0];
                              Verifier python:view.get_verifier(collection)">
            <table class="table table-sm table-condensed noborder">
             <colgroup>
-              <col style="width:50%"/>
-              <col style="width:50%"/>
+              <col style="width:25%"/>
+              <col style="width:25%"/>
+              <col style="width:25%"/>
+              <col style="width:25%"/>
             </colgroup>
             <tr>
+                <td i18n:translate="">
+                  <div class="font-weight-bold">
+                  Manager
+                  </div>
+                </td>
+                <td i18n:translate="">
+                </td>
                 <td i18n:translate="">
                   <div class="font-weight-bold">Publisher</div>
                 </td>
                 <td i18n:translate="">
                   <div class="font-weight-bold">Date Published</div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                   <div tal:content="publish/publisher"/>
-                </td>
-                <td>
-                   <div
-                       tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
-                </td>
-            </tr>
-           </table>
-          </tal:render>
-          <table class="table table-sm table-condensed noborder">
-            <colgroup>
-              <col style="width:50%"/>
-              <col style="width:50%"/>
-            </colgroup>
-            <tr>
-                <td i18n:translate="">
-                  <div class="font-weight-bold">
-                  Managers Responsible
-                  </div>
-                </td>
-                <td i18n:translate="">
                 </td>
             </tr>
             <tr>
@@ -1151,8 +1135,16 @@
                     </tal:email>
                 </td>
               </tal:manager>
+                <td>
+                   <div tal:content="publish/publisher"/>
+                </td>
+                <td>
+                   <div
+                       tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
+                </td>
             </tr>
-          </table>
+           </table>
+          </tal:render>
          </div>
          <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px; margin-top: -10px; "></div>
       </div>
