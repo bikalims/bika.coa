@@ -282,7 +282,7 @@
   <!-- Samplepoint Location error message start -->
   <tal:render condition="python: not view.same_sample_point_location(collection)">
     <div>
-      <h1> Samples are not from the same System </h1>
+      <h1> Samples are not from the same System Location </h1>
     </div>
   </tal:render>
   <!-- Samplepoint Location error message end -->
@@ -515,7 +515,7 @@
                   <!-- Tel Number -->
                   <tr>
                     <td class="label no-padding" i18n:translate="">
-                      <div class="cell-bg">System</div>
+                      <div class="cell-bg">System Location</div>
                     </td>
                     <td class="field">
                         <tal:render define="primarysample python:collection[0];
@@ -655,7 +655,7 @@
                     <!-- Location -->
                       <tr>
                         <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">System</div>
+                          <div class="cell-bg">System Location</div>
                         </td>
                         <td class="field">
                             <tal:render define="primarysample python:collection[0];
@@ -794,7 +794,7 @@
               </div>
               <div class="table-row noborder">
                 <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
-                    <span>Sample Point</span>
+                    <span>System</span>
                 </div>
                 <tal:ar repeat="model page">
                     <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
@@ -996,7 +996,7 @@
                     <!-- Location -->
                       <tr>
                         <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">System</div>
+                          <div class="cell-bg">System Location</div>
                         </td>
                         <td class="field">
                             <tal:render define="primarysample python:collection[0];
