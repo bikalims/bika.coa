@@ -237,15 +237,15 @@
     <div class="row section-info no-gutters">
       <div class="w-100">
         <!-- Client Info -->
-        <table class="table">
+        <table class="table font-size-110">
           <colgroup>
-            <col style="width:70%"/>
-            <col style="width:30%"/>
+            <col style="width:60%"/>
+            <col style="width:40%"/>
           </colgroup>
           <tr>
             <td style="border:none;" class="align-top pr-2">
               <!-- Left Table -->
-              <table class="table table-sm table-condensed">
+              <table class="table font-size-110">
                 <!-- Client Name(s) -->
                 <tr>
                   <td class="label" i18n:translate="">Client</td>
@@ -305,7 +305,7 @@
             </td>
             <td style="border:none;" class="align-top pl-2">
               <!-- Right Table -->
-              <table class="table table-sm table-condensed ml-1"
+              <table class="table font-size-110 ml-1"
                      tal:define="laboratory python:view.laboratory;">
                 <tr>
                   <td>
