@@ -589,11 +589,10 @@
     <!-- ATTACHMENTS -->
     <tal:render condition="python:True">
       <div class="row section-attachments no-gutters">
-        <tal:model repeat="model collection">
-          <tal:attachment tal:define="attachments python:model.get_sorted_attachments('r');">
+          <tal:attachment tal:define="attachments python: view.get_all_attachments(collection);">
             <h2 i18n:translate=""
                 tal:condition="attachments">
-              Attachments for <span tal:replace="model/getId"/>
+              Attachments for <span tal:replace="python: attachments[0].getTextTitle()"/>
             </h2>
             <table class="table w-100" tal:condition="attachments">
               <colgroup tal:condition="python:len(attachments) > 1">
@@ -610,7 +609,7 @@
                     <figcaption class="figure-caption pt-2">
                       <div class="att_for">
                         <span i18n:translate="">Attachment for</span>
-                        <span tal:content="attachment/getTextTitle|model/getId"/>
+                        <span tal:content="attachment/getTextTitle"/>
                       </div>
                       <div class="att_keys">
                         <span tal:content="attachment/AttachmentKeys"/>
@@ -625,7 +624,6 @@
               </tr>
             </table>
           </tal:attachment>
-        </tal:model>
       </div>
     </tal:render>
 

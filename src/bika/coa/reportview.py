@@ -1340,6 +1340,18 @@ class MultiReportView(MRV):
 
     # ------------------------Hydro end--------------------------------------
 
+    # ------------------------RGN start--------------------------------------
+
+    def get_all_attachments(self, collection):
+        attachments = []
+        for sample in collection:
+            sample_attachments = sample.get_sorted_attachments('r')
+            if sample_attachments:
+                attachments.extend(sample_attachments)
+        return attachments
+
+    # ------------------------RGN end--------------------------------------
+
     # ------------------------Cannabis start---------------------------------
     def get_date_analysed(self, sample):
         from_date = ""
