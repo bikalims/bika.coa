@@ -236,7 +236,7 @@
     <div class="row section-info no-gutters">
       <div class="w-100">
         <!-- Client Info -->
-        <table class="table font-size-110 noborder">
+        <table class="table font-size-110 noborder mb-0">
           <colgroup>
             <col style="width:60%"/>
             <col style="width:40%"/>
@@ -588,7 +588,7 @@
     <tal:render define="publish python:view.get_publisher();
                         primarymodel python:collection[0];
                         Verifier python:view.get_verifier(collection)">
-      <div class="table font-size-110">
+      <div class="table font-size-110 mb-3">
           <div class="table-row">
               <div class="table-header-date">Publisher</div>
               <div class="table-cell-date" tal:content="publish/publisher"/>
