@@ -203,13 +203,6 @@
     </style>
   </tal:css>
 
-  <!-- Samplepoint Location error message start -->
-  <tal:render condition="python:not view.same_sample_point_location(collection)">
-    <div>
-      <h1> Samples are not from the same Location </h1>
-    </div>
-  </tal:render>
-  <!-- Samplepoint Location error message end -->
 
   <tal:meets_conditions condition="python: view.same_sample_point_location(collection)">
 
