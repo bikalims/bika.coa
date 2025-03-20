@@ -204,7 +204,7 @@
   </tal:css>
 
 
-  <tal:meets_conditions condition="python: view.same_sample_point_location(collection)">
+  <tal:meets_conditions condition="python: True">
 
   <!-- HEADER -->
   <tal:render>
