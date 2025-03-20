@@ -588,7 +588,7 @@
     <tal:render define="publish python:view.get_publisher();
                         primarymodel python:collection[0];
                         Verifier python:view.get_verifier(collection)">
-      <div class="table font-size-110 mb-4">
+      <div class="table font-size-110 pb-5">
           <div class="table-row">
               <div class="table-header-date">Publisher</div>
               <div class="table-cell-date" tal:content="publish/publisher"/>
