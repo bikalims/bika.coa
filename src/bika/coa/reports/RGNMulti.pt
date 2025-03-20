@@ -501,7 +501,7 @@
   <tal:render condition="python:True"
               define="laboratory python:view.laboratory;">
     <div class="row section-discreeter no-gutters">
-      <div class="w-100 text-muted font-weight-normal small">
+      <div class="w-100 text-muted font-weight-normal pb-4">
         <div class="discreeter-outofrange">
           <span class="outofrange text-danger">
               <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
@@ -548,10 +548,10 @@
   <!--  SIGNATURES -->
   <tal:render condition="python:True">
     <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
-      <div class="row section-signatures no-gutters">
+      <div class="row section-signatures no-gutters font-size-110">
         <div class="w-100">
           <h1 i18n:translate="">Managers Responsible</h1>
-          <table class="table table-sm table-condensed">
+          <table class="table">
             <tr>
               <tal:manager repeat="manager managers">
                 <td style="border:none">
@@ -588,7 +588,7 @@
     <tal:render define="publish python:view.get_publisher();
                         primarymodel python:collection[0];
                         Verifier python:view.get_verifier(collection)">
-      <div class="table">
+      <div class="table font-size-110">
           <div class="table-row">
               <div class="table-header-date">Publisher</div>
               <div class="table-cell-date" tal:content="publish/publisher"/>
