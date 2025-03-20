@@ -66,7 +66,13 @@
      .report .font-size-100 { font-size: 100%; }
      .report .colon-after:after { content: ":"; }
      .report address { margin: 1rem 0; }
-     .report table.noborder td, .report table.noborder th { border: none; }
+     .report table.noborder,
+     .report table.noborder th,
+     .report table.noborder td,
+     .report table.noborder tr {
+                                   border: none;
+                                   border-collapse: collapse;
+                               }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
@@ -230,13 +236,13 @@
     <div class="row section-info no-gutters">
       <div class="w-100">
         <!-- Client Info -->
-        <table class="table font-size-110">
+        <table class="table font-size-110 noborder">
           <colgroup>
             <col style="width:60%"/>
             <col style="width:40%"/>
           </colgroup>
           <tr>
-            <td style="border:none;" class="align-top pr-2">
+            <td class="align-top pr-2">
               <!-- Left Table -->
               <table class="table font-size-110">
                 <!-- Client Name(s) -->
@@ -296,14 +302,14 @@
                 </tr>
               </table>
             </td>
-            <td style="border:none;" class="align-top pl-2">
+            <td class="align-top pl-2">
               <!-- Right Table -->
-              <table class="table font-size-110 ml-1"
+              <table class="table font-size-110 ml-1 noborder"
                      tal:define="laboratory python:view.laboratory;">
                 <tr>
                   <td>
                     <!-- Laboratory Info -->
-                    <address class="laboratory-address text-right">
+                    <address class="laboratory-address text-right m-0">
                       <div class="lab-title font-weight-bold">
                         <div tal:replace="laboratory/title|nothing"/>
                       </div>
@@ -579,6 +585,19 @@
     </tal:responsibles>
   </tal:render>
 
+    <tal:render define="publish python:view.get_publisher();
+                        primarymodel python:collection[0];
+                        Verifier python:view.get_verifier(collection)">
+      <div class="table">
+          <div class="table-row">
+              <div class="table-header-date">Publisher</div>
+              <div class="table-cell-date" tal:content="publish/publisher"/>
+              <div class="table-header-date">Date Published</div>
+              <div class="table-cell-date" tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
+          </div>
+      </div>
+    </tal:render>
+
     <!-- ATTACHMENTS -->
     <tal:render condition="python:True">
       <div class="row section-attachments no-gutters">
@@ -619,21 +638,6 @@
           </tal:attachment>
       </div>
     </tal:render>
-
-    <tal:render define="publish python:view.get_publisher();
-                        primarymodel python:collection[0];
-                        Verifier python:view.get_verifier(collection)">
-      <div class="table">
-          <div class="table-row">
-              <div class="table-header-date">Publisher</div>
-              <div class="table-cell-date" tal:content="publish/publisher"/>
-              <div class="table-header-date">Date Published</div>
-              <div class="table-cell-date" tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
-          </div>
-      </div>
-    </tal:render>
-
-
 
     <!-- CUSTOM FOOTER -->
     <tal:render condition="python:footer">
