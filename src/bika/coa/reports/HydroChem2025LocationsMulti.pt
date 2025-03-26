@@ -256,6 +256,8 @@
      @page {
        margin-left: 7mm;
        margin-right: 2mm;
+       margin-top: 5mm;
+       margin-bottom: 15mm;
        @bottom-right {
          vertical-align: top;
          margin-top: 2mm;
@@ -501,15 +503,6 @@
                       <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
                           <div tal:replace="client/Name|nothing"></div>
                       </tal:by_client>
-                    </td>
-                  </tr>
-                  <!-- Client Name(s) -->
-                  <tr>
-                    <td class="label no-padding" i18n:translate="">
-                      <div class="cell-bg">Client Reference</div>
-                    </td>
-                    <td class="field">
-                          <div tal:replace="primarymodel/ClientReference|nothing"></div>
                     </td>
                   </tr>
                   <!-- Tel Number -->
