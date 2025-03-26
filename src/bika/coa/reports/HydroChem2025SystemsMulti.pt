@@ -939,6 +939,24 @@
         </tal:poc>
     </tal:render>
  </tal:page>
+
+  <!--  RESULTS INTERPRETATIONS -->
+  <tal:render condition="python:True">
+    <tal:model repeat="model collection">
+      <div class="row section-resultsinterpretation no-gutters"
+          tal:define="ris python:model.get_resultsinterpretation();
+                      has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+        <div class="" tal:condition="has_ri">
+          <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
+          <tal:ri repeat="ri ris">
+            <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
+            <div class="" tal:content="structure ri/richtext|nothing"></div>
+          </tal:ri>
+        </div>
+      </div>
+    </tal:model>
+  </tal:render>
+
  <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
  <div class="page-break"></div>
 <!-- Results end -->
@@ -1052,23 +1070,6 @@
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
-
-    <!--  RESULTS INTERPRETATIONS -->
-    <tal:render condition="python:True">
-      <tal:model repeat="model collection">
-        <div class="row section-resultsinterpretation no-gutters"
-            tal:define="ris python:model.get_resultsinterpretation();
-                        has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-          <div class="" tal:condition="has_ri">
-            <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
-            <tal:ri repeat="ri ris">
-              <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-              <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-            </tal:ri>
-          </div>
-        </div>
-      </tal:model>
-    </tal:render>
 
     <!-- REMARKS -->
     <tal:render condition="python:True"
