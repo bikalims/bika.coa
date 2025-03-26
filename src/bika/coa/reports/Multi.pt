@@ -101,6 +101,35 @@
        max-width: <tal:t replace="python:'{:.2f}mm'.format(cw)"/>;
        max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
      }
+
+    .div-table {
+      display: table;
+      width: auto;
+    }
+
+    .table-row {
+      display: table-row;
+      padding: 4px;
+      border-top: 1px solid #ccc
+    }
+
+    .table-header {
+      display: table-cell;
+      padding-top : 4px;
+      padding-bottom : 4px;
+      font-weight: bold;
+      border-top: 1px solid #ccc;
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+    }
+
+    .table-cell {
+      display: table-cell;
+      padding-top : 4px;
+      padding-bottom : 4px;
+      border-top: 1px solid #ccc;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+    }
+
      </tal:block>
      @page {
        @bottom-right {
@@ -315,12 +344,12 @@
     </div>
   </tal:render>
 
+
   <!-- RESULTS -->
   <tal:render condition="python:True"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="row section-results no-gutters">
-      <div class="w-100">
         <h1 i18n:translate="">Results</h1>
 
         <tal:page tal:repeat="page pages">
@@ -329,116 +358,120 @@
           <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
 
           <!-- Results table per PoC -->
-          <table class="table table-sm table-condensed small">
-              <tr>
-                <th colspan="4" style="word-wrap:normal;">Sample ID</th>
+
+          <!-- WTIH Method/Verifier/Unit -->
+          <div class="div-table table-sm table-condensed small" style="margin:0;">
+              <!-- Start of row / add border-top-->
+              <div class="table-row" style="display:grid; grid-template-columns: 4fr 2fr;">
+                <div style="" class="table-header">Sample ID</div>
                 <tal:ar repeat="model page">
-                  <th colspan="2" class="font-weight-normal">
-                    <div class="text-primary text-center"
+                    <div class="text-primary table-cell font-weight-normal text-center"
                          tal:content="model/Title"/>
-                  </th>
                 </tal:ar>
-              </tr>
-              <tr class="noborder" style="border:none !important">
+              </div>
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                  <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                         Client Sample ID
-                  </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  </div>
+                  <div class="font-weight-normal table-cell text-center noborder">
                       <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
-                  </th>
+                  </div>
                 </tal:ar>
-              </tr>
-              <tr class="noborder">
+              </div>
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                  <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                         <div class="text-left">Sample Type</div>
-                  </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
+                  </div>
+                  <div class="font-weight-normal table-cell text-center noborder">
                       <div class="text-center"
                            tal:content="python:model.SampleTypeTitle or '-'"/>
-                  </th>
+                  </div>
                 </tal:ar>
-              </tr>
-              <tr class="noborder">
+              </div>
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                <div style="grid-column: span 4;" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                     <div class="text-left">Sample Point</div>
-                </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                </div>
+                 <div style="grid-column: span 2;"  class="font-weight-normal table-cell text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.SamplePointTitle or '-'"/>
-                </th>
+                </div>
                 </tal:ar>
-              </tr>
-              <tr class="noborder">
+              </div>
+              <!-- End of row -->
+
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                     <div class="text-left">Date Sampled</div>
-                </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                </div>
+                <div class="font-weight-normal table-cell text-center noborder">
                     <div class="text-center"
-                         tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
-                </th>
+                        tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                </div>
                 </tal:ar>
-              </tr>
-              <tr class="noborder">
+              </div>
+
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                     <div class="text-left">Date Received</div>
-                </th>
-                 <th colspan="2" class="font-weight-normal text-center noborder">
+                </div>
+                 <div class="font-weight-normal table-cell text-center noborder">
                     <div class="text-center"
                          tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
-                </th>
+                </div>
                 </tal:ar>
-              </tr>
-              <tr>
+              </div>
+              <div class="table-row">
                 <tal:ar repeat="model page">
-                <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
                     <div class="text-left">Date Verified</div>
-                </th>
-                 <th colspan="2" class="font-weight-normal text-center" style="border-top: none;">
+                </div>
+                 <div class="font-weight-normal table-cell text-center noborder" style="border-top: none;">
                     <div class="text-center"
                          tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
-                </th>
+                </div>
                 </tal:ar>
-               </tr>
+               </div>
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
-                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
-                   <td class="font-weight-bold table-warning">
-                       <span tal:content="category/Title"/> 
-                   </td> 
-                   <td class="font-weight-bold">Method</td> 
-                   <td class="font-weight-bold">Verifier</td>
-                   <td class="font-weight-bold">Unit</td> 
+                <div class="table-row" tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
+                   <div class="table-header font-weight-bold table-warning">
+                       <span tal:content="category/Title"/>
+                   </div>
+                    <div class="font-weight-bold">Method</div>
+                    <div class="font-weight-bold">Verifier</div>
+                    <div class="font-weight-bold">Unit</div>
                    <tal:results repeat="model page">
-                       <td class="font-weight-bold text-center" colspan="2">Result</td> 
+                       <div class="table-header font-weight-bold text-center">Result</div>
                    </tal:results>
-                </tr> 
+                </div>
 
-                <tr tal:define="common_row_data python:view.get_common_row_data_updated(page, poc=poc, category=category)"
+                <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_updated(page, poc=poc, category=category)"
                     tal:repeat="row_data python:common_row_data">
-                  <td class="text-secondary">
+                  <div class="table-header text-secondary">
                     <span tal:condition="python: row_data[4]">
                       <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
                     </span>
                     <span tal:content="python: row_data[0]"/>
-                  </td>
-                  <td class="text-secondary">
+                  </div>
+                  <div class="text-secondary">
                     <span tal:content="python: row_data[1]"/>
-                  </td>
-                  <td class="text-secondary">
+                  </div>
+                  <div class="text-secondary">
                     <span tal:content="python: row_data[5]">
-                  </td>
-                  <td class="text-secondary">
+                  </div>
+                  <div class="text-secondary">
                     <span tal:content="python: row_data[2]"/>
-                  </td>
+                  </div>
                   <tal:results repeat="model page">
                     <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
                       <tal:analysis tal:repeat="analysis analyses">
-                        <td colspan="2" class="text-center"
+                        <div class="text-center table-cell"
                             tal:define="result python:model.get_formatted_result(analysis);
                                         verified python:analysis.review_state in ['published', 'verified']">
                           <span class="font-weight-normal"
@@ -454,21 +487,150 @@
                                   <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
                             </span>
                           </span>
-                        </td>
+                        </div>
                       </tal:analysis>
                       <tal:analysis condition="not:analyses">
-                        <td></td>
-                        <td></td>
+                        <div></div>
+                        <div></div>
                       </tal:analysis>
                     </tal:analyses>
                   </tal:results>
-                </tr>
+                </div>
               </tal:categories_in_poc>
-          </table>
+          </div>
           <div class="clearfix"></div>
+          <!-- START OF DUPLICATION-->
+          <!-- Without Method/Verifier/Unit -->
+          <div class="div-table table-sm table-condensed small" style="margin:0;">
+              <!-- Start of row / add border-top-->
+              <div class="table-row" style="display:grid; grid-template-columns: 4fr 2fr;">
+                <div style="" class="table-header">Sample ID</div>
+                <tal:ar repeat="model page">
+                    <div class="text-primary table-cell font-weight-normal text-center"
+                         tal:content="model/Title"/>
+                </tal:ar>
+              </div>
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                  <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                        Client Sample ID
+                  </div>
+                  <div class="font-weight-normal table-cell text-center noborder">
+                      <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
+                  </div>
+                </tal:ar>
+              </div>
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                  <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                        <div class="text-left">Sample Type</div>
+                  </div>
+                  <div class="font-weight-normal table-cell text-center noborder">
+                      <div class="text-center"
+                           tal:content="python:model.SampleTypeTitle or '-'"/>
+                  </div>
+                </tal:ar>
+              </div>
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                <div style="grid-column: span 4;" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                    <div class="text-left">Sample Point</div>
+                </div>
+                 <div style="grid-column: span 2;"  class="font-weight-normal table-cell text-center noborder">
+                    <div class="text-center"
+                         tal:content="python:model.SamplePointTitle or '-'"/>
+                </div>
+                </tal:ar>
+              </div>
+              <!-- End of row -->
+
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                    <div class="text-left">Date Sampled</div>
+                </div>
+                <div class="font-weight-normal table-cell text-center noborder">
+                    <div class="text-center"
+                        tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"></div>
+                </div>
+                </tal:ar>
+              </div>
+
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                    <div class="text-left">Date Received</div>
+                </div>
+                 <div class="font-weight-normal table-cell text-center noborder">
+                    <div class="text-center"
+                         tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"></div>
+                </div>
+                </tal:ar>
+              </div>
+              <div class="table-row">
+                <tal:ar repeat="model page">
+                <div tal:condition="python: repeat['model'].start or page.index(model) == 0" class="table-header noborder">
+                    <div class="text-left">Date Verified</div>
+                </div>
+                 <div class="font-weight-normal table-cell text-center noborder" style="border-top: none;">
+                    <div class="text-center"
+                         tal:content="python:model.getDateVerified() and view.to_localized_date(model.getDateVerified()) or '-'"></div>
+                </div>
+                </tal:ar>
+               </div>
+              <!-- Categories in PoC -->
+              <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
+                <div class="table-row" tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
+                   <div class="table-header font-weight-bold table-warning">
+                       <span tal:content="category/Title"/>
+                   </div> 
+                   <tal:results repeat="model page">
+                       <div class="table-header font-weight-bold text-center">Result</div>
+                   </tal:results>
+                </div>
+
+                <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_updated(page, poc=poc, category=category)"
+                    tal:repeat="row_data python:common_row_data">
+                  <div class="table-header text-secondary">
+                    <span tal:condition="python: row_data[4]">
+                      <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
+                    </span>
+                    <span tal:content="python: row_data[0]"/>
+                  </div>
+                  <tal:results repeat="model page">
+                    <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
+                      <tal:analysis tal:repeat="analysis analyses">
+                        <div class="text-center table-cell"
+                            tal:define="result python:model.get_formatted_result(analysis);
+                                        verified python:analysis.review_state in ['published', 'verified']">
+                          <span class="font-weight-normal"
+                                tal:condition="python:result and verified"
+                                tal:content="structure result" />
+                          <span class="font-weight-normal"
+                                tal:condition="python:result and not verified">-</span>
+                          <span class="font-weight-normal"
+                                tal:condition="not:result"></span>
+                          <span tal:condition="python:model.is_out_of_range(analysis)"
+                                class="font-weight-normal">
+                            <span class="outofrange text-danger">
+                                  <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+                            </span>
+                          </span>
+                        </div>
+                      </tal:analysis>
+                      <tal:analysis condition="not:analyses">
+                        <div></div>
+                        <div></div>
+                      </tal:analysis>
+                    </tal:analyses>
+                  </tal:results>
+                </div>
+              </tal:categories_in_poc>
+          </div>
+          <!-- END OF DUPLICATION-->
+
         </tal:poc>
         </tal:page>
-      </div>
     </div>
   </tal:render>
 
