@@ -179,9 +179,12 @@
               <!-- Additional Attachments -->
               <tal:reports repeat="report view/reports_data">
                 <tal:attachments repeat="attachment report/attachments">
-		  <tal:is_not_result_import condition="python: attachment.get('attachment_keys') != 'Results, Automatic import'">
+		  <tal:is_not_result_import condition="python: attachment.get('attachment_keys') != 'Results, Automatic import'"
+                                    define="email_sender_name view/email_sender_name">
                     <div class="attachment col-xs-12 col-sm-4 col-md-3 col-lg-2">
-                      <input type="checkbox" name="attachment_uids:list" tal:attributes="value attachment/uid"/>
+                      <input type="checkbox" name="attachment_uids:list"
+                                tal:attributes="value attachment/uid;
+                                                checked python:attachment.get('obj').RenderInReport and 'RGN' in email_sender_name and 'checked'"/>
                       <a href="#"
                          class="attachment-link"
                          target="_blank"
