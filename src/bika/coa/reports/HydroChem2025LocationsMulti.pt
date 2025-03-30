@@ -16,6 +16,7 @@
           content_height options/content_height|nothing;
           content_width python: content_width + 25;
           pages python:view.get_pages_dynamic(options, 4, 4);
+          sample_info python:pages[0];
           report_images python:view.get_extended_report_images();
           styles python:view.get_coa_styles();
       ">
@@ -576,6 +577,133 @@
     </tal:render>
     <!-- Legend end -->
 
+    <!-- Sample Information-->
+    <tal:page tal:define="page sample_info">
+      <tal:render condition="python:True"
+                  define="analyses_by_poc python:view.get_analyses_by_poc(collection);
+                          categories_by_poc python:view.get_categories_by_poc(collection);
+                          page sample_info">
+        <div class="row section-results no-gutters">
+          <div class="w-100">
+            <h1 i18n:translate="">Sample Information</h1>
+              <div style="margin-bottom: 10px;" class="color-setup div-table small">
+                  <div class="table-row">
+                    <div class="header-colour-bg table-header" style="padding-left: 10px;">Sample ID</div>
+                    <tal:ar repeat="model page">
+                      <div class="header-colour-bg table-cell-padded font-weight-normal">
+                             <span tal:content="model/Title"/>
+                      </div>
+                    </tal:ar>
+                  </div>
+                  <div class="table-row noborder" style="border:none !important">
+                    <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
+                            Client Sample ID
+                    </div>
+                    <tal:ar repeat="model page">
+                        <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                                <span tal:content="python:model.ClientSampleID or '-'"/>
+                            </div>
+                        </tal:is_last_sample>
+                        <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder">
+                                <span tal:content="python:model.ClientSampleID or '-'"/>
+                            </div>
+                        </tal:is_not_last_sample>
+                    </tal:ar>
+                  </div>
+                  <div class="table-row noborder">
+                    <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
+                        <span>Date Sampled</span>
+                    </div>
+                    <tal:ar repeat="model page">
+                        <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                                <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+                            </div>
+                        </tal:is_last_sample>
+                        <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder">
+                                <span tal:content="python:model.DateSampled and view.to_localized_date(model.DateSampled) or '-'"/>
+                            </div>
+                        </tal:is_not_last_sample>
+                    </tal:ar>
+                  </div>
+                  <div class="table-row noborder">
+                    <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
+                          <span>Sample Type</span>
+                    </div>
+                    <tal:ar repeat="model page">
+                        <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                                <span tal:content="python:model.SampleTypeTitle or '-'"/>
+                            </div>
+                        </tal:is_last_sample>
+                        <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder">
+                                <span tal:content="python:model.SampleTypeTitle or '-'"/>
+                            </div>
+                        </tal:is_not_last_sample>
+                    </tal:ar>
+                  </div>
+                  <div class="table-row noborder">
+                    <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
+                        <span>System</span>
+                    </div>
+                    <tal:ar repeat="model page">
+                        <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder add-right-border">
+                                <span tal:content="python:model.SamplePointTitle or '-'"/>
+                            </div>
+                        </tal:is_last_sample>
+                        <tal:is_not_last_sample tal:condition="python: not view.is_last_sample(page, model)">
+                            <div class="table-cell-padded font-weight-normal  noborder">
+                                <span tal:content="python:model.SamplePointTitle or '-'"/>
+                            </div>
+                        </tal:is_not_last_sample>
+                    </tal:ar>
+                  </div>
+                  <div class="table-row noborder">
+                    <div class="cell-colour-bg table-header noborder add-bottom-border" style="padding-left: 10px;">
+                        <span>Specification</span>
+                    </div>
+                    <tal:ar repeat="model page">
+                    <tal:spec_values tal:define="specification model/Specification;
+                                      publication_specification model/PublicationSpecification;
+                                      spec python:publication_specification or specification;
+                                      last_sample python: view.is_last_sample(page, model);">
+                        <tal:is_last_sample tal:condition="python: last_sample">
+                            <div class="table-cell-padded font-weight-normal noborder add-bottom-border add-right-border">
+                            <span>
+                                <span
+                                    tal:condition="spec"
+                                    tal:content="python:spec.Title() or '-'"/>
+                                <span
+                                    tal:condition="not:spec"
+                                    tal:content="python:'-'"/>
+                            </span>
+                            </div>
+                        </tal:is_last_sample>
+                        <tal:is_not_last_sample tal:condition="python: not last_sample">
+                            <div class="table-cell-padded font-weight-normal noborder add-bottom-border">
+                            <span>
+                                <span
+                                    tal:condition="spec"
+                                    tal:content="python:spec.Title() or '-'"/>
+                                <span
+                                    tal:condition="not:spec"
+                                    tal:content="python:'-'"/>
+                            </span>
+                            </div>
+                        </tal:is_not_last_sample>
+                    </tal:spec_values>
+                    </tal:ar>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </tal:render>
+
     <!-- ALERTS -->
     <tal:render condition="python:True">
       <div class="page-break row section-alerts no-gutters">
@@ -711,14 +839,10 @@
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
-
-
-
-
 <tal:page tal:repeat="page pages">
 
   <!-- Sample Information-->
-  <tal:render condition="python:True"
+  <tal:render condition="python: not repeat['page'].start"
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
