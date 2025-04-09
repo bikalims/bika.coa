@@ -990,6 +990,14 @@
                 </div>
               </tal:ar>
             </div>
+            <div class="color-setup table-row">
+              <div class="table-cell-category cell-colour-bg font-weight-bold add-left-border" style="padding-left: 10px;">System</div>
+              <tal:ar repeat="model page">
+                <div class="table-cell cell-colour-bg font-weight-normal border-out text-center">
+                      <span tal:content="model/SamplePointTitle|nothing"/>
+                </div>
+              </tal:ar>
+            </div>
 	      </div>
 	      <div class="color-setup div-table small">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
