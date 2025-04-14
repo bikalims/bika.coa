@@ -76,7 +76,7 @@
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
-     .report .border-out { border-right: 1px solid #999; border-left: 1px solid #999;}
+     .report .border-out { border-right: 1px solid #999; border-left: 2px solid #999;}
      .report .border-lft { border-left: 1px solid #999;}
      .report .border-rite { border-right: 1px solid #999;}
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
@@ -134,6 +134,8 @@
       border-bottom: 1px solid #ccc;
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
       border-right: 1px solid #ccc;
+      border-left: 1px solid #ccc;
+      padding-left: 5px;
     }
 
     .table-cell {

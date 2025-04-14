@@ -101,6 +101,8 @@
       border-bottom: 1px solid #ccc;
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
       border-right: 1px solid #ccc;
+      border-left: 1px solid #ccc;
+      padding-left: 5px;
     }
 
     .table-cell {
