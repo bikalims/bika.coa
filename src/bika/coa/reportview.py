@@ -1217,7 +1217,7 @@ class MultiReportView(MRV):
 
     def is_orientation_landscape(self, options):
         orientation =  options.get("orientation", None)
-        template = options.get("report_optios", {}).get("template", None)
+        template = options.get("report_options", {}).get("template", None)
         if not template:
             template = api.get_registry_record(
                 "senaite.impress.default_template")
