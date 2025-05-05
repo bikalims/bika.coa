@@ -13,6 +13,7 @@
           page_width options/page_width|nothing;
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
+          reduced_content_width python: content_width - 3;
           content_height options/content_height|nothing;
           content_width python: content_width + 25;
           pages python:view.get_pages_dynamic(options, 4, 4);
@@ -134,7 +135,7 @@
       padding-bottom : 4px;
       font-weight: bold;
       border-top: 1px solid #b7b7b7;
-      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+      width: <tal:t replace="python:'{:.2f}mm'.format(reduced_content_width / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell {
@@ -142,7 +143,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width -4) / (len(pages[0]) + 1))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format((reduced_content_width) / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell-padded {
@@ -151,7 +152,7 @@
       padding-bottom : 4px;
       padding-left : 9mm;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(((content_width -3) / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
+      width:  <tal:t replace="python:'{:.2f}mm'.format(((reduced_content_width) / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
     }
 
     .table-cell-lower {
@@ -160,7 +161,7 @@
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
       border-bottom: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*((content_width-3) / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*((reduced_content_width) / (len(pages[0]) + 1)))"/>;
 
     }   
 
@@ -169,7 +170,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(reduced_content_width / (len(pages[0]) + 1)))"/>;
     }
 
     .table-header-date {
