@@ -215,6 +215,10 @@
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width)"/>;
     }
 
+    .logo-width {
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width + 2)"/>;
+    }
+
     .remarks-block {
     border: 1px solid #b7b7b7;
     padding: 10px;
@@ -222,7 +226,7 @@
     }
 
     .stick-right {
-      float: right;
+      text-align: right;
     }
 
     .page-break {
@@ -608,9 +612,8 @@
   <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
     <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
       <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
+          <div class="stick-right logo-width">
+            <img style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
           <div class="full-width">
@@ -709,7 +712,6 @@
               </tr>
             </table>
           </div>
-        </div>
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
@@ -724,7 +726,7 @@
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
-    <div class="row section-results no-gutters">
+    <div class="section-results no-gutters">
       <div class="full-width">
         <h1 i18n:translate="">Sample Information</h1>
           <div style="margin-bottom: 10px;" class="color-setup div-table small">
@@ -949,7 +951,7 @@
   <!--  RESULTS INTERPRETATIONS -->
   <tal:render condition="python:True">
     <tal:model repeat="model collection">
-      <div class="row section-resultsinterpretation no-gutters"
+      <div class="section-resultsinterpretation no-gutters"
           tal:define="ris python:model.get_resultsinterpretation();
                       has_ri python:any(map(lambda r: r.get('richtext'), ris));">
         <div class="" tal:condition="has_ri">
@@ -971,9 +973,8 @@
   <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
     <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
       <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
+          <div class="stick-right logo-width">
+            <img style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
           <div class="full-width">
@@ -1072,7 +1073,6 @@
               </tr>
             </table>
           </div>
-        </div>
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
