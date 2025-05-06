@@ -248,11 +248,11 @@
         <!-- Client Info -->
         <table class="table font-size-110 noborder mb-0">
           <colgroup>
-            <col style="width:60%"/>
-            <col style="width:40%"/>
+            <col style="width:68%"/>
+            <col style="width:32%"/>
           </colgroup>
           <tr>
-            <td class="align-top pr-2">
+            <td class="align-top pr-0">
               <!-- Left Table -->
               <table class="table font-size-110">
                 <!-- Client Name(s) -->
@@ -312,12 +312,12 @@
                 </tr>
               </table>
             </td>
-            <td class="align-top pl-2">
+            <td class="align-top pl-0">
               <!-- Right Table -->
-              <table class="table font-size-110 ml-1 noborder"
+              <table class="table font-size-110 ml-0 noborder"
                      tal:define="laboratory python:view.laboratory;">
                 <tr>
-                  <td>
+                  <td class="pl-0">
                     <!-- Laboratory Info -->
                     <address class="laboratory-address text-right m-0">
                       <div class="lab-title font-weight-bold">
