@@ -13,6 +13,7 @@
           page_width options/page_width|nothing;
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
+          reduced_content_width python: content_width - 3;
           content_height options/content_height|nothing;
           content_width python: content_width + 25;
           pages python:view.get_pages_dynamic(options, 4, 4);
@@ -118,7 +119,7 @@
 
     .div-table {
       display: table;
-      width: auto;
+      width: 100%;
     }
 
     .span-two-rows {
@@ -135,7 +136,7 @@
       padding-bottom : 4px;
       font-weight: bold;
       border-top: 1px solid #b7b7b7;
-      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+      width: <tal:t replace="python:'{:.2f}mm'.format(reduced_content_width / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell {
@@ -143,7 +144,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format((reduced_content_width) / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell-padded {
@@ -152,7 +153,7 @@
       padding-bottom : 4px;
       padding-left : 9mm;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
+      width:  <tal:t replace="python:'{:.2f}mm'.format(((reduced_content_width) / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
     }
 
     .table-cell-lower {
@@ -161,7 +162,8 @@
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
       border-bottom: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*((reduced_content_width) / (len(pages[0]) + 1)))"/>;
+
     }   
 
     .table-cell-category {
@@ -169,7 +171,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(reduced_content_width / (len(pages[0]) + 1)))"/>;
     }
 
     .table-header-date {
@@ -214,6 +216,10 @@
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width)"/>;
     }
 
+    .logo-width {
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width + 2)"/>;
+    }
+
     .remarks-block {
     border: 1px solid #b7b7b7;
     padding: 10px;
@@ -221,7 +227,7 @@
     }
 
     .stick-right {
-      float: right;
+      text-align: right;
     }
 
     .page-break {
@@ -736,9 +742,8 @@
   <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
     <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
       <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
+          <div class="stick-right logo-width">
+            <img style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
           <div class="full-width">
@@ -837,7 +842,6 @@
               </tr>
             </table>
           </div>
-        </div>
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
@@ -849,8 +853,8 @@
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
-    <div class="row section-results no-gutters">
-      <div class="w-100">
+    <div class="section-results no-gutters">
+      <div class="full-width">
         <h1 i18n:translate="">Sample Information</h1>
           <div style="margin-bottom: 10px;" class="color-setup div-table small">
               <div class="table-row">
@@ -981,6 +985,7 @@
         <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
         <tal:poc tal:repeat="poc analyses_by_poc">
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
+      <div class="full-width">
           <div class="div-table small" style="margin:0;">
             <div class="header-colour-bg table-row">
               <div class="table-header add-left-border" style="padding-left: 10px;">Compound/Analyte</div>
@@ -999,7 +1004,9 @@
               </tal:ar>
             </div>
 	      </div>
-	      <div class="color-setup div-table small">
+      </div>
+      <div class="full-width">
+	      <div class="color-setup div-table small" style="margin:0">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
                 <div class="cell-colour-bg table-cell-category add-left-border font-weight-bold" style="padding-left: 10px;">
@@ -1069,6 +1076,7 @@
               </div>
             </tal:categories_in_poc>
           </div>
+          </div>
           <br />
           <br />
         </tal:poc>
@@ -1078,7 +1086,7 @@
   <!--  RESULTS INTERPRETATIONS -->
   <tal:render condition="python:True">
     <tal:model repeat="model collection">
-      <div class="row section-resultsinterpretation no-gutters"
+      <div class="section-resultsinterpretation no-gutters"
           tal:define="ris python:model.get_resultsinterpretation();
                       has_ri python:any(map(lambda r: r.get('richtext'), ris));">
         <div class="" tal:condition="has_ri">
@@ -1100,9 +1108,8 @@
   <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
     <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
       <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
+          <div class="stick-right logo-width">
+            <img style="max-width: 30%; height: auto;"
                   src = "++resource++bika.coa.images/HydroChemHeader.png"/>
           </div>
           <div class="full-width">
@@ -1201,7 +1208,6 @@
               </tr>
             </table>
           </div>
-        </div>
       </div>
     </tal:render>
   <!-- /PAGE HEADER -->
