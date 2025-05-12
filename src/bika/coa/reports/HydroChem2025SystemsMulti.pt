@@ -590,7 +590,7 @@
                           categories_by_poc python:view.get_categories_by_poc(collection);
                           page sample_info">
         <div class="row section-results no-gutters">
-          <div class="w-100">
+          <div class="full-width">
             <h1 i18n:translate="">Sample Information</h1>
               <div style="margin-bottom: 10px;" class="color-setup div-table small">
                   <div class="table-row">
