@@ -13,6 +13,7 @@
           page_width options/page_width|nothing;
           page_height options/page_height|nothing;
           content_width options/content_width|nothing;
+          reduced_content_width python: content_width - 3;
           content_height options/content_height|nothing;
           content_width python: content_width + 25;
           pages python:view.get_pages_dynamic(options, 4, 4);
@@ -118,7 +119,7 @@
 
     .div-table {
       display: table;
-      width: auto;
+      width: 100%;
     }
 
     .span-two-rows {
@@ -135,7 +136,7 @@
       padding-bottom : 4px;
       font-weight: bold;
       border-top: 1px solid #b7b7b7;
-      width: <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+      width: <tal:t replace="python:'{:.2f}mm'.format(reduced_content_width / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell {
@@ -143,7 +144,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(content_width / (len(pages[0]) + 1))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format((reduced_content_width) / (len(pages[0]) + 1))"/>;
     }
 
     .table-cell-padded {
@@ -152,7 +153,7 @@
       padding-bottom : 4px;
       padding-left : 9mm;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format((content_width / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
+      width:  <tal:t replace="python:'{:.2f}mm'.format(((reduced_content_width) / (len(pages[0]) + 1))-9)"/>;/*-9 from the padding-left amount*/
     }
 
     .table-cell-lower {
@@ -161,7 +162,8 @@
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
       border-bottom: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*((reduced_content_width) / (len(pages[0]) + 1)))"/>;
+
     }   
 
     .table-cell-category {
@@ -169,7 +171,7 @@
       padding-top : 4px;
       padding-bottom : 4px;
       border-top: 1px solid #b7b7b7;
-      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(content_width / (len(pages[0]) + 1)))"/>;
+      width:  <tal:t replace="python:'{:.2f}mm'.format(0.5*(reduced_content_width / (len(pages[0]) + 1)))"/>;
     }
 
     .table-header-date {
@@ -214,6 +216,10 @@
       width: <tal:t replace="python:'{:.2f}mm'.format(content_width)"/>;
     }
 
+    .logo-width {
+      width: <tal:t replace="python:'{:.2f}mm'.format(content_width + 2)"/>;
+    }
+
     .remarks-block {
     border: 1px solid #b7b7b7;
     padding: 10px;
@@ -221,7 +227,7 @@
     }
 
     .stick-right {
-      float: right;
+      text-align: right;
     }
 
     .page-break {
@@ -270,7 +276,7 @@
          vertical-align: top;
          margin-top: 2mm;
          font-size: 8pt;
-         content: "Certificate of Analysis";
+         content: "Certificate of Analysis "" <tal:t replace="coa_num">";
        }
        @bottom-center {
          vertical-align: top;
@@ -285,7 +291,7 @@
   <!-- Samplepoint Location error message start -->
   <tal:render condition="python: not view.same_sample_point_location(collection)">
     <div>
-      <h1> Samples are not from the same Location </h1>
+      <h1> Samples are not from the same Sample Point Location </h1>
     </div>
   </tal:render>
   <!-- Samplepoint Location error message end -->
@@ -584,7 +590,7 @@
                           categories_by_poc python:view.get_categories_by_poc(collection);
                           page sample_info">
         <div class="row section-results no-gutters">
-          <div class="w-100">
+          <div class="full-width">
             <h1 i18n:translate="">Sample Information</h1>
               <div style="margin-bottom: 10px;" class="color-setup div-table small">
                   <div class="table-row">
@@ -648,7 +654,7 @@
                   </div>
                   <div class="table-row noborder">
                     <div class="cell-colour-bg table-header noborder" style="padding-left: 10px;">
-                        <span>System</span>
+                        <span>Sample Point</span>
                     </div>
                     <tal:ar repeat="model page">
                         <tal:is_last_sample tal:condition="python: view.is_last_sample(page, model)">
@@ -704,6 +710,8 @@
         </div>
       </tal:render>
 
+
+
     <!-- ALERTS -->
     <tal:render condition="python:True">
       <div class="page-break row section-alerts no-gutters">
@@ -730,115 +738,6 @@
     </tal:render>
 
 
-  <!-- PAGE HEADER -->
-  <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
-    <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
-      <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
-                  src = "++resource++bika.coa.images/HydroChemHeader.png"/>
-          </div>
-          <div class="full-width">
-            <table class="table table-sm table-condensed">
-              <colgroup>
-                  <col style="width:60%"/>
-                  <col style="width:40%"/>
-              </colgroup>
-              <tr>
-                <td style="border:none;" class="align-top pr-2">
-                <!-- Left Table -->
-                  <table class="color-setup table table-sm table-condensed table-bordered">
-                    <colgroup>
-                      <col style="width:50%"/>
-                      <col style="width:50%"/>
-                    </colgroup>
-                    <!-- Certificate Number -->
-                      <tr>
-                        <td class="label no-padding " i18n:translate="">
-                          <div class="cell-bg">Certificate Number</div>
-                        </td>
-                        <td class="field">
-                            <div tal:content="string:${coa_num}"/>
-                        </td>
-                      </tr>
-                    <!-- Client Name(s) -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Client</div>
-                        </td>
-                        <td class="field">
-                          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                              <div tal:replace="client/Name|nothing"></div>
-                          </tal:by_client>
-                        </td>
-                      </tr>
-                    <!-- Location -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Location</div>
-                        </td>
-                        <td class="field">
-                            <tal:render define="primarysample python:collection[0];
-                                                samplepointlocation python:primarysample.getSamplePointLocation();"
-                                        condition="samplepointlocation">
-                            <div tal:content="python:samplepointlocation.Title() or ''"/>
-                            </tal:render>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-                <td style="border:none;" class="align-top pl-2" rowspan="2">
-                <!-- Right Table -->
-                  <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
-                        tal:define="laboratory python:view.laboratory;">
-                    <col style="width:35%"/>
-                    <col style="width:65%"/>
-                    <!-- Page Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Page</div>
-                        </td>
-                        <td class="field">
-                            <div>2/number_of_pages</div>
-                        </td>
-                      </tr>
-                    <!-- Contact -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Lab</div>
-                        </td>
-                        <td class="field">
-                                <div tal:replace="laboratory/title|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Email Address -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Email Address</div>
-                        </td>
-                        <td class="field">
-                            <div tal:replace="laboratory/EmailAddress|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Tel Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Telephone</div>
-                        </td>
-                        <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                          <div tal:replace="laboratory/Phone|nothing"/>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </tal:render>
-  <!-- /PAGE HEADER -->
 <tal:page tal:repeat="page pages">
 
   <!-- Sample Information-->
@@ -846,8 +745,8 @@
               define="analyses_by_poc python:view.get_analyses_by_poc(collection);
                       categories_by_poc python:view.get_categories_by_poc(collection)">
     <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
-    <div class="row section-results no-gutters">
-      <div class="w-100">
+    <div class="section-results no-gutters">
+      <div class="full-width">
         <h1 i18n:translate="">Sample Information</h1>
           <div style="margin-bottom: 10px;" class="color-setup div-table small">
               <div class="table-row">
@@ -978,6 +877,7 @@
         <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 10px;"></div>
         <tal:poc tal:repeat="poc analyses_by_poc">
           <h2 tal:content="python:view.hydro_get_poc_title(poc, analyses_by_poc)"></h2>
+      <div class="full-width">
           <div class="div-table small" style="margin:0;">
             <div class="header-colour-bg table-row">
               <div class="table-header add-left-border" style="padding-left: 10px;">Compound/Analyte</div>
@@ -987,8 +887,18 @@
                 </div>
               </tal:ar>
             </div>
+            <div class="color-setup table-row">
+              <div class="table-cell-category cell-colour-bg font-weight-bold add-left-border" style="padding-left: 10px;">Sample Point</div>
+              <tal:ar repeat="model page">
+                <div class="table-cell cell-colour-bg font-weight-normal border-out text-center">
+                      <span tal:content="model/SamplePointTitle|nothing"/>
+                </div>
+              </tal:ar>
+            </div>
 	      </div>
-	      <div class="color-setup div-table small">
+      </div>
+      <div class="full-width">
+	      <div class="color-setup div-table small" style="margin:0">
             <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
               <div tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category)" class="table-row">
                 <div class="cell-colour-bg table-cell-category add-left-border font-weight-bold" style="padding-left: 10px;">
@@ -1058,6 +968,7 @@
               </div>
             </tal:categories_in_poc>
           </div>
+          </div>
           <br />
           <br />
         </tal:poc>
@@ -1067,7 +978,7 @@
   <!--  RESULTS INTERPRETATIONS -->
   <tal:render condition="python:True">
     <tal:model repeat="model collection">
-      <div class="row section-resultsinterpretation no-gutters"
+      <div class="section-resultsinterpretation no-gutters"
           tal:define="ris python:model.get_resultsinterpretation();
                       has_ri python:any(map(lambda r: r.get('richtext'), ris));">
         <div class="" tal:condition="has_ri">
@@ -1085,115 +996,6 @@
  <div class="page-break"></div>
 <!-- Results end -->
 
-  <!-- PAGE HEADER -->
-  <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
-    <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
-      <div>
-        <div class="row section-info no-gutters">
-          <div>
-            <img class="stick-right" style="max-width: 30%; height: auto;"
-                  src = "++resource++bika.coa.images/HydroChemHeader.png"/>
-          </div>
-          <div class="full-width">
-            <table class="table table-sm table-condensed">
-              <colgroup>
-                  <col style="width:60%"/>
-                  <col style="width:40%"/>
-              </colgroup>
-              <tr>
-                <td style="border:none;" class="align-top pr-2">
-                <!-- Left Table -->
-                  <table class="color-setup table table-sm table-condensed table-bordered">
-                    <colgroup>
-                      <col style="width:50%"/>
-                      <col style="width:50%"/>
-                    </colgroup>
-                    <!-- Certificate Number -->
-                      <tr>
-                        <td class="label no-padding " i18n:translate="">
-                          <div class="cell-bg">Certificate Number</div>
-                        </td>
-                        <td class="field">
-                            <div tal:content="string:${coa_num}"/>
-                        </td>
-                      </tr>
-                    <!-- Client Name(s) -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Client</div>
-                        </td>
-                        <td class="field">
-                          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                              <div tal:replace="client/Name|nothing"></div>
-                          </tal:by_client>
-                        </td>
-                      </tr>
-                    <!-- Location -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Location</div>
-                        </td>
-                        <td class="field">
-                            <tal:render define="primarysample python:collection[0];
-                                                samplepointlocation python:primarysample.getSamplePointLocation();"
-                                        condition="samplepointlocation">
-                            <div tal:content="python:samplepointlocation.Title() or ''"/>
-                            </tal:render>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-                <td style="border:none;" class="align-top pl-2" rowspan="2">
-                <!-- Right Table -->
-                  <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
-                        tal:define="laboratory python:view.laboratory;">
-                    <col style="width:35%"/>
-                    <col style="width:65%"/>
-                    <!-- Page Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Page</div>
-                        </td>
-                        <td class="field">
-                            <div>last/number_of_pages</div>
-                        </td>
-                      </tr>
-                    <!-- Contact -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Lab</div>
-                        </td>
-                        <td class="field">
-                                <div tal:replace="laboratory/title|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Email Address -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Email Address</div>
-                        </td>
-                        <td class="field">
-                            <div tal:replace="laboratory/EmailAddress|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Tel Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Telephone</div>
-                        </td>
-                        <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                          <div tal:replace="laboratory/Phone|nothing"/>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </tal:render>
-  <!-- /PAGE HEADER -->
 
     <!-- REMARKS -->
     <tal:render condition="python:True"
@@ -1215,7 +1017,7 @@
       <div class="row section-signatures no-gutters">
           <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
           <div class="full-width">
-          <tal:render define="publish python:view.get_publisher();
+          <tal:render define="publish python:view.get_publisher_rgn();
                              primarymodel python:collection[0];
                              Verifier python:view.get_verifier(collection)">
            <table class="table table-sm table-condensed noborder">
@@ -1314,7 +1116,7 @@
     </tal:render>
 
     <tal:render>
-      <h1> End of Certificate </h1>
+      <div class="font-weight-bold pb-1"> End of Certificate </div>
       <p tal:content="string:This document shall not be reproduced except in full, without written approval of ${laboratory/title|nothing}"/>
     </tal:render>
 
