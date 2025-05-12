@@ -276,7 +276,7 @@
          vertical-align: top;
          margin-top: 2mm;
          font-size: 8pt;
-         content: "Certificate of Analysis";
+         content: "Certificate of Analysis "" <tal:t replace="coa_num">";
        }
        @bottom-center {
          vertical-align: top;
@@ -738,114 +738,6 @@
     </tal:render>
 
 
-  <!-- PAGE HEADER -->
-  <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
-    <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
-      <div>
-          <div class="stick-right logo-width">
-            <img style="max-width: 30%; height: auto;"
-                  src = "++resource++bika.coa.images/HydroChemHeader.png"/>
-          </div>
-          <div class="full-width">
-            <table class="table table-sm table-condensed">
-              <colgroup>
-                  <col style="width:60%"/>
-                  <col style="width:40%"/>
-              </colgroup>
-              <tr>
-                <td style="border:none;" class="align-top pr-2">
-                <!-- Left Table -->
-                  <table class="color-setup table table-sm table-condensed table-bordered">
-                    <colgroup>
-                      <col style="width:50%"/>
-                      <col style="width:50%"/>
-                    </colgroup>
-                    <!-- Certificate Number -->
-                      <tr>
-                        <td class="label no-padding " i18n:translate="">
-                          <div class="cell-bg">Certificate Number</div>
-                        </td>
-                        <td class="field">
-                            <div tal:content="string:${coa_num}"/>
-                        </td>
-                      </tr>
-                    <!-- Client Name(s) -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Client</div>
-                        </td>
-                        <td class="field">
-                          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                              <div tal:replace="client/Name|nothing"></div>
-                          </tal:by_client>
-                        </td>
-                      </tr>
-                    <!-- Location -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">System Location</div>
-                        </td>
-                        <td class="field">
-                            <tal:render define="primarysample python:collection[0];
-                                                samplepointlocation python:primarysample.getSamplePointLocation();"
-                                        condition="samplepointlocation">
-                            <div tal:content="python:samplepointlocation.Title() or ''"/>
-                            </tal:render>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-                <td style="border:none;" class="align-top pl-2" rowspan="2">
-                <!-- Right Table -->
-                  <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
-                        tal:define="laboratory python:view.laboratory;">
-                    <col style="width:35%"/>
-                    <col style="width:65%"/>
-                    <!-- Page Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Page</div>
-                        </td>
-                        <td class="field">
-                            <div>2/number_of_pages</div>
-                        </td>
-                      </tr>
-                    <!-- Contact -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Lab</div>
-                        </td>
-                        <td class="field">
-                                <div tal:replace="laboratory/title|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Email Address -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Email Address</div>
-                        </td>
-                        <td class="field">
-                            <div tal:replace="laboratory/EmailAddress|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Tel Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Telephone</div>
-                        </td>
-                        <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                          <div tal:replace="laboratory/Phone|nothing"/>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </div>
-      </div>
-    </tal:render>
-  <!-- /PAGE HEADER -->
-
 <tal:page tal:repeat="page pages">
 
   <!-- Sample Information-->
@@ -1104,113 +996,6 @@
  <div class="page-break"></div>
 <!-- Results end -->
 
-  <!-- PAGE HEADER -->
-  <!-- THIS NEEDS TO REPEAT ON EVERY PAGE EXCEPT PAGE 1-->
-    <tal:render condition="python: view.meets_hydrochem_conditions(collection, **options)">
-      <div>
-          <div class="stick-right logo-width">
-            <img style="max-width: 30%; height: auto;"
-                  src = "++resource++bika.coa.images/HydroChemHeader.png"/>
-          </div>
-          <div class="full-width">
-            <table class="table table-sm table-condensed">
-              <colgroup>
-                  <col style="width:60%"/>
-                  <col style="width:40%"/>
-              </colgroup>
-              <tr>
-                <td style="border:none;" class="align-top pr-2">
-                <!-- Left Table -->
-                  <table class="color-setup table table-sm table-condensed table-bordered">
-                    <colgroup>
-                      <col style="width:50%"/>
-                      <col style="width:50%"/>
-                    </colgroup>
-                    <!-- Certificate Number -->
-                      <tr>
-                        <td class="label no-padding " i18n:translate="">
-                          <div class="cell-bg">Certificate Number</div>
-                        </td>
-                        <td class="field">
-                            <div tal:content="string:${coa_num}"/>
-                        </td>
-                      </tr>
-                    <!-- Client Name(s) -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Client</div>
-                        </td>
-                        <td class="field">
-                          <tal:by_client repeat="client python:view.group_items_by('Client', collection)">
-                              <div tal:replace="client/Name|nothing"></div>
-                          </tal:by_client>
-                        </td>
-                      </tr>
-                    <!-- Location -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">System Location</div>
-                        </td>
-                        <td class="field">
-                            <tal:render define="primarysample python:collection[0];
-                                                samplepointlocation python:primarysample.getSamplePointLocation();"
-                                        condition="samplepointlocation">
-                            <div tal:content="python:samplepointlocation.Title() or ''"/>
-                            </tal:render>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-                <td style="border:none;" class="align-top pl-2" rowspan="2">
-                <!-- Right Table -->
-                  <table class="color-setup table table-sm table-condensed ml-1 table-bordered"
-                        tal:define="laboratory python:view.laboratory;">
-                    <col style="width:35%"/>
-                    <col style="width:65%"/>
-                    <!-- Page Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Page</div>
-                        </td>
-                        <td class="field">
-                            <div>last/number_of_pages</div>
-                        </td>
-                      </tr>
-                    <!-- Contact -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Lab</div>
-                        </td>
-                        <td class="field">
-                                <div tal:replace="laboratory/title|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Email Address -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Email Address</div>
-                        </td>
-                        <td class="field">
-                            <div tal:replace="laboratory/EmailAddress|nothing"/>
-                        </td>
-                      </tr>
-                    <!-- Tel Number -->
-                      <tr>
-                        <td class="label no-padding" i18n:translate="">
-                          <div class="cell-bg">Telephone</div>
-                        </td>
-                        <td class="field" tal:define="contact python:view.group_items_by('Contact', collection)">
-                          <div tal:replace="laboratory/Phone|nothing"/>
-                        </td>
-                      </tr>
-                  </table>
-                </td>
-              </tr>
-            </table>
-          </div>
-      </div>
-    </tal:render>
-  <!-- /PAGE HEADER -->
 
     <!-- REMARKS -->
     <tal:render condition="python:True"
@@ -1331,7 +1116,7 @@
     </tal:render>
 
     <tal:render>
-      <h1> End of Certificate </h1>
+      <div class="font-weight-bold pb-1"> End of Certificate </div>
       <p tal:content="string:This document shall not be reproduced except in full, without written approval of ${laboratory/title|nothing}"/>
     </tal:render>
 
