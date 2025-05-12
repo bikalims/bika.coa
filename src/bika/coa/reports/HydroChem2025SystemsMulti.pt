@@ -1017,7 +1017,7 @@
       <div class="row section-signatures no-gutters">
           <div class="full-width" style="height: 3px; background-color: #7f2346; margin-bottom: 0px;"></div>
           <div class="full-width">
-          <tal:render define="publish python:view.get_publisher();
+          <tal:render define="publish python:view.get_publisher_rgn();
                              primarymodel python:collection[0];
                              Verifier python:view.get_verifier(collection)">
            <table class="table table-sm table-condensed noborder">

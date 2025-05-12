@@ -1754,6 +1754,33 @@ class MultiReportView(MRV):
 
         return publisher
 
+    def get_publisher_rgn(self):
+        """ No salutation """
+
+        publisher = {
+            "today": "{}".format(DateTime().strftime("%Y-%m-%d")),
+            "email": "",
+            "jobtitle": "",
+            "publisher_job": "",
+        }
+        current_user = api.get_current_user()
+        user = api.get_user_contact(current_user)
+        publisher["user_url"] = ""
+        if not user:
+            publisher["publisher"] = "{}".format(current_user.id)
+            return publisher
+
+        publisher["email"] = "{}".format(user.getEmailAddress())
+        publisher["jobtitle"] = user.getJobTitle()
+        publisher["publisher"] = "{}".format(user.getFullname())
+        fullname = publisher["publisher"]
+        jobtitle = publisher["jobtitle"]
+        publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
+        if user.getSignature():
+            publisher["user_url"] = user.absolute_url()
+
+        return publisher
+
     def has_results_intepretation(self, collection):
         has_additional_info = False
         for model in collection:
