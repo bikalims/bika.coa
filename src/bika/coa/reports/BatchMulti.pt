@@ -136,6 +136,11 @@
       width: 22mm;
     }
 
+    .page-break {
+      page-break-after: always;
+      display: block; /* Ensure it's not inline */
+    }
+
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
                    define="cw python:float(content_width);
@@ -179,16 +184,11 @@
       <!-- Header Table -->
       <div class="col-6 text-left">
         <!-- Header Left -->
-        <!-- Check if one line is better than two for the below code.................-->
         <h1>Certificate of Analysis <span name='coa_num' tal:content="python: coa_num"/></h1>
-        <div class="field" tal:replace="string:Order: ${batch/ClientBatchID}, ${batch/title}"></div>
-
-          <!-- <div class="field">
-              <div tal:content="primarymodel/ClientOrderNumber"/>
-          </div> -->
+        <div class="field" tal:replace="string:Order nr ${batch/ClientBatchID}, ${batch/title}"></div>
       </div>
       <div class="col-6 text-right">
-          <!-- Ask about the size of the logo here. also 12 grids in a col. test with a border to see how big this is......................................-->
+          <!-- Ask about the size of the logo here. also 12 grids in a col. test with a border to see how big this is-->
           <!-- Header Right -->
           <img class="logo image-fluid" style="object-fit:contain"
                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
@@ -324,6 +324,24 @@
               </td>
             </tr>
           </table>
+          <table class="table table-sm table-condensed">
+            <tr>
+              <td class="label" i18n:translate="" style="width: 25%;">Date Received</td>
+              <td class="field" style="width: 25%;">
+                <span tal:content="python:primarymodel.getDateReceived() and view.to_localized_date(primarymodel.getDateReceived()) or '-'"/>
+              </td>
+              <td class="label" i18n:translate=""  style="width: 25%;">Date Verified</td>
+              <td class="field" style="width: 25%;">
+                <span tal:content="python:primarymodel.getDateVerified() and view.to_localized_date(primarymodel.getDateVerified()) or '-'"/>
+              </td>
+            </tr>
+            <tr>
+              <td class="label" i18n:translate="" style="width: 25%;">Case Narrative</td>
+              <td class="field" style="width: 75%;" colspan="3">
+                <span tal:content="structure batch/COARemarks"/>
+              </td>
+            </tr>
+          </table>
         </div>
         <!-- Clear Floats
             https://github.com/Kozea/WeasyPrint/issues/36
@@ -355,6 +373,8 @@
         </div>
       </div>
     </tal:render>
+
+    <div class="page-break"></div>
 
     <tal:render condition="python:view.is_batch_unique(collection)"
                 define="analyses_by_poc python:view.get_analyses_by_poc(collection);
