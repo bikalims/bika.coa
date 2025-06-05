@@ -172,15 +172,23 @@
 
 
   <!-- HEADER -->
-  <tal:render condition="python:view.is_batch_unique(collection)">
+  <tal:render condition="python:view.is_batch_unique(collection)"
+              define="primarymodel python:collection[0];
+                      batch primarymodel/Batch;">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
       <div class="col-6 text-left">
         <!-- Header Left -->
-        <h1>Certificate of Analysis</h1>
-        <h1 name='coa_num' tal:content="python: coa_num"/>
+        <!-- Check if one line is better than two for the below code.................-->
+        <h1>Certificate of Analysis <span name='coa_num' tal:content="python: coa_num"/></h1>
+        <div class="field" tal:replace="string:Order: ${batch/ClientBatchID}, ${batch/title}"></div>
+
+          <!-- <div class="field">
+              <div tal:content="primarymodel/ClientOrderNumber"/>
+          </div> -->
       </div>
       <div class="col-6 text-right">
+          <!-- Ask about the size of the logo here. also 12 grids in a col. test with a border to see how big this is......................................-->
           <!-- Header Right -->
           <img class="logo image-fluid" style="object-fit:contain"
                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
@@ -220,18 +228,6 @@
               <td style="border:none;" class="align-top pr-2">
                 <!-- Left Table -->
                 <table class="table table-sm table-condensed">
-                  <tr>
-                    <td class="label" i18n:translate="">Batch</td>
-                    <td class="field">
-                        <div tal:content="batch/id"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="label" i18n:translate="">Client Order Number</td>
-                    <td class="field">
-                        <div tal:content="batch/ClientBatchID"/>
-                    </td>
-                  </tr>
                   <!-- Client Name(s) -->
                   <tr>
                     <td class="label" i18n:translate="">Client</td>
@@ -273,24 +269,11 @@
                     </td>
                   </tr>
                   <tr>
-                    <td class="label" i18n:translate="">Date Published</td>
-                    <td tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"></td>
-                  </tr>
-                  <tr tal:condition="reporter">
-                    <td class="label" i18n:translate="">Published by</td>
-                    <td>
-                      <span tal:content="reporter/fullname|reporter/username"/>
-                      <tal:email tal:condition="reporter/email|nothing"
-                                tal:define="email reporter/email|nothing">
-                        (<a tal:content="email"
-                            tal:attributes="href string:mailto:${email}"></a>)
-                      </tal:email>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan='2' class='label'>Batch Remarks</td>
-                    <td colspan='4' rowspan='2'>
-                      <div tal:content="batch/COARemarks"/>
+                    <td class="label" i18n:translate="">Client Tel.</td>
+                    <td class="field">
+                      <tal:by_contact repeat="contact python:view.group_items_by('Contact', collection)">
+                        <div tal:content="contact/Phone"/>
+                      </tal:by_contact>
                     </td>
                   </tr>
                 </table>
