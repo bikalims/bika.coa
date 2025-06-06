@@ -184,7 +184,7 @@
       <!-- Header Table -->
       <div class="col-6 text-left">
         <!-- Header Left -->
-        <div class="font-size-140">Certificate of Analysis <span name='coa_num' tal:content="python: coa_num"/></div>
+        <div style="font-size: 150%;">Certificate of Analysis <span name='coa_num' tal:content="python: coa_num"/></div>
         <h1 tal:content="string:Order nr ${batch/ClientBatchID}, ${batch/title}"></h1>
       </div>
       <div class="col-6 text-right">
