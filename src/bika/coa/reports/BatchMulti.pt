@@ -188,7 +188,6 @@
         <div class="field" tal:replace="string:Order nr ${batch/ClientBatchID}, ${batch/title}"></div>
       </div>
       <div class="col-6 text-right">
-          <!-- Ask about the size of the logo here. also 12 grids in a col. test with a border to see how big this is-->
           <!-- Header Right -->
           <img class="logo image-fluid" style="object-fit:contain"
                 tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
@@ -640,46 +639,34 @@
         </tal:model>
       </div>
     </tal:render>
+
     <!-- Publisher start -->
     <tal:render define="publish python:view.get_publisher();
                         primarymodel python:collection[0];
-                        Verifier python:view.get_verifier(collection)">
+                        laboratory python:view.laboratory">
       <div>
-        <table class="table table-condensed" tal:define="verifiers python:view.get_verifiers(collection)">
-            <tr>
-              <td colspan='2' class='label'>
-                <h2>Publisher</h2>
-              </td>
-              <td colspan='3'>
-                <h3 tal:content="publish/publisher_job"/>
-              </td>
-            </tr>
-            <tr>
-              <td colspan='5' class='label'>
-                <h2>Authorised by</h2>
-              </td>
-            </tr>
-            <tal:verifiers tal:repeat="verifier verifiers">
-            <tr>
-              <td style="border:none">
-                <div>
-                  <img tal:condition="verifier/signature"
-                      tal:attributes="src string:${verifier/signature}" style="height:75px"/>
-                </div>
-                <div class="font-weight-bold">
-                  <span tal:content="verifier/verifier"></span>
-                </div>
-                <div>
-                  <span tal:content="verifier/jobtitle"></span>
-                </div>
-                <div>
-                  <span tal:content="verifier/default_department|nothing"></span>
-                </div>
-              </td>
-            </tr>
-          </tal:verifiers>
+        <h1 i18n:translate="">Signatories</h1>
+        <table class="table table-sm table-condensed">
+          <tr>
+            <td class="field" i18n:translate="" style="width: 25%;">Lab Manager</td>
+            <td class="label" style="width: 25%;">
+              <span tal:replace="laboratory/Supervisor/Fullname|nothing"/>
+            </td>
+            <td class="field" i18n:translate=""  style="width: 25%;">Published by</td>
+            <td class="label" style="width: 25%;">
+              <span tal:content="publish/publisher_job|nothing"/>
+            </td>
+          </tr>
+          <tr>
+            <td style="border:none" tal:define="supervisor view/get_lab_supervisor">
+              <div>
+                <img tal:condition="supervisor/signature"
+                    tal:attributes="src string:${supervisor/signature}" style="height:75px"/>
+              </div>
+            </td>
+          </tr>
         </table>
-      <div>
+      </div>
     </tal:render>
     <!-- Publisher end -->
 
