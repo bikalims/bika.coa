@@ -65,7 +65,7 @@ class AjaxPublishView(AP):
         filename = "/tmp/{}.html".format(coa_num)
         try:
             with open(filename, "wb") as f:
-                f.write(html)
+                f.write(html.encode("utf8"))
             logger.info("HTML successfully saved as '{}'".format(filename))
         except Exception as e:
             logger.error(
@@ -99,9 +99,14 @@ class AjaxPublishView(AP):
         # # Overwrite html from save images
         filename = "/tmp/{}.html".format(coa_num)
         if os.path.exists(filename):
+            logger.info("ajax_save_reports: load HTML: {}".format(filename))
             with open(filename, "rb") as f:
                 html = f.read()
-            os.remove(filename)
+            # os.remove(filename)
+        else:
+            logger.error(
+                "+++++++ ajax_save_reports: load HTML failed: {}".format(filename)
+            )
 
         # get the triggered action (Save|Email)
         action = data.get("action", "save")
