@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import StringIO
 import csv
+import os
+import StringIO
 from bika.coa import logger
 from bika.lims import api
 from DateTime import DateTime
@@ -13,6 +14,68 @@ from zope.component import getAdapter
 
 
 class AjaxPublishView(AP):
+    def ajax_load_preview(self):
+        """Recalculate the HTML of one rendered report after all the embedded
+        JavaScripts modified the report on the client side.
+        """
+        # Data sent via async ajax call as JSON data from the frontend
+        data = self.get_json()
+
+        # This is the html after it was rendered by the client browser and
+        # eventually extended by JavaScript, e.g. Barcodes or Graphs added etc.
+        # N.B. It might also contain multiple reports!
+        html = data.get("html")
+
+        if self.get_developer_mode():
+            return html
+
+        # Metadata
+        paperformat = data.get("format")
+        orientation = data.get("orientation", "portrait")
+
+        # Generate the print CSS with the set format/orientation
+        css = self.get_print_css(
+            paperformat=paperformat, orientation=orientation
+        )  # NOQA
+        logger.info("Preview CSS: {}".format(css))
+
+        # get an publisher instance
+        publisher = self.publisher
+        # add the generated CSS to the publisher
+        publisher.add_inline_css(css)
+
+        # HTML image previews
+        preview = ""
+
+        # Generate PNG previews for the pages of each report
+        for report_node in publisher.parse_reports(html):
+            pages = publisher.write_png_pages(report_node)
+            previews = map(lambda page: publisher.png_to_img(*page), pages)
+            preview += "\n".join(previews)
+
+        # Add the generated CSS to the preview, so that the container can grow
+        # accordingly
+        preview += "<style id='style-id' type='text/css'>{}</style>".format(css)
+
+        # get COA number
+        parser = publisher.get_parser(html)
+        coa_num = parser.find_all(attrs={"name": "coa_num"})
+        coa_num = coa_num.pop()
+        coa_num = coa_num.text.strip()
+        filename = "/tmp/{}.html".format(coa_num)
+        try:
+            with open(filename, "wb") as f:
+                f.write(html)
+            logger.info("HTML successfully saved as '{}'".format(filename))
+        except Exception as e:
+            logger.error(
+                "!!!!!!!!!!!!!!!!!!!!!Generate COA Preview PDF {} failed: {}".format(
+                    filename, e
+                )
+            )
+
+        return preview
+
     def ajax_save_reports(self):
         """Render all reports as PDFs and store them as AR Reports"""
         # Data sent via async ajax call as JSON data from the frontend
@@ -22,6 +85,23 @@ class AjaxPublishView(AP):
         # eventually extended by JavaScript, e.g. Barcodes or Graphs added etc.
         # NOTE: It might also contain multiple reports!
         html = data.get("html")
+
+        # get the publisher instance
+        publisher = self.publisher
+
+        # get COA number
+        parser = publisher.get_parser(html)
+        coa_num = parser.find_all(attrs={"name": "coa_num"})
+        coa_num = coa_num.pop()
+        coa_num = coa_num.text.strip()
+
+        # # CUSTOM CODE
+        # # Overwrite html from save images
+        filename = "/tmp/{}.html".format(coa_num)
+        if os.path.exists(filename):
+            with open(filename, "rb") as f:
+                html = f.read()
+            os.remove(filename)
 
         # get the triggered action (Save|Email)
         action = data.get("action", "save")
@@ -39,16 +119,8 @@ class AjaxPublishView(AP):
         css = self.get_print_css(paperformat=paperformat, orientation=orientation)
         logger.info("Print CSS: {}".format(css))
 
-        # get the publisher instance
-        publisher = self.publisher
         # add the generated CSS to the publisher
         publisher.add_inline_css(css)
-
-        # get COA number
-        parser = publisher.get_parser(html)
-        coa_num = parser.find_all(attrs={"name": "coa_num"})
-        coa_num = coa_num.pop()
-        coa_num = coa_num.text.strip()
 
         # split the html per report
         # NOTE: each report is an instance of <bs4.Tag>
