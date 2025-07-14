@@ -25,7 +25,7 @@ class TemplateFinder(TF):
                     continue
                 template = content
                 if name:
-                    template = u"{}:{}".format(name, content)
+                    template = "{}:{}".format(name, content)
                 template_path = os.path.join(path, content)
                 templates.append((template, template_path))
         templates.sort(key=lambda x: x[0])
@@ -46,9 +46,7 @@ class Publisher(Pu):
 
         start = time.time()
         # Lay out and paginate the document
-        html = HTML(
-            string=html, url_fetcher=self.url_fetcher, base_url=self.base_url
-        )
+        html = HTML(string=html, url_fetcher=self.url_fetcher, base_url=self.base_url)
         document = html.render(stylesheets=self.css)
         end = time.time()
         logger.info(
@@ -60,9 +58,7 @@ class Publisher(Pu):
         del html
         del document
         # NOTE: Rerun now that we have number_of_pages HACK!!!
-        tags = old_html.find_all(
-            "div", text=lambda x: x and "number_of_pages" in x
-        )
+        tags = old_html.find_all("div", text=lambda x: x and "number_of_pages" in x)
         for tag in tags:
             tag.string = tag.text.replace("number_of_pages", number_of_pages)
 
@@ -73,16 +69,14 @@ class Publisher(Pu):
             paragraph_count = len(tag.find_all("p"))
             if paragraph_count:
                 paragraph_count = paragraph_count - 1
-            total_count = tag_length + paragraph_count*400
+            total_count = tag_length + paragraph_count * 400
             if total_count > 1750:
                 has_remarks_table = True
 
         tag = old_html.find("div", text=lambda x: x and "last" in x)
         if tag:
             if has_remarks_table:
-                tag.string = tag.text.replace(
-                    "last", str(int(number_of_pages) - 1)
-                )
+                tag.string = tag.text.replace("last", str(int(number_of_pages) - 1))
             else:
                 tag.string = tag.text.replace("last", number_of_pages)
 
@@ -91,9 +85,7 @@ class Publisher(Pu):
 
         start = time.time()
         # Lay out and paginate the document
-        html = HTML(
-            string=html, url_fetcher=self.url_fetcher, base_url=self.base_url
-        )
+        html = HTML(string=html, url_fetcher=self.url_fetcher, base_url=self.base_url)
         document = html.render(stylesheets=self.css)
         end = time.time()
         logger.info(

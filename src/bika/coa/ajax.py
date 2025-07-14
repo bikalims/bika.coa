@@ -7,11 +7,9 @@ from bika.lims import api
 from DateTime import DateTime
 from senaite.app.supermodel.interfaces import ISuperModel
 from senaite.impress.interfaces import IPdfReportStorage
-from senaite.impress.interfaces import ITemplateFinder
 from senaite.impress.ajax import AjaxPublishView as AP
 from zope.component import getMultiAdapter
 from zope.component import getAdapter
-from zope.component import getUtility
 
 
 class AjaxPublishView(AP):
