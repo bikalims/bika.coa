@@ -648,7 +648,7 @@
             <img tal:attributes="src python:report_images['accredited_symbol_url']"/>
           </span>
           <span class="" i18n:translate="">
-            Methods included in the
+            Method included in the
             <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
             schedule of Accreditation for this Laboratory.
           </span>
