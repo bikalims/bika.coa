@@ -216,6 +216,39 @@
          content: ""counter(page) " <tal:t i18n:translate=''> of </tal:t> " counter(pages);
        }
      }
+
+     .report table.time-series-matrix {
+       border: 1px solid black;
+     }
+     .report table.time-series-matrix th {
+       border: 1px solid #ddd;
+       text-align: center;
+     }
+     .report .time-series-graph {
+       border: 1px solid #ddd;
+     }
+     .report .time-series-graph svg {
+       border: 1px solid black;
+       padding: 10px;
+     }
+     .report .graph-title {
+       color: black;
+     }
+
+     .time-series-data {
+       border: 1px solid #ddd;
+       background-color: rgb(233, 236, 239);
+       text-align: right;
+     }
+     .time-series-data span {
+       color: '#2d5e77';
+       border: None;
+       background-color: inherit;
+     }
+     .time-series-oor span {
+       color: red;
+     }
+
     </style>
   </tal:css>
 
@@ -540,6 +573,81 @@
       </tal:model>
     </tal:render>
 
+
+  <tal:render condition="python:True">
+    <div class="row section-results no-gutters">
+      <div class="w-100">
+
+        <!-- Point of Capture -->
+        <tal:poc define="analyses_by_poc python:view.get_analyses_by_poc(model);"
+                 repeat="poc analyses_by_poc">
+
+          <!-- Analysis Category -->
+          <tal:categories_in_poc define="categories_by_poc python:view.get_categories_by_poc(model)"
+                                 repeat="category python:view.sort_items(categories_by_poc.get(poc))">
+
+            <!--  TIMESERIES RESULTS -->
+            <tal:render
+              define="analyses python:[analysis for analysis in view.get_analyses_by(model, poc=poc, category=category) if analysis.ResultOptionsType=='timeseries']"
+              condition="python:analyses">
+                <div class="section section-timeseries no-gutters">
+                  <div class="">
+                    <h1 i18n:translate="">TimeSeries Results</h1>
+                    <tal:block tal:repeat="analysis analyses">
+                      <div class="row"
+                           tal:define="columns python: analysis.TimeSeriesColumns;
+                                       columns_str python:view.json_dumps(columns);
+                                       graph_title python: analysis.GraphTitle;
+                                       graph_xaxis python: analysis.GraphXAxisTitle;
+                                       graph_yaxis python: analysis.GraphYAxisTitle;
+                                       results python:view.json_loads(view.get_timeseries_result(model, analysis));
+                                       results_str python:view.json_dumps(results)">
+
+                        <div class="col-12">
+                          <h3 tal:content="analysis/Title"/>
+
+                          <table class="time-series-matrix table table-sm ">
+                            <thead>
+                              <tr>
+                                <tal:head tal:repeat="col columns">
+                                  <th tal:content="python: col['ColumnTitle']"/>
+                                </tal:head>
+                              </tr>
+                            <thead>
+                            <tbody>
+                              <tr tal:repeat="row results">
+                                <tal:cell tal:repeat="cell row">
+                                  <tal:block tal:define="OOR python: cell['val'] and cell['OOR'] and repeat.cell.index > 0">
+                                    <td tal:condition="OOR" class="time-series-data time-series-oor">
+                                      <span tal:content="python: cell['val']"/>
+                                    </td>
+                                    <td tal:condition="python: not OOR" class="time-series-data">
+                                        <span tal:content="python: cell['val']"/>
+                                    </td>
+                                  </tal:block>
+                                </tal:cell>
+                              </tr>
+                            </tbody>
+                          </table>
+
+                          <div class="time-series-graph"
+                            tal:attributes="data-columns columns_str; data-results results_str; data-graph_title graph_title; data-graph_xaxis graph_xaxis; data-graph_yaxis graph_yaxis">
+                          </div>
+
+                        </div>
+                      </div>
+                      <div class="clearfix"></div>
+                    </tal:block>
+                  </div>
+                  <br />
+                </div>
+            </tal:render>
+          </tal:categories_in_poc>
+        </tal:poc>
+      </div>
+    </div>
+  </tal:render>
+
     <!-- REMARKS -->
     <tal:render condition="python:True">
       <tal:model repeat="model collection">
@@ -660,3 +768,151 @@
   </tal:meets_conditions>
 </tal:report>
 
+  <script type="text/javascript">
+
+    function isValidCharacter(char) {
+        const charCode = char.charCodeAt(0);
+        return charCode >= 0 && charCode <= 255; // Valid ASCII range
+    }
+
+    function sanitizeInput(word) {
+        let sanitizedString = '';
+        for (let i = 0; i < word.length; i++) {
+            if (isValidCharacter(word[i])) {
+                sanitizedString += word[i]; // Keep valid characters
+            } else if (word[i].charCodeAt(0) == 8722) {
+                sanitizedString += "-"
+            } else {
+                // Invalid characters are skipped (not added to sanitizedString)
+                console.error('Invalid char: ' + word[i] + ' = ' + word[i].charCodeAt(0));
+            };
+        }
+        return sanitizedString;
+    }
+
+    function safeBtoa(word) {
+      try {
+        const sanitizedInput = sanitizeInput(word);
+        return btoa(sanitizedInput); // Now it's safe to use btoa
+      } catch (error) {
+        console.error('Failed to sanitize  object:', error);
+        throw error;
+      }
+    }
+
+    function insertSVGAsObject(svgElement, targetContainer) {
+      try {
+        // Serialize the SVG to a string
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+
+        // Ensure proper SVG data URL encoding (no need for base64 if using raw SVG)
+        // b64 = btoa(unescape(encodeURIComponent(svgData)));
+        b64 = safeBtoa(svgData);
+        const svgDataUrl = 'data:image/svg+xml;base64,' + b64;
+
+        // Create an object element with the data URL
+        const objectElement = document.createElement('object');
+        objectElement.setAttribute('type', 'image/svg+xml');
+        objectElement.setAttribute('data', svgDataUrl);
+
+        // Append object to the target container
+        targetContainer.innerHTML = '';  // Clear existing content
+        targetContainer.appendChild(objectElement);
+
+        return objectElement;
+
+      } catch (error) {
+        console.error('Failed to insert SVG as object:', error);
+        throw error;
+      }
+    }
+
+    function convertSvgToPng(svgElement, container) {
+
+    // Use html2canvas to capture the SVG element
+    html2canvas(svgElement).then(canvas => {
+        // Convert the canvas to a PNG data URL
+        const pngData = canvas.toDataURL('image/png');
+
+        // Create an image element and append it to the container
+        const pngImage = new Image();
+        pngImage.src = pngData;
+        container.innerHTML = ''; // Clear previous images
+        container.appendChild(pngImage);
+    }).catch(error => {
+        console.error('Error capturing SVG:', error);
+    });
+}
+
+
+
+
+
+    $(document).ready(function() {
+
+        $('.time-series-graph').each(function(index, element) {
+
+          const container = d3.select(element);
+          container.selectAll("svg").remove();  // Clear existing SVGs
+          container.selectAll("img").remove();  // Clear existing SVGs
+
+          let columns = element.getAttribute('data-columns');
+          let graph_title = element.getAttribute('data-graph_title');
+          let graph_xaxis = element.getAttribute('data-graph_xaxis');
+          let graph_yaxis = element.getAttribute('data-graph_yaxis');
+          let results = element.getAttribute('data-results');
+
+          try {
+            columns = JSON.parse(columns);
+            results = JSON.parse(results);
+          } catch (e) {
+            console.error("JSON parsing error:", e);
+          }
+          // Prep results
+          new_results = []
+          for (let i = 0; i < results.length; i++) {
+            row = results[i];
+            new_row = []
+            for (let j = 0; j < row.length; j++) {
+              item = row[j];
+              val = item['val'];
+              if (val.length > 0) {
+                new_row.push(val);
+              }
+            };
+            new_results.push(new_row);
+          }
+
+          data = {
+            results: new_results,
+            time_series_columns: columns,
+            time_series_graph_title: graph_title,
+            time_series_graph_xaxis: graph_xaxis,
+            time_series_graph_yaxis: graph_yaxis,
+            container: element
+          };
+          this.svgRef = { current: element };
+          this.state = { value: new_results };
+          this.props = {
+            item: {
+              time_series_columns: columns,
+              time_series_graph_title: graph_title,
+              time_series_graph_xaxis: graph_xaxis,
+              time_series_graph_yaxis: graph_yaxis,
+            }
+          };
+          // Create instance of TimeSeries
+          const timeSeriesGraph = new window.TimeSeries(this);
+
+          // Build the graph
+          timeSeriesGraph.build_graph();
+
+          const svg = container.selectAll("svg")
+          insertSVGAsObject(svg.node(), container.node())
+
+          console.log('Completed timeseries COA graphs')
+
+        });
+
+    });
+  </script>
