@@ -24,6 +24,12 @@
       layer="bika.coa.interfaces.IBikaCOALayer"
       />
 
+  <plone:static
+      type="plone"
+      name="bika.coa.javascript"
+      directory="static/js"
+      />
+
   <genericsetup:registerProfile
           name="default"
           title="BIKA COA"
