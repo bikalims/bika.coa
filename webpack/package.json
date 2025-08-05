@@ -1,0 +1,32 @@
+{
+  "name": "bika.cement",
+  "version": "1.0.0",
+  "description": "A project to generate D3 graphs using CoffeeScript and Webpack",
+  "main": "timeseries.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "start": "webpack serve --mode development"
+  },
+  "keywords": [
+    "d3",
+    "coffeescript",
+    "webpack"
+  ],
+  "author": "Mike Metcalfe <mike@webtide.co.za>",
+  "license": "GPL",
+  "dependencies": {
+    "d3": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "canvg": "^4.0.2",
+    "coffee-loader": "^5.0.0",
+    "coffeescript": "^2.7.0",
+    "d3-svg-to-png": "^0.3.1",
+    "react": "^18.3.1",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4"
+  }
+}
