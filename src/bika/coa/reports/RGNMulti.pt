@@ -505,13 +505,21 @@
                     <tal:analysis tal:repeat="analysis analyses">
                       <div class="table-cell text-center"
                               tal:define="result python:model.get_formatted_result(analysis);
-                                          verified python:analysis.review_state in ['published', 'verified']">
+                                          verified python:analysis.review_state in ['published', 'verified'];
+                                          time_series_result python:analysis.ResultOptionsType == 'timeseries'">
                         <span class="font-weight-normal"
-                              tal:condition="python:result and verified"
+                              tal:condition="python:result and verified and not time_series_result"
                               tal:content="structure result"/>
                         <span class="font-weight-normal"
-                              tal:condition="python:result and verified"
+                              tal:condition="python:result and verified and time_series_result">
+                              See Below
+                        </span>
+                        <span class="font-weight-normal"
+                              tal:condition="python:result and verified and not time_series_result"
                               tal:content="python:model.get_formatted_unit(analysis)"/>
+                        <span class="font-weight-normal"
+                              tal:condition="python:result and verified and time_series_result">
+                        </span>
                         <span class="font-weight-normal"
                               tal:condition="python:result and not verified">-</span>
                         <span class="font-weight-normal"
@@ -576,7 +584,7 @@
 
     <!--  TIME-SERIES PLOT -->
   <tal:render condition="python:True">
-    <div class="row section-results no-gutters">
+    <div class="row section-results no-gutters pt-4">
       <div class="w-100">
 
       <tal:model repeat="model collection">
@@ -595,7 +603,7 @@
               condition="python:analyses">
                 <div class="section section-timeseries no-gutters">
                   <div class="">
-                    <h2 tal:content="python: 'Sample {0} {1}'.format(model.Title(), model.getSampleTypeTitle())" i18n:translate="">Graphs</h2>
+                    <h1 tal:content="python: 'Sample {0} {1}'.format(model.Title(), model.getSampleTypeTitle())" i18n:translate="">Graphs</h1>
                     <tal:block tal:repeat="analysis analyses">
                       <div class="row"
                            tal:define="columns python: analysis.TimeSeriesColumns;
@@ -608,9 +616,9 @@
                                        results_str python:view.json_dumps(results)">
 
                         <div class="col-12">
-                          <h3 tal:content="analysis/Title"/>
+                          <h1 class="pt-2" tal:content="analysis/Title"/>
 
-                          <table class="time-series-matrix table table-sm ">
+                          <table class="time-series-matrix table table-sm mb-5">
                             <thead>
                               <tr>
                                 <tal:head tal:repeat="col columns">
