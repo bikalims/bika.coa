@@ -1,5 +1,5 @@
 {
-  "name": "bika.cement",
+  "name": "bika.coa",
   "version": "1.0.0",
   "description": "A project to generate D3 graphs using CoffeeScript and Webpack",
   "main": "timeseries.js",
