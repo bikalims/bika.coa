@@ -564,21 +564,74 @@
   </tal:render>
 
 
-    <!--  RESULTS INTERPRETATIONS -->
-    <tal:render condition="python:True">
-      <tal:model repeat="model collection">
-        <div class="row section-resultsinterpretation no-gutters"
-            tal:define="ris python:model.get_resultsinterpretation();
-                        has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-          <div class="" tal:condition="has_ri">
-            <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
-            <tal:ri repeat="ri ris">
-              <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
-              <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-            </tal:ri>
-          </div>
+  <!--  RESULTS INTERPRETATIONS -->
+  <tal:render condition="python:True">
+    <tal:model repeat="model collection">
+      <div class="row section-resultsinterpretation no-gutters"
+          tal:define="ris python:model.get_resultsinterpretation();
+                      has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+        <div class="" tal:condition="has_ri">
+          <h1 i18n:translate>Results Interpretation for <span tal:replace="model/getId"/></h1>
+          <tal:ri repeat="ri ris">
+            <h2 tal:condition="ri/richtext|nothing" tal:content="ri/title|nothing">Department</h2>
+            <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
+          </tal:ri>
         </div>
-      </tal:model>
+      </div>
+    </tal:model>
+  </tal:render>
+
+  <!--  SIGNATURES -->
+  <tal:render condition="python:True">
+    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
+      <div class="row section-signatures no-gutters font-size-110">
+        <div class="full-width">
+          <h1 i18n:translate="">Managers Responsible</h1>
+          <table class="table">
+            <tr>
+              <tal:manager repeat="manager managers">
+                <td style="border:none">
+                  <div>
+                    <img tal:condition="manager/getSignature"
+                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
+                  </div>
+                  <div class="font-weight-bold">
+                    <span tal:content="manager/getFullname"></span>
+                    <span tal:condition="manager/getEmailAddress">&nbsp;</span>
+                    (<span>
+                        <tal:email tal:condition="manager/EmailAddress|nothing"
+                                   tal:define="email manager/EmailAddress|nothing">
+                            <a tal:content="email"
+                               tal:attributes="href string:mailto:${email}"></a>
+                        </tal:email>
+                    </span>)
+                  </div>
+                  <div>
+                    <span tal:content="manager/JobTitle"></span>
+                  </div>
+                  <div>
+                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
+                  </div>
+                </td>
+              </tal:manager>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </tal:responsibles>
+  </tal:render>
+
+    <tal:render define="publish python:view.get_publisher();
+                        primarymodel python:collection[0];
+                        Verifier python:view.get_verifier(collection)">
+      <div class="table font-size-110 pb-5 full-width">
+          <div class="table-row">
+              <div class="table-header-date">Publisher</div>
+              <div class="table-cell-date" tal:content="publish/publisher"/>
+              <div class="table-header-date">Date Published</div>
+              <div class="table-cell-date" tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
+          </div>
+      </div>
     </tal:render>
 
 
@@ -668,66 +721,16 @@
           <div class="">
             <h2 i18n:translate>Remarks for <span tal:replace="model/getId"/></h2>
             <div class="text-info" tal:repeat="remark model/Remarks">
-                <div class="text-info" tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])"></div>
+                <div class="text-info"
+                    tal:content="python: '{}, {}: {}'.format(remark['user_name'], remark['created'][:10], remark['content'])">
+                </div>
             </div>
-	  </div>
+	      </div>
           <br />
         </div>
       </tal:model>
     </tal:render>
 
-  <!--  SIGNATURES -->
-  <tal:render condition="python:True">
-    <tal:responsibles define="managers python:view.uniquify_items(reduce(lambda a1, a2: a1+a2, map(lambda m: m.managers, collection)))">
-      <div class="row section-signatures no-gutters font-size-110">
-        <div class="full-width">
-          <h1 i18n:translate="">Managers Responsible</h1>
-          <table class="table">
-            <tr>
-              <tal:manager repeat="manager managers">
-                <td style="border:none">
-                  <div>
-                    <img tal:condition="manager/getSignature"
-                         tal:attributes="src string:${manager/absolute_url}/Signature" style="height:75px"/>
-                  </div>
-                  <div class="font-weight-bold">
-                    <span tal:content="manager/getFullname"></span>
-                    <span tal:condition="manager/getEmailAddress">&nbsp;</span>
-                    (<span>
-                        <tal:email tal:condition="manager/EmailAddress|nothing"
-                                   tal:define="email manager/EmailAddress|nothing">
-                            <a tal:content="email"
-                               tal:attributes="href string:mailto:${email}"></a>
-                        </tal:email>
-                    </span>)
-                  </div>
-                  <div>
-                    <span tal:content="manager/JobTitle"></span>
-                  </div>
-                  <div>
-                    <span tal:content="manager/DefaultDepartment/title|nothing"></span>
-                  </div>
-                </td>
-              </tal:manager>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </tal:responsibles>
-  </tal:render>
-
-    <tal:render define="publish python:view.get_publisher();
-                        primarymodel python:collection[0];
-                        Verifier python:view.get_verifier(collection)">
-      <div class="table font-size-110 pb-5 full-width">
-          <div class="table-row">
-              <div class="table-header-date">Publisher</div>
-              <div class="table-cell-date" tal:content="publish/publisher"/>
-              <div class="table-header-date">Date Published</div>
-              <div class="table-cell-date" tal:content="python:view.to_localized_date(primarymodel.DatePublished or view.timestamp)"/>
-          </div>
-      </div>
-    </tal:render>
 
     <!-- ATTACHMENTS -->
     <tal:render condition="python:True">
