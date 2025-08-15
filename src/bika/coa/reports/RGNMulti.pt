@@ -637,7 +637,7 @@
 
     <!--  TIME-SERIES PLOT -->
   <tal:render condition="python:True">
-    <div class="row section-results no-gutters pt-4">
+    <div class="section-results no-gutters pt-4">
       <div class="w-100">
 
       <tal:model repeat="model collection">
@@ -656,9 +656,10 @@
               condition="python:analyses">
                 <div class="section section-timeseries no-gutters">
                   <div class="">
-                    <h1 tal:content="python: 'Sample {0} {1}'.format(model.Title(), model.getSampleTypeTitle())" i18n:translate="">Graphs</h1>
+                    <h1 tal:content="python: 'Sample {0} {1}'.format(model.Title(), model.getSampleTypeTitle())"
+                        i18n:translate="">Graphs</h1>
                     <tal:block tal:repeat="analysis analyses">
-                      <div class="row"
+                      <div class=""
                            tal:define="columns python: analysis.TimeSeriesColumns;
                                        columns_str python:view.json_dumps(columns);
                                        graph_interpolation python: analysis.GraphInterpolation;
@@ -670,7 +671,6 @@
 
                         <div class="col-12">
                           <h1 class="pt-2" tal:content="analysis/Title"/>
-
                           <table class="time-series-matrix table table-sm mb-5">
                             <thead>
                               <tr>
@@ -694,8 +694,10 @@
                               </tr>
                             </tbody>
                           </table>
+                        </div>
+                        <div class="col-12">
 
-                          <div class="time-series-graph"
+                          <div class="row time-series-graph"
                             tal:attributes="data-columns columns_str; data-results results_str; data-graph_interpolation graph_interpolation; data-graph_title graph_title; data-graph_xaxis graph_xaxis; data-graph_yaxis graph_yaxis">
                           </div>
 
