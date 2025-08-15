@@ -736,10 +736,7 @@
     <tal:render condition="python:True">
       <div class="row section-attachments no-gutters">
           <tal:attachment tal:define="attachments python: view.get_all_attachments(collection);">
-            <h2 i18n:translate=""
-                tal:condition="attachments">
-              Attachments for <span tal:replace="python: attachments[0].getTextTitle()"/>
-            </h2>
+            <h2 i18n:translate="" tal:condition="attachments">Attachments</h2>
             <table class="table w-100" tal:condition="attachments">
               <colgroup tal:condition="python:len(attachments) > 1">
                 <col tal:repeat="col python:range(attachments_per_row)"
