@@ -507,6 +507,18 @@ class MultiReportView(MRV):
         self.collection = collection
         self.request = request
 
+    def json_dumps(self, data):
+        return json.dumps(data)
+
+    def json_loads(self, data):
+        return json.loads(data)
+
+    def get_timeseries_result(self, model, analysis):
+        """Return formatted result"""
+        result = model.get_formatted_result(analysis)
+        formatted = format_timeseries(analysis, result)
+        return formatted
+
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
             num_per_page = 4
