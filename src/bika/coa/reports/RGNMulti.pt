@@ -656,11 +656,7 @@
               condition="python:analyses">
                 <div class="section section-timeseries no-gutters">
                   <div class="">
-                        <div class="row">
-                        <div class="col-12">
-                        <div>
                     <h1 tal:content="python: 'Sample {0} {1}'.format(model.Title(), model.getSampleTypeTitle())" i18n:translate="">Graphs</h1>
-                    </div>
                     <tal:block tal:repeat="analysis analyses">
                       <div class="row"
                            tal:define="columns python: analysis.TimeSeriesColumns;
