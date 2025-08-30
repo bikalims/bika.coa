@@ -162,7 +162,54 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     return True, not in_shoulder
 
 
-class SingleReportView(SRV):
+class ReportView(object):
+    def get_coa_number(self):
+        kwargs = {"portal_type": "ARReport", "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run
+
+    def get_timeseries_result(self, model, analysis):
+        """Return formatted result"""
+        result = model.get_formatted_result(analysis)
+        formatted = format_timeseries(analysis, result)
+        return formatted
+
+    def get_formatted_uncertainty(self, analysis):
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        decimalmark = setup.getDecimalMark()
+        uncertainty = format_uncertainty(
+            analysis.instance,
+            decimalmark=decimalmark,
+            sciformat=sciformat,
+        )
+        if uncertainty:
+            return "&plusmn; {}".format(uncertainty)
+        return
+
+    def get_report_images(self):
+        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
+            self.portal_url
+        )
+        subcontracted_symbol_url = (
+            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
+        )
+        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
+            self.portal_url
+        )
+        datum = {
+            "outofrange_symbol_url": outofrange_symbol_url,
+            "subcontracted_symbol_url": subcontracted_symbol_url,
+            "accredited_symbol_url": accredited_symbol_url,
+        }
+        return datum
+
+
+
+class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
 
     def json_dumps(self, data):
@@ -171,13 +218,6 @@ class SingleReportView(SRV):
     def json_loads(self, data):
         return json.loads(data)
 
-    def get_coa_number(self, model):
-        kwargs = {"portal_type": "ARReport", "dry_run": True}
-        coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
-        return dry_run
 
     def get_sampler_fullname(self, model):
         obj = model.instance
@@ -194,17 +234,6 @@ class SingleReportView(SRV):
         if result:
             return result.strftime("%d-%b-%y")
         return ""
-
-    def get_formatted_uncertainty(self, analysis):
-        setup = api.get_setup()
-        sciformat = int(setup.getScientificNotationReport())
-        decimalmark = setup.getDecimalMark()
-        uncertainty = format_uncertainty(
-            analysis.instance,
-            decimalmark=decimalmark,
-            sciformat=sciformat,
-        )
-        return "&plusmn; {}".format(uncertainty)
 
     def get_report_images(self):
         outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
@@ -437,12 +466,6 @@ class SingleReportView(SRV):
         if len(brains) == 1:
             return api.get_object(brains[0])
 
-    def get_timeseries_result(self, model, analysis):
-        """Return formatted result"""
-        result = model.get_formatted_result(analysis)
-        formatted = format_timeseries(analysis, result)
-        return formatted
-
     def get_mix_type(self, model):
         mix_design = self.get_mix_design(model)
         mix_type = mix_design.mix_type
@@ -498,7 +521,7 @@ class SingleReportView(SRV):
         return row_data
 
 
-class MultiReportView(MRV):
+class MultiReportView(MRV, ReportView):
     """View for Bika COA Multi Reports"""
 
     def __init__(self, collection, request):
@@ -513,11 +536,6 @@ class MultiReportView(MRV):
     def json_loads(self, data):
         return json.loads(data)
 
-    def get_timeseries_result(self, model, analysis):
-        """Return formatted result"""
-        result = model.get_formatted_result(analysis)
-        formatted = format_timeseries(analysis, result)
-        return formatted
 
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
@@ -1175,19 +1193,6 @@ class MultiReportView(MRV):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-    def get_formatted_uncertainty(self, analysis):
-        setup = api.get_setup()
-        sciformat = int(setup.getScientificNotationReport())
-        decimalmark = setup.getDecimalMark()
-        uncertainty = format_uncertainty(
-            analysis.instance,
-            decimalmark=decimalmark,
-            sciformat=sciformat,
-        )
-        if uncertainty:
-            return "&plusmn; {}".format(uncertainty)
-        return
-
     def get_formatted_specs_hydro(self, model, analysis):
         specs = analysis.getResultsRange()
         fs = ""
@@ -1823,23 +1828,6 @@ class MultiReportView(MRV):
         user = api.get_user(user)
         return user.fullname
 
-    def get_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
-        )
-        subcontracted_symbol_url = (
-            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
-        )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
-        )
-        datum = {
-            "outofrange_symbol_url": outofrange_symbol_url,
-            "subcontracted_symbol_url": subcontracted_symbol_url,
-            "accredited_symbol_url": accredited_symbol_url,
-        }
-        return datum
-
     def get_toolbar_logo(self):
         registry = getUtility(IRegistry)
         portal_url = self.portal_url
@@ -1854,13 +1842,6 @@ class MultiReportView(MRV):
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
 
-    def get_coa_number(self):
-        kwargs = {"portal_type": "ARReport", "dry_run": True}
-        coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
-        return dry_run
 
     def get_coa_styles(self):
         registry = getUtility(IRegistry)
