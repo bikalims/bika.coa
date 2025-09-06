@@ -214,6 +214,7 @@ class TimeSeries
       curve_val = d3[interp]
 
       headers.slice(1).forEach((key, i) ->
+        line_configs_idx = i % line_configs.length
         # console.debug "Main loop: " + key + "  " + i
 
         # Filter data to exclude rows with null, undefined, or non-numeric values for the current key
@@ -236,7 +237,7 @@ class TimeSeries
           .attr("fill", "none")
           .attr("stroke-width", 2)
           .attr("stroke", col_colors[i+1])
-          .attr("stroke-dasharray", line_configs[i].dash)
+          .attr("stroke-dasharray", line_configs[line_configs_idx].dash)
           .attr("d", lineGen)
 
         # Add data points with different symbols
@@ -244,7 +245,7 @@ class TimeSeries
           .data(validData) # Use filtered data
           .enter().append("path")
           .attr("class", "symbol symbol-#{i}")
-          .attr("d", symbolGenerator.type(line_configs[i].symbol))
+          .attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol))
           .attr("transform", (d) ->
             # Ensure valid x and y before applying transform
             xVal = parseFloat(d[index])
@@ -275,7 +276,8 @@ class TimeSeries
       # Add legend color symbols
       legendItems.append("path")
         .attr("d", (d, i) ->
-          d3.symbol().type(line_configs[i].symbol).size(100)()
+          line_configs_idx = i % line_configs.length
+          d3.symbol().type(line_configs[line_configs_idx].symbol).size(100)()
         )
         .attr("transform", "translate(9, 9)")  # Center the symbol within the legend item
         .style("fill", (d, i) -> col_colors[i+1])

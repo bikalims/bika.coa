@@ -194,7 +194,8 @@ TimeSeries = function () {
           // console.log(interp)
           curve_val = d3[interp];
           headers.slice(1).forEach(function (key, i) {
-            var lineGen, validData;
+            var lineGen, line_configs_idx, validData;
+            line_configs_idx = i % line_configs.length;
             // console.debug "Main loop: " + key + "  " + i
 
             // Filter data to exclude rows with null, undefined, or non-numeric values for the current key
@@ -207,10 +208,10 @@ TimeSeries = function () {
             }).y(function (d) {
               return y(d[key]);
             });
-            svg.append("path").datum(validData).attr("fill", "none").attr("stroke-width", 2).attr("stroke", col_colors[i + 1]).attr("stroke-dasharray", line_configs[i].dash).attr("d", lineGen); // Use filtered data
+            svg.append("path").datum(validData).attr("fill", "none").attr("stroke-width", 2).attr("stroke", col_colors[i + 1]).attr("stroke-dasharray", line_configs[line_configs_idx].dash).attr("d", lineGen); // Use filtered data
             // Add data points with different symbols
             return svg.selectAll(".symbol-".concat(i)).data(validData).enter().append("path").attr("class", "symbol symbol-".concat(i // Use filtered data
-            )).attr("d", symbolGenerator.type(line_configs[i].symbol)).attr("transform", function (d) {
+            )).attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol)).attr("transform", function (d) {
               var xVal, yVal;
               // Ensure valid x and y before applying transform
               xVal = parseFloat(d[index]);
@@ -234,7 +235,9 @@ TimeSeries = function () {
           });
           // Add legend color symbols
           legendItems.append("path").attr("d", function (d, i) {
-            return d3.symbol().type(line_configs[i].symbol).size(100)();
+            var line_configs_idx;
+            line_configs_idx = i % line_configs.length;
+            return d3.symbol().type(line_configs[line_configs_idx].symbol).size(100)();
           }).attr("transform", "translate(9, 9)").style("fill", function (d, i) {
             // Center the symbol within the legend item
             return col_colors[i + 1];
