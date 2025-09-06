@@ -38,7 +38,7 @@ class TimeSeries
       y_range = d3.range(minY, maxY)
 
     # console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
-    y_range
+    [y_range, maxTicks]
 
   ###
    * Converts the string value to an array
@@ -108,7 +108,7 @@ class TimeSeries
       # Set up dimensions
       margin = {top: 40, right: 80, bottom: 50, left: 60}
       width = 700 - margin.left - margin.right
-      height = 400 - margin.top - margin.bottom + 50
+      height = 500 - margin.top - margin.bottom + 50
 
       # Set up scales
       x = d3.scaleLinear()
@@ -118,9 +118,11 @@ class TimeSeries
       # Set up Y scale with trimmed domain
       absoluteMinY = d3.min(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
       minY_factor = 0.05; # 20%
-      minY = absoluteMinY - absoluteMinY * minY_factor;
+      minY = absoluteMinY - absoluteMinY * minY_factor
 
       maxY = d3.max(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
+      [y_range, maxTicks] = @get_Y_range(minY, maxY)
+      maxY = maxTicks
 
       y = d3.scaleLinear()
         .domain([Math.floor(minY), Math.ceil(maxY)])  # Trim domain to just cover data range
@@ -165,7 +167,6 @@ class TimeSeries
         .text(this.props.item.time_series_graph_xaxis)
 
       # Y-axis
-      y_range = @get_Y_range(minY, maxY)
       yAxis = d3.axisLeft(y)
         .tickValues(y_range)
         .tickSize(-width)  # Extend ticks across the chart width

@@ -408,8 +408,14 @@
               <!-- Categories in PoC -->
               <tal:categories_in_poc tal:repeat="category python:view.sort_items(categories_by_poc.get(poc))">
                 <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
+                   <td class="font-weight-bold table-warning padded-col"
+                       style="border: none" colspan="4">
+                       <span class="font-size-140" tal:content="category/Title">Category</span>
+                   </td>
+                </tr>
+                <tr tal:condition="python:view.get_analyses_by(collection, poc=poc, category=category) and view.get_common_row_data(page, poc=poc, category=category)">
                    <td class="font-weight-bold table-warning padded-col">
-                       <span tal:content="category/Title"/> 
+                       Analysis
                    </td> 
                    <td class="font-weight-bold padded-col">Method</td>
                    <td class="font-weight-bold padded-col">Verifier</td>
