@@ -861,6 +861,17 @@ class MultiReportView(MRV, ReportView):
                 return [result, min, max]
         return ["", "", ""]
 
+    def duplicate_analysis_data(self, qc):
+        analysis_service_uid = qc.getAnalysisService().UID()
+        ref_results = qc.getResult()
+        # for res in ref_results:
+        #     if analysis_service_uid in res.values():
+        #         result = res.get("result")
+        #         min = res.get("min")
+        #         max = res.get("max")
+        #         return [result, min, max]
+        return [ref_results, "", ""]
+
     def is_unique_qc(self, qc):
         if len(qc_list) == 0:
             qc_list.append(qc)
@@ -1875,6 +1886,35 @@ class MultiReportView(MRV, ReportView):
             if count + len(analyses) <= half:
                 col1.append(category)
                 count += len(analyses)
+            else:
+                col2.append(category)
+
+        return col1, col2
+
+    def split_categories_qc(self, sample):
+        analyses = sample.getQCAnalyses(["verified", "published"])
+        categories = []
+        for analysis in analyses:
+            category = analysis.getCategory()
+            if category not in categories:
+                categories.append(category)
+
+        total = len(analyses)
+        half = total / 2
+
+        col1, col2 = [], []
+        count = 0
+
+        for cat in categories:
+            category = {"title": cat.title}
+            cats = []
+            for an in analyses:
+                if an.getCategory().title == cat.title:
+                    cats.append(an)
+            category["analyses"] = cats
+            if count + len(cats) <= half:
+                col1.append(category)
+                count += len(cats)
             else:
                 col2.append(category)
 
