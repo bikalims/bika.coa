@@ -1,8 +1,5 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/*!*******************************!*\
-  !*** ./app/TimeSeries.coffee ***!
-  \*******************************/
 
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -46,8 +43,10 @@ TimeSeries = function () {
           interval = 5;
         } else if (diffY > 20) {
           interval = 2;
-        } else if (diffY > 10) {
+        } else if (diffY > 5) {
           interval = 1;
+        } else {
+          interval = 0.1;
         }
         if (interval > 0) {
           minTicks = minY - minY % interval + interval;
@@ -56,7 +55,7 @@ TimeSeries = function () {
         } else {
           y_range = d3.range(minY, maxY);
         }
-        // console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
+        console.log("Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval);
         return y_range;
       }
 

@@ -27,8 +27,10 @@ class TimeSeries
       interval = 5
     else if diffY > 20
       interval = 2
-    else if diffY > 10
+    else if diffY > 5
       interval = 1
+    else 
+      interval = 0.1
 
     if interval > 0
       minTicks = minY - (minY % interval) + interval
@@ -37,7 +39,7 @@ class TimeSeries
     else
       y_range = d3.range(minY, maxY)
 
-    # console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
+    console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
     y_range
 
   ###
