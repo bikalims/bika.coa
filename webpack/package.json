@@ -21,7 +21,7 @@
     "@babel/core": "^7.0.0",
     "@babel/preset-env": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
-    "canvg": "^4.0.2",
+    "canvg": "^4.0.3",
     "coffee-loader": "^5.0.0",
     "coffeescript": "^2.7.0",
     "d3-svg-to-png": "^0.3.1",
