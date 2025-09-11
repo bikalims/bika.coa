@@ -124,6 +124,7 @@ class TimeSeries
 
       maxY = d3.max(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
 
+      console.log('New maxY: ' + maxY)
       y = d3.scaleLinear()
         .domain([Math.floor(minY), Math.ceil(maxY)])  # Trim domain to just cover data range
         .range([height, 0])
@@ -137,9 +138,12 @@ class TimeSeries
       # Remove any previous SVG content
       svg.selectAll('*').remove()
 
+      svg_height = height + margin.top + margin.bottom
+      new_margin_top = 10
+      console.log('margin.top: ' + margin.top)
       svg = svg
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("height", svg_height)
         .attr('xmlns', 'http://www.w3.org/2000/svg')
         .append("g")
         .attr("transform", "translate(#{margin.left},#{margin.top})")
@@ -168,6 +172,7 @@ class TimeSeries
 
       # Y-axis
       y_range = @get_Y_range(minY, maxY)
+      console.log('Width: ' + width)
       yAxis = d3.axisLeft(y)
         .tickValues(y_range)
         .tickSize(-width)  # Extend ticks across the chart width
@@ -191,6 +196,7 @@ class TimeSeries
           .style("opacity", 0.4)       # Adjust transparency
 
       # Add vertical grid lines
+      # console.log('height: ' + height)
       svg.append("g")
         .attr("class", "grid vertical")
         .attr("transform", "translate(0, #{height})")
@@ -216,7 +222,7 @@ class TimeSeries
 
       headers.slice(1).forEach((key, i) ->
         line_configs_idx = i % line_configs.length
-        # console.debug "Main loop: " + key + "  " + i
+        console.info "Main loop: " + key + "  " + i
 
         # Filter data to exclude rows with null, undefined, or non-numeric values for the current key
         validData = data.filter((d) ->

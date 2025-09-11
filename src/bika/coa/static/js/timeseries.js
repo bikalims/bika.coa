@@ -99,7 +99,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, minY_factor, svg, values, width, x, y, yAxis, y_range;
+        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, minY_factor, new_margin_top, svg, svg_height, values, width, x, y, yAxis, y_range;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -150,6 +150,7 @@ TimeSeries = function () {
               return parseFloat(row[header]);
             });
           }));
+          console.log('New maxY: ' + maxY);
           y = d3.scaleLinear().domain([Math.floor(minY), Math.ceil(maxY) // Trim domain to just cover data range
           ]).range([height, 0]);
           // Create SVG container
@@ -157,7 +158,10 @@ TimeSeries = function () {
           , "px"));
           // Remove any previous SVG content
           svg.selectAll('*').remove();
-          svg = svg.attr("width", width + margin.left + margin.right).attr("height", height + margin.top + margin.bottom).attr('xmlns', 'http://www.w3.org/2000/svg').append("g").attr("transform", "translate(".concat(margin.left, ",").concat(margin.top, ")"));
+          svg_height = height + margin.top + margin.bottom;
+          new_margin_top = 10;
+          console.log('margin.top: ' + margin.top);
+          svg = svg.attr("width", width + margin.left + margin.right).attr("height", svg_height).attr('xmlns', 'http://www.w3.org/2000/svg').append("g").attr("transform", "translate(".concat(margin.left, ",").concat(margin.top, ")"));
           // Graph title
           svg.append("text").attr("x", width / 2).attr("y", -margin.top / 2).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text(this.props.item.time_series_graph_title);
           // X-axis
@@ -166,6 +170,7 @@ TimeSeries = function () {
           svg.append("text").attr("x", width / 2).attr("y", height + margin.bottom - 10).attr("text-anchor", "middle").style("font-size", "12px").text(this.props.item.time_series_graph_xaxis);
           // Y-axis
           y_range = this.get_Y_range(minY, maxY);
+          console.log('Width: ' + width);
           yAxis = d3.axisLeft(y).tickValues(y_range).tickSize(-width); // Extend ticks across the chart width
 
           // Y-axis label
@@ -174,6 +179,7 @@ TimeSeries = function () {
           svg.append("g").attr("class", "grid horizontal").attr("transform", "translate(0, 0)").call(yAxis).selectAll("line").style("stroke", "#999").style("opacity", 0.4); // Lighter gray // Adjust transparency
 
           // Add vertical grid lines
+          // console.log('height: ' + height)
           svg.append("g").attr("class", "grid vertical").attr("transform", "translate(0, ".concat(height, ")")).call(d3.axisBottom(x).tickSize(-height).tickFormat("")).selectAll("line").style("stroke", "#999").style("stroke-dasharray", "2,2").style("opacity", 0.8); // Extend ticks across the chart height // Remove tick labels // Lighter gray // Adjust transparency
 
           // Draw axes
@@ -185,8 +191,7 @@ TimeSeries = function () {
           headers.slice(1).forEach(function (key, i) {
             var lineGen, line_configs_idx, validData;
             line_configs_idx = i % line_configs.length;
-            // console.debug "Main loop: " + key + "  " + i
-
+            console.info("Main loop: " + key + "  " + i);
             // Filter data to exclude rows with null, undefined, or non-numeric values for the current key
             validData = data.filter(function (d) {
               return d[key] != null && !isNaN(d[key]);
