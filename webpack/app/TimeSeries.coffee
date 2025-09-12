@@ -120,8 +120,10 @@ class TimeSeries
 
       # Set up Y scale with trimmed domain
       absoluteMinY = d3.min(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
-      minY_factor = 0.05; # 20%
-      minY = absoluteMinY - absoluteMinY * minY_factor;
+      if absoluteMinY > 0
+        minY = absoluteMinY * 0.9
+      else
+        minY = absoluteMinY * 1.1
 
       maxY = d3.max(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
 
@@ -159,11 +161,6 @@ class TimeSeries
         .style("font-weight", "bold")
         .text(this.props.item.time_series_graph_title)
 
-      # X-axis
-      svg.append("g")
-        .attr("transform", "translate(0,#{height})")
-        .call(d3.axisBottom(xScale))
-
       # X-axis label
       svg.append("text")
         .attr("x", width / 2)
@@ -171,9 +168,6 @@ class TimeSeries
         .attr("text-anchor", "middle")
         .style("font-size", "12px")
         .text(this.props.item.time_series_graph_xaxis)
-
-      # Y-axis 
-      # y_range = @get_Y_range(minY, maxY)
 
       # Y-axis label
       svg.append("text")
@@ -186,16 +180,15 @@ class TimeSeries
 
       # y-axis horizontal grid lines
       svg.append("g")
-          .attr("class", "grid horizontal")
-          # .attr("transform", "translate(${width}, 0)")
-          .call(
-            d3.axisLeft(yScale)
-              # .tickValues(10)  # hard code 
-              .tickSize(-width)  # Extend ticks across the chart width
-          )
-          .selectAll("line")
-          .style("stroke", "#999")  # Lighter gray
-          .style("opacity", 0.8)       # Adjust transparency
+        .attr("class", "grid horizontal")
+        .call(
+          d3.axisLeft(yScale)
+            .tickSize(-width)  # Extend ticks across the chart width
+        )
+        .selectAll("line")
+        .style("stroke", "#999")  # Lighter gray
+        .style("stroke-dasharray", "2,2")
+        .style("opacity", 0.8)       # Adjust transparency
 
       # Add vertical grid lines
       # console.log('height: ' + height)
@@ -205,17 +198,12 @@ class TimeSeries
         .call(
           d3.axisBottom(xScale)
             .tickSize(-height)  # Extend ticks across the chart height
-            .tickFormat("")     # Remove tick labels
         )
         .selectAll("line")
         .style("stroke", "#999")  # Lighter gray
         .style("stroke-dasharray", "2,2")
         .style("opacity", 0.8)       # Adjust transparency
 
-      # Draw axes
-      svg.append("g")
-        .attr("transform", "translate(0,#{height})")
-        .call(d3.axisBottom(xScale))
 
       # Get interpolation
       interp = this.props.item.time_series_graph_interpolation

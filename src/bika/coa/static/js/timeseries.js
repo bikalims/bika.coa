@@ -100,7 +100,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, minY_factor, svg, svg_height, values, width, xScale, yScale, y_offset;
+        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, width, xScale, yScale, y_offset;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -144,8 +144,11 @@ TimeSeries = function () {
               return parseFloat(row[header]);
             });
           }));
-          minY_factor = 0.05;
-          minY = absoluteMinY - absoluteMinY * minY_factor;
+          if (absoluteMinY > 0) {
+            minY = absoluteMinY * 0.9;
+          } else {
+            minY = absoluteMinY * 1.1;
+          }
           maxY = d3.max(data.flatMap(function (row) {
             return headers.slice(1).map(function (header) {
               return parseFloat(row[header]);
@@ -164,26 +167,17 @@ TimeSeries = function () {
           svg = svg.attr("width", width + margin.left + margin.right).attr("height", svg_height).attr('xmlns', 'http://www.w3.org/2000/svg').append("g").attr("transform", "translate(".concat(margin.left, ",").concat(margin.top, ")"));
           // Graph title
           svg.append("text").attr("x", width / 2).attr("y", -margin.top / 2).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text(this.props.item.time_series_graph_title);
-          // X-axis
-          svg.append("g").attr("transform", "translate(0,".concat(height, ")")).call(d3.axisBottom(xScale));
           // X-axis label
           svg.append("text").attr("x", width / 2).attr("y", height + margin.bottom - 10).attr("text-anchor", "middle").style("font-size", "12px").text(this.props.item.time_series_graph_xaxis);
-          // Y-axis 
-          // y_range = @get_Y_range(minY, maxY)
-
           // Y-axis label
           svg.append("text").attr("transform", "rotate(-90)").attr("x", -height / 2).attr("y", -margin.left + 15).attr("text-anchor", "middle").style("font-size", "12px").text(this.props.item.time_series_graph_yaxis);
           // y-axis horizontal grid lines
-          // .attr("transform", "translate(${width}, 0)")
-          // .tickValues(10)  # hard code 
-          svg.append("g").attr("class", "grid horizontal").call(d3.axisLeft(yScale).tickSize(-width)).selectAll("line").style("stroke", "#999").style("opacity", 0.8); // Extend ticks across the chart width // Lighter gray // Adjust transparency
+          svg.append("g").attr("class", "grid horizontal").call(d3.axisLeft(yScale).tickSize(-width)).selectAll("line").style("stroke", "#999").style("stroke-dasharray", "2,2").style("opacity", 0.8); // Extend ticks across the chart width // Lighter gray // Adjust transparency
 
           // Add vertical grid lines
           // console.log('height: ' + height)
-          svg.append("g").attr("class", "grid vertical").attr("transform", "translate(0, ".concat(height, ")")).call(d3.axisBottom(xScale).tickSize(-height).tickFormat("")).selectAll("line").style("stroke", "#999").style("stroke-dasharray", "2,2").style("opacity", 0.8); // Extend ticks across the chart height // Remove tick labels // Lighter gray // Adjust transparency
+          svg.append("g").attr("class", "grid vertical").attr("transform", "translate(0, ".concat(height, ")")).call(d3.axisBottom(xScale).tickSize(-height)).selectAll("line").style("stroke", "#999").style("stroke-dasharray", "2,2").style("opacity", 0.8); // Extend ticks across the chart height // Lighter gray // Adjust transparency
 
-          // Draw axes
-          svg.append("g").attr("transform", "translate(0,".concat(height, ")")).call(d3.axisBottom(xScale));
           // Get interpolation
           interp = this.props.item.time_series_graph_interpolation;
           // console.log(interp)
