@@ -20,6 +20,7 @@ class TimeSeries
   ###
   get_Y_range: (minY, maxY) ->
     diffY = maxY - minY
+    console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY
     interval = 0
     if diffY > 70
       interval = 10
@@ -35,11 +36,11 @@ class TimeSeries
     if interval > 0
       minTicks = minY - (minY % interval) + interval
       maxTicks = maxY + (maxY % interval) + interval
+      console.log "Y Axis: minTicks: ", minTicks, " maxTicks: ", maxTicks, " interval: ", interval
       y_range = d3.range(minTicks, maxTicks, interval)
     else
       y_range = d3.range(minY, maxY)
 
-    console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
     y_range
 
   ###
@@ -113,7 +114,7 @@ class TimeSeries
       height = 400 - margin.top - margin.bottom + 50
 
       # Set up scales
-      x = d3.scaleLinear()
+      xScale = d3.scaleLinear()
         .domain(d3.extent(data, (d) -> parseFloat(d[index])))
         .range([0, width])
 
@@ -124,23 +125,24 @@ class TimeSeries
 
       maxY = d3.max(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
 
-      console.log('New maxY: ' + maxY)
-      y = d3.scaleLinear()
-        .domain([Math.floor(minY), Math.ceil(maxY)])  # Trim domain to just cover data range
+      console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
+      yScale = d3.scaleLinear()
+        .domain([minY, maxY])
+        .nice()  # expands domain to "nice" human-friendly values
         .range([height, 0])
 
       # Create SVG container
+      y_offset = 140
       svg = d3.select(@container)
         .append('svg')
         .attr("id", "timeseries-svg")  # Add unique ID
-        .style("height", "#{height+140}px")
+        .style("height", "#{height+y_offset}px")
 
       # Remove any previous SVG content
       svg.selectAll('*').remove()
 
       svg_height = height + margin.top + margin.bottom
-      new_margin_top = 10
-      console.log('margin.top: ' + margin.top)
+      console.log('svg_height: ' + svg_height)
       svg = svg
         .attr("width", width + margin.left + margin.right)
         .attr("height", svg_height)
@@ -160,7 +162,7 @@ class TimeSeries
       # X-axis
       svg.append("g")
         .attr("transform", "translate(0,#{height})")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(xScale))
 
       # X-axis label
       svg.append("text")
@@ -170,12 +172,8 @@ class TimeSeries
         .style("font-size", "12px")
         .text(this.props.item.time_series_graph_xaxis)
 
-      # Y-axis
-      y_range = @get_Y_range(minY, maxY)
-      console.log('Width: ' + width)
-      yAxis = d3.axisLeft(y)
-        .tickValues(y_range)
-        .tickSize(-width)  # Extend ticks across the chart width
+      # Y-axis 
+      # y_range = @get_Y_range(minY, maxY)
 
       # Y-axis label
       svg.append("text")
@@ -186,14 +184,18 @@ class TimeSeries
         .style("font-size", "12px")
         .text(this.props.item.time_series_graph_yaxis)
 
-      # Add horizontal grid lines
+      # y-axis horizontal grid lines
       svg.append("g")
           .attr("class", "grid horizontal")
-          .attr("transform", "translate(0, 0)")
-          .call(yAxis)
+          # .attr("transform", "translate(${width}, 0)")
+          .call(
+            d3.axisLeft(yScale)
+              # .tickValues(10)  # hard code 
+              .tickSize(-width)  # Extend ticks across the chart width
+          )
           .selectAll("line")
           .style("stroke", "#999")  # Lighter gray
-          .style("opacity", 0.4)       # Adjust transparency
+          .style("opacity", 0.8)       # Adjust transparency
 
       # Add vertical grid lines
       # console.log('height: ' + height)
@@ -201,7 +203,7 @@ class TimeSeries
         .attr("class", "grid vertical")
         .attr("transform", "translate(0, #{height})")
         .call(
-          d3.axisBottom(x)
+          d3.axisBottom(xScale)
             .tickSize(-height)  # Extend ticks across the chart height
             .tickFormat("")     # Remove tick labels
         )
@@ -213,7 +215,7 @@ class TimeSeries
       # Draw axes
       svg.append("g")
         .attr("transform", "translate(0,#{height})")
-        .call(d3.axisBottom(x))
+        .call(d3.axisBottom(xScale))
 
       # Get interpolation
       interp = this.props.item.time_series_graph_interpolation
@@ -233,10 +235,10 @@ class TimeSeries
         lineGen = d3.line()
           .curve(curve_val)
           .x((d) ->
-            x(d[index])
+            xScale(d[index])
           )
           .y((d) ->
-            y(d[key])
+            yScale(d[key])
           )
 
         svg.append("path")
@@ -258,7 +260,7 @@ class TimeSeries
             xVal = parseFloat(d[index])
             yVal = parseFloat(d[key])
             if not isNaN(xVal) and not isNaN(yVal)
-              "translate(#{x(xVal)}, #{y(yVal)})"
+              "translate(#{xScale(xVal)}, #{yScale(yVal)})"
             else
               null # Skip invalid points
           )
