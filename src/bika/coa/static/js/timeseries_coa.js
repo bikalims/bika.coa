@@ -5,25 +5,27 @@ function isValidCharacter(char) {
     return charCode >= 0 && charCode <= 255; // Valid ASCII range
 }
 
-function sanitizeInput(word) {
+function sanitizeInput(data) {
     let sanitizedString = '';
-    for (let i = 0; i < word.length; i++) {
-        if (isValidCharacter(word[i])) {
-            sanitizedString += word[i]; // Keep valid characters
-        } else if (word[i].charCodeAt(0) == 8722) {
+    for (let i = 0; i < data.length; i++) {
+        if (isValidCharacter(data[i])) {
+            sanitizedString += data[i]; // Keep valid characters
+        } else if (data[i].charCodeAt(0) == 8722) {
             sanitizedString += "-"
         } else {
             // Invalid characters are skipped (not added to sanitizedString)
-            console.error('Invalid char: ' + word[i] + ' = ' + word[i].charCodeAt(0));
+            console.error('Invalid char: ' + data[i] + ' = ' + data[i].charCodeAt(0));
         };
     }
     return sanitizedString;
 }
 
-function safeBtoa(word) {
+function safeBtoa(data) {
+  // Ensure proper SVG data URL encoding
   try {
-    const sanitizedInput = sanitizeInput(word);
-    return btoa(sanitizedInput); // Now it's safe to use btoa
+    const sanitizedInput = sanitizeInput(data);
+    // Encode as base64 (btoa only handles Latin1, so we escape properly)
+    return window.btoa(unescape(encodeURIComponent(sanitizedInput)));
   } catch (error) {
     console.error('Failed to sanitize  object:', error);
     throw error;
@@ -35,8 +37,6 @@ function insertSVGAsObject(svgElement, targetContainer) {
     // Serialize the SVG to a string
     const svgData = new XMLSerializer().serializeToString(svgElement);
     
-    // Ensure proper SVG data URL encoding (no need for base64 if using raw SVG)
-    // b64 = btoa(unescape(encodeURIComponent(svgData)));
     b64 = safeBtoa(svgData);
     const svgDataUrl = 'data:image/svg+xml;base64,' + b64;
     
@@ -117,7 +117,7 @@ function renderChart(el) {
 
     const svg = container.selectAll("svg")
     insertSVGAsObject(svg.node(), container.node())
-    console.log('insertSVGAsObject');
+    console.log('insertSVGAsObject complete');
 
   } catch (e) {
     console.error("Graph build failed:", e);
