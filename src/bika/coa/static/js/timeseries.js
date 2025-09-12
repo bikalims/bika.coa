@@ -29,41 +29,9 @@ TimeSeries = function () {
 
     // console.log('constructor complete')
     /*
-     * Calculate Y range
+     * Converts the string value to an array
      */
     return _createClass(TimeSeries, [{
-      key: "get_Y_range",
-      value: function get_Y_range(minY, maxY) {
-        var diffY, interval, maxTicks, minTicks, y_range;
-        diffY = maxY - minY;
-        console.log("Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY);
-        interval = 0;
-        if (diffY > 70) {
-          interval = 10;
-        } else if (diffY > 50) {
-          interval = 5;
-        } else if (diffY > 20) {
-          interval = 2;
-        } else if (diffY > 5) {
-          interval = 1;
-        } else {
-          interval = 0.1;
-        }
-        if (interval > 0) {
-          minTicks = minY - minY % interval + interval;
-          maxTicks = maxY + maxY % interval + interval;
-          console.log("Y Axis: minTicks: ", minTicks, " maxTicks: ", maxTicks, " interval: ", interval);
-          y_range = d3.range(minTicks, maxTicks, interval);
-        } else {
-          y_range = d3.range(minY, maxY);
-        }
-        return y_range;
-      }
-
-      /*
-       * Converts the string value to an array
-       */
-    }, {
       key: "to_matrix",
       value: function to_matrix(listString, headers) {
         var list, matrix;
@@ -145,9 +113,9 @@ TimeSeries = function () {
             });
           }));
           if (absoluteMinY > 0) {
-            minY = absoluteMinY * 0.9;
+            minY = absoluteMinY * 0.95;
           } else {
-            minY = absoluteMinY * 1.1;
+            minY = absoluteMinY * 1.05;
           }
           maxY = d3.max(data.flatMap(function (row) {
             return headers.slice(1).map(function (header) {
