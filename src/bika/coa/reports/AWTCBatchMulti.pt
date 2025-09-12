@@ -89,8 +89,7 @@
      }
     .table {
       display: table;
-      table-layout:fixed;
-      width: auto;
+      width: 100%;
     }
     .table-row {
       display: table-row;
@@ -111,13 +110,13 @@
       display: table-cell;
       padding: 2px;
       border-top: 1px solid #ccc;
-      width: 30mm;
+      width: 34mm;
     }
     .table-cell-unit {
       display: table-cell;
       padding: 2px;
       border-top: 1px solid #ccc;
-      width: 14mm;
+      width: 10mm;
     }
 
      <tal:block condition="python:content_width and content_height">
