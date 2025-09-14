@@ -106,6 +106,18 @@
       border-top: 1px solid #ccc;
       width: 22mm;
     }
+    .table-cell-analysis {
+      display: table-cell;
+      padding: 2px;
+      border-top: 1px solid #ccc;
+      width: 34mm;
+    }
+    .table-cell-unit {
+      display: table-cell;
+      padding: 2px;
+      border-top: 1px solid #ccc;
+      width: 10mm;
+    }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
@@ -270,12 +282,8 @@
               </div>
               <div class="table-row" tal:define="common_row_data python:view.get_common_row_data_by_poc(page, poc=poc)"
                       tal:repeat="row_data python:common_row_data">
-                <div class="table-cell text-secondary">
-                  <span tal:content="python: row_data[0]"/>
-                </div>
-                <div class="table-cell text-secondary">
-                  <span tal:content="python: row_data[2]"/>
-                </div>
+                <div class="table-cell-analysis text-secondary" tal:content="python: row_data[0]"/>
+                <div class="table-cell-unit text-secondary" tal:content="python: row_data[2]"/>
                 <!-- Result values -->
                 <tal:results repeat="model page">
                   <tal:analyses tal:define="analyses python:view.get_analyses_by(model, title=row_data[0]);">
