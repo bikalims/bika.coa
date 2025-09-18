@@ -71,9 +71,13 @@ class TimeSeries
 
       # Get datasets
       columns = this.props.item.time_series_columns
-      col_types = columns.map (i) -> i.ColumnType
-      col_colors = columns.map (i) -> i.ColumnColor
-      headers = columns.map (i) -> i.ColumnTitle
+      visible_cols = columns.filter (i) -> i.ColumnHide != 'on'
+      if visible_cols.length == 0
+        return
+
+      col_types = visible_cols.map (i) -> i.ColumnType
+      col_colors = visible_cols.map (i) -> i.ColumnColor
+      headers = visible_cols.map (i) -> i.ColumnTitle
       index = headers[0]
       data = @to_matrix(values, headers)
 

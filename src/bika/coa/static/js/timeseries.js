@@ -68,7 +68,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, width, xScale, yScale, y_offset;
+        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, visible_cols, width, xScale, yScale, y_offset;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -80,13 +80,19 @@ TimeSeries = function () {
           }
           // Get datasets
           columns = this.props.item.time_series_columns;
-          col_types = columns.map(function (i) {
+          visible_cols = columns.filter(function (i) {
+            return i.ColumnHide !== 'on';
+          });
+          if (visible_cols.length === 0) {
+            return;
+          }
+          col_types = visible_cols.map(function (i) {
             return i.ColumnType;
           });
-          col_colors = columns.map(function (i) {
+          col_colors = visible_cols.map(function (i) {
             return i.ColumnColor;
           });
-          headers = columns.map(function (i) {
+          headers = visible_cols.map(function (i) {
             return i.ColumnTitle;
           });
           index = headers[0];
