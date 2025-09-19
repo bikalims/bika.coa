@@ -331,22 +331,22 @@
 
           <!-- Results table per PoC -->
           <table class="table table-sm table-condensed small">
+              <tr class="noborder" style="border:none !important">
+                <tal:ar repeat="model page">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                        Sample ID
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder">
+                      <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
+                  </th>
+                </tal:ar>
+              </tr>
               <tr>
-                <th colspan="4" style="word-wrap:normal;">Sample ID</th>
+                <th colspan="4" style="word-wrap:normal;">Lab ID</th>
                 <tal:ar repeat="model page">
                   <th colspan="2" class="font-weight-normal">
                     <div class="text-primary text-center"
                          tal:content="model/Title"/>
-                  </th>
-                </tal:ar>
-              </tr>
-              <tr class="noborder" style="border:none !important">
-                <tal:ar repeat="model page">
-                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
-                        Client Sample ID
-                  </th>
-                  <th colspan="2" class="font-weight-normal text-center noborder">
-                      <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
                   </th>
                 </tal:ar>
               </tr>
@@ -358,6 +358,43 @@
                   <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center"
                            tal:content="python:model.SampleTypeTitle or '-'"/>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                        <div class="text-left">Cultivar</div>
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder">
+                      <div class="text-center" tal:condition="model/Cultivar"
+                           tal:content="python:model.Cultivar.title or '-'"/>
+                      <div class="text-center" tal:condition="not:model/Cultivar">-</div>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                        <div class="text-left">Vintage</div>
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder">
+                      <div class="text-center" tal:condition="model/Vintage"
+                           tal:content="python:model.Vintage.title or '-'"/>
+                      <div class="text-center" tal:condition="not:model/Vintage">-</div>
+                  </th>
+                </tal:ar>
+              </tr>
+              <tr class="noborder">
+                <tal:ar repeat="model page">
+                  <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
+                        <div class="text-left">Specification</div>
+                  </th>
+                  <th colspan="2" class="font-weight-normal text-center noborder"
+                      tal:define="specification model/Specification;
+                                  publication_specification model/PublicationSpecification;
+                                  spec python:publication_specification or specification;">
+                      <div class="text-center" tal:content="python: spec.contextual_title() or '-'"/>
                   </th>
                 </tal:ar>
               </tr>
