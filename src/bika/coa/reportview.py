@@ -163,14 +163,6 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
 
 
 class ReportView(object):
-    def get_coa_number(self, model=None):  # some coa's use the model attribute
-        kwargs = {"portal_type": "ARReport", "dry_run": True}
-        coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
-        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
-        return dry_run
-
     def get_timeseries_result(self, model, analysis):
         """Return formatted result"""
         result = model.get_formatted_result(analysis)
@@ -312,6 +304,29 @@ class ReportView(object):
 
 class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
+
+    def get_items(self):
+        from urlparse import urlparse, parse_qs
+        referer = self.request.get_header("referer")
+        parsed_url = urlparse(referer)
+        query_params = parse_qs(parsed_url.query)
+        items = query_params.get("items", [])
+        if not items:
+            return[]
+        items = items[0]
+        return filter(api.is_uid, items.split(","))
+
+    def get_coa_number(self, model=None):  # some coa's use the model attribute
+        kwargs = {"portal_type": "ARReport", "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        items = self.get_items()
+        if items:
+            increment += items.index(self.model.uid) 
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run
+
 
     def json_dumps(self, data):
         return json.dumps(data)
@@ -524,6 +539,15 @@ class MultiReportView(MRV, ReportView):
 
     def json_loads(self, data):
         return json.loads(data)
+
+    def get_coa_number(self):
+        kwargs = {"portal_type": "ARReport", "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run
+
 
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
