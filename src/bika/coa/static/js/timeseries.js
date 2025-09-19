@@ -33,14 +33,12 @@ TimeSeries = function () {
      */
     return _createClass(TimeSeries, [{
       key: "to_matrix",
-      value: function to_matrix(listString, headers) {
-        var list, matrix;
-        if (!listString || listString.length === 0) {
+      value: function to_matrix(list, headers) {
+        var matrix;
+        // No values yet
+        if (list.length === 0) {
           return [];
         }
-        // Parse the string version of the list of lists into an array
-        // list = JSON.parse(listString)
-        list = listString;
         // Map each inner list to an object using the headers
         matrix = list.map(function (innerList) {
           var obj;
@@ -68,7 +66,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, visible_cols, width, xScale, yScale, y_offset;
+        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, h, headers, height, i, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, visible_cols, visible_idxs, visible_values, width, xScale, yScale, y_offset;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -96,7 +94,27 @@ TimeSeries = function () {
             return i.ColumnTitle;
           });
           index = headers[0];
-          data = this.to_matrix(values, headers);
+          visible_idxs = function () {
+            var j, len, results;
+            results = [];
+            for (i = j = 0, len = columns.length; j < len; i = ++j) {
+              h = columns[i];
+              if (h.ColumnHide !== 'on') {
+                results.push(i);
+              }
+            }
+            return results;
+          }();
+          visible_values = values.map(function (row) {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = visible_idxs.length; j < len; j++) {
+              i = visible_idxs[j];
+              results.push(row[i]);
+            }
+            return results;
+          });
+          data = this.to_matrix(visible_values, headers);
           // Generate the line colors (exclude index)
           line_configs = getLineConfigs(headers.length - 1);
           // Set up dimensions

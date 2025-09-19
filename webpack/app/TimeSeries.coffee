@@ -18,13 +18,9 @@ class TimeSeries
   ###
    * Converts the string value to an array
   ###
-  to_matrix: (listString, headers) ->
+  to_matrix: (list, headers) ->
     # No values yet
-    return [] if !listString || listString.length == 0
-
-    # Parse the string version of the list of lists into an array
-    # list = JSON.parse(listString)
-    list = listString
+    return [] if list.length == 0
 
     # Map each inner list to an object using the headers
     matrix = list.map (innerList) ->
@@ -79,7 +75,10 @@ class TimeSeries
       col_colors = visible_cols.map (i) -> i.ColumnColor
       headers = visible_cols.map (i) -> i.ColumnTitle
       index = headers[0]
-      data = @to_matrix(values, headers)
+      visible_idxs = (i for h, i in columns when h.ColumnHide != 'on')
+      visible_values = values.map (row) ->
+         (row[i] for i in visible_idxs)
+      data = @to_matrix(visible_values, headers)
 
       # Generate the line colors (exclude index)
       line_configs = getLineConfigs(headers.length - 1)
