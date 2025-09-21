@@ -253,6 +253,9 @@ class ReportView(object):
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
 
+    def to_custom_date(self, date):
+        return date.strftime('%d-%b-%y') or ''
+
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
             if analysis.Method.Supplier:
@@ -523,6 +526,63 @@ class SingleReportView(SRV, ReportView):
             amount = mix_mat_amount.amounts
             row_data.append([mat_class, mat_type, mix_material_title, specific_gravity, amount])
         return row_data
+
+    def split_categories(self, model):
+        categories = self.get_analyses_by_category(model)
+        analyses = self.get_analyses_by(model)
+        total = len(analyses)
+        half = total / 2
+
+        col1, col2 = [], []
+        count = 0
+
+        for cat in categories:
+            category = {"title": cat.title}
+            analyses = self.get_analyses_by(model, category=cat)
+            category["analyses"] = analyses
+            if count + len(analyses) <= half:
+                col1.append(category)
+                count += len(analyses)
+            else:
+                col2.append(category)
+
+        return col1, col2
+
+    def split_categories_qc(self, sample):
+        analyses = sample.getQCAnalyses(["verified", "published"])
+        categories = []
+        for analysis in analyses:
+            category = analysis.getCategory()
+            if category not in categories:
+                categories.append(category)
+
+        total = len(analyses)
+        half = total / 2
+
+        col1, col2 = [], []
+        count = 0
+
+        for cat in categories:
+            category = {"title": cat.title}
+            cats = []
+            if len(categories) == 1 and len(analyses) < 10:
+                category["analyses"] = analyses
+                col1.append(category)
+                return col1, col2
+        for cat in categories:
+            category = {"title": cat.title}
+            cats = []
+            for an in analyses:
+                if an.getCategory().title == cat.title:
+                    cats.append(an)
+            category["analyses"] = cats
+            if count + len(cats) <= half:
+                col1.append(category)
+                count += len(cats)
+            else:
+                col2.append(category)
+
+        return col1, col2
 
 
 class MultiReportView(MRV, ReportView):
@@ -1882,24 +1942,3 @@ class MultiReportView(MRV, ReportView):
         if not tracking_id:
             return "-"
         return tracking_id[:12]
-
-    def split_categories(self, collection):
-        categories = self.get_analyses_by_category(collection)
-        analyses = self.get_analyses_by(collection)
-        total = len(analyses)
-        half = total / 2
-
-        col1, col2 = [], []
-        count = 0
-
-        for cat in categories:
-            category = {"title": cat.title}
-            analyses = self.get_analyses_by(collection, category=cat)
-            category["analyses"] = analyses
-            if count + len(analyses) <= half:
-                col1.append(category)
-                count += len(analyses)
-            else:
-                col2.append(category)
-
-        return col1, col2
