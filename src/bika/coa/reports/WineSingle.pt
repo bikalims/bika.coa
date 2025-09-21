@@ -268,79 +268,59 @@
 
         <h1 i18n:translate="">Summary</h1>
         <table class="table table-sm table-condensed">
+              <colgroup>
+                <col style="width: 20%;">
+                <col style="width: 30%;">
+                <col style="width: 20%;">
+                <col style="width: 30%;">
+              </colgroup>
           <tr>
-            <td style="width:20%" class="label" i18n:translate="">Sample ID</td>
+            <td class="label" i18n:translate="">Sample ID</td>
             <td>
               <a tal:content="model/getId"
                  tal:attributes="href model/absolute_url;">
               </a>
             </td>
+            <td class="label" i18n:translate="">Client SID</td>
+            <td tal:content="model/ClientSampleID"></td>
           </tr>
           <tr tal:condition="batch">
             <td class="label" i18n:translate="">Batch ID</td>
-            <td>
+            <td colspan="3">
               <a tal:content="batch/getId"
-                 tal:attributes="href batch/absolute_url">
+                 tal:attributes="href batch/absolute_url">,
+              <a tal:content="batch/title"
+                 tal:attributes="href batch/absolute_url">,
               </a>
             </td>
           </tr>
           <tr>
-            <td class="label" i18n:translate="">Client</td>
-            <td>
-              <a tal:attributes="href client/absolute_url"
-                 tal:content="client/Name"></a>
-            </td>
-          </tr>
-          <tr>
-            <td class="label" i18n:translate="">Client SID</td>
-            <td tal:content="model/ClientSampleID"></td>
-          </tr>
-          <tr>
             <td class="label" i18n:translate="">Sample Type</td>
             <td tal:content="model/SampleType/title|nothing"></td>
+            <td class="label" i18n:translate="">Cultivar</td>
+            <td tal:content="model/Cultivar/title|nothing"></td>
           </tr>
           <tr>
-            <td class="label" i18n:translate="">Sampler</td>
-            <td tal:content="python:view.get_sampler_fullname(model)"></td>
-          </tr>
-          <tr>
-            <td class="label" i18n:translate="">Sampling Deviation</td>
-            <td tal:content="model/SamplingDeviation/title|nothing"></td>
-          </tr>
-          <tr>
-            <td class="label" i18n:translate="">Sample Condition</td>
-            <td tal:content="model/SampleCondition/title|nothing"></td>
+            <td class="label" i18n:translate="">Sample Point</td>
+            <td tal:content="model/SamplePointTitle|nothing"></td>
+            <td class="label" i18n:translate="">Vintage</td>
+            <td tal:content="model/Vintage/title|nothing"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Specification</td>
-            <td tal:content="spec/contextual_title|nothing"></td>
+            <td tal:content="spec/contextual_title|nothing" colspan="3"></td>
           </tr>
           <tr>
+            <td class="label" i18n:translate="">Date Sampled</td>
+            <td tal:content="python:view.to_localized_time(model.DateSampled)"></td>
             <td class="label" i18n:translate="">Date Received</td>
             <td tal:content="python:view.to_localized_time(model.DateReceived)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Date Verified</td>
             <td tal:content="python:view.to_localized_time(model.get_transition_date('senaite_sample_workflow', 'verified'))"></td>
-          </tr>
-          <tr>
             <td class="label" i18n:translate="">Date Published</td>
             <td tal:content="python:view.to_localized_time(model.DatePublished or view.timestamp)"></td>
-          </tr>
-          <tr tal:condition="reporter">
-            <td class="label" i18n:translate="">Published by</td>
-            <td>
-              <span tal:content="reporter/fullname|reporter/username"/>
-              <tal:email tal:condition="reporter/email|nothing"
-                         tal:define="email reporter/email|nothing">
-                (<a tal:content="email"
-                    tal:attributes="href string:mailto:${email}"></a>)
-              </tal:email>
-            </td>
-          </tr>
-          <tr tal:condition="python: batch and batch.BatchLabels">
-            <td class="label" i18n:translate="">Batch Labels</td>
-            <td tal:content="python: view.get_batch_labels(model)"></td>
           </tr>
         </table>
       </div>
@@ -373,20 +353,23 @@
                 <!-- Date -->
                 <col style="width: 10%;">
                 <!-- Result -->
-                <col style="width: 10%">
+                <col style="width: 15%">
                 <!-- Unit -->
                 <col style="width: 10%">
                 <!-- Uncertainty -->
                 <col style="width: 10%">
                 <!-- Range -->
                 <col style="width: 15%">
-                <!-- Out of Range -->
-                <col style="width: 5%">
               </colgroup>
               <thead tal:condition="python:view.get_analyses_by(model, poc=poc, category=category)">
                 <tr class="small">
-                  <th class="analysis">
+                  <th class="analysis" colspan="8">
                     <span class="font-weight-normal font-size-140" tal:content="category/Title">Category</span>
+                  </th>
+                </tr>
+                <tr class="small">
+                  <th class="analysis">
+                    <span class="font-weight-normal font-size-140">Analysis</span>
                   </th>
                   <th class="text-left method">
                     <span i18n:translate="">Method</span>
@@ -408,9 +391,6 @@
                   </th>
                   <th class="specs">
                     <span i18n:translate="">Range</span>
-                  </th>
-                  <th class="outofrange">
-                    <span i18n:translate=""></span>
                   </th>
                 </tr>
               </thead>
@@ -450,6 +430,12 @@
                     </td>
                     <td class="text-right">
                       <span class="result" tal:content="structure python:model.get_formatted_result(analysis)">23</span>
+                      <span tal:condition="python:model.is_out_of_range(analysis)"
+                            class="font-weight-light">
+                        <span class="outofrange text-danger">
+                          <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
+                        </span>
+                      </span>
                     </td>
                     <td class="text-left text-muted font-italic">
                       <span class="units" tal:content="structure python:model.get_formatted_unit(analysis)"></span>
@@ -461,14 +447,6 @@
                     <td class="specs">
                       <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
                       <span tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
-                    </td>
-                    <td class="text-center align-middle">
-                      <span tal:condition="python:model.is_out_of_range(analysis)"
-                            class="font-weight-light">
-                        <span class="outofrange text-danger">
-                          <img tal:attributes="src python:report_images['outofrange_symbol_url']"/>
-                        </span>
-                      </span>
                     </td>
                   </tr>
                 </tal:analyses>

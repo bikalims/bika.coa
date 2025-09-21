@@ -1,17 +1,8 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
-/*!*******************************!*\
-  !*** ./app/TimeSeries.coffee ***!
-  \*******************************/
 
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
-function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
 function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
 function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
@@ -52,8 +43,10 @@ TimeSeries = function () {
           interval = 5;
         } else if (diffY > 20) {
           interval = 2;
-        } else if (diffY > 10) {
+        } else if (diffY > 5) {
           interval = 1;
+        } else {
+          interval = 0.1;
         }
         if (interval > 0) {
           minTicks = minY - minY % interval + interval;
@@ -62,8 +55,8 @@ TimeSeries = function () {
         } else {
           y_range = d3.range(minY, maxY);
         }
-        // console.log "Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval
-        return [y_range, maxTicks];
+        console.log("Y Axis: min: ", minY, " max: ", maxY, " diffY: ", diffY, " interval: ", interval);
+        return y_range;
       }
 
       /*
@@ -106,7 +99,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxTicks, maxY, minY, minY_factor, svg, values, width, x, y, yAxis, y_range;
+        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, headers, height, index, interp, legend, legendItems, line_configs, margin, maxY, minY, minY_factor, svg, values, width, x, y, yAxis, y_range;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -139,7 +132,7 @@ TimeSeries = function () {
             left: 60
           };
           width = 700 - margin.left - margin.right;
-          height = 500 - margin.top - margin.bottom + 50;
+          height = 400 - margin.top - margin.bottom + 50;
           // Set up scales
           x = d3.scaleLinear().domain(d3.extent(data, function (d) {
             return parseFloat(d[index]);
@@ -157,11 +150,6 @@ TimeSeries = function () {
               return parseFloat(row[header]);
             });
           }));
-          var _this$get_Y_range = this.get_Y_range(minY, maxY);
-          var _this$get_Y_range2 = _slicedToArray(_this$get_Y_range, 2);
-          y_range = _this$get_Y_range2[0];
-          maxTicks = _this$get_Y_range2[1];
-          maxY = maxTicks;
           y = d3.scaleLinear().domain([Math.floor(minY), Math.ceil(maxY) // Trim domain to just cover data range
           ]).range([height, 0]);
           // Create SVG container
@@ -177,6 +165,7 @@ TimeSeries = function () {
           // X-axis label
           svg.append("text").attr("x", width / 2).attr("y", height + margin.bottom - 10).attr("text-anchor", "middle").style("font-size", "12px").text(this.props.item.time_series_graph_xaxis);
           // Y-axis
+          y_range = this.get_Y_range(minY, maxY);
           yAxis = d3.axisLeft(y).tickValues(y_range).tickSize(-width); // Extend ticks across the chart width
 
           // Y-axis label
