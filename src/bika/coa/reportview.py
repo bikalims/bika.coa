@@ -325,7 +325,7 @@ class SingleReportView(SRV, ReportView):
         increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
         items = self.get_items()
         if items:
-            increment += items.index(self.model.uid) 
+            increment += items.index(self.model.uid)
         num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
