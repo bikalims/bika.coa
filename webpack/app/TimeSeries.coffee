@@ -65,20 +65,39 @@ class TimeSeries
         @container.current.appendChild([])
         return
 
+      # console.log 'Graph raw data: ' + values
       # Get datasets
       columns = this.props.item.time_series_columns
-      visible_cols = columns.filter (i) -> i.ColumnHide != 'on'
+      visible_cols = (c for c in columns when c.ColumnHide != 'on')
       if visible_cols.length == 0
         return
-
       col_types = visible_cols.map (i) -> i.ColumnType
       col_colors = visible_cols.map (i) -> i.ColumnColor
       headers = visible_cols.map (i) -> i.ColumnTitle
+      # console.log 'Graph headers: ' + headers
       index = headers[0]
-      visible_idxs = (i for h, i in columns when h.ColumnHide != 'on')
+
+      err_col = ""
+      err_key = ""
+      error_columns = (c for c in columns when c.ColumnType == 'errorbar')
+      if error_columns.length == 1
+        err_col = error_columns[0]
+        err_key = error_columns[0].ColumnTitle
+      avg_col = ""
+      avg_key = ""
+      avg_columns = (c for c in columns when c.ColumnType == 'average')
+      if avg_columns.length == 1
+          avg_col = avg_columns[0]
+          avg_key = avg_columns[0].ColumnTitle
+      legend_headers = (c.ColumnTitle for c in columns when c.ColumnHide != 'on' and c.ColumnType != 'errorbar').slice(1)
+
+      visible_idxs = (i for c, i in columns when c.ColumnHide != 'on')
       visible_values = values.map (row) ->
          (row[i] for i in visible_idxs)
-      data = @to_matrix(visible_values, headers)
+      # console.log 'visible_values: ' + JSON.stringify(visible_values)
+
+      data = @to_matrix(visible_values, headers, 'graph')
+      # console.log 'data: ' + JSON.stringify(data)
 
       # Generate the line colors (exclude index)
       line_configs = getLineConfigs(headers.length - 1)
@@ -94,15 +113,23 @@ class TimeSeries
         .range([0, width])
 
       # Set up Y scale with trimmed domain
-      absoluteMinY = d3.min(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
-      if absoluteMinY > 0
+      maxError = 0
+      if err_key
+        maxError = d3.max(data.flatMap((row) -> parseFloat(row[err_key])))
+
+      absoluteMinY = d3.min(data.flatMap((row) -> legend_headers.map((header) -> parseFloat(row[header]))))
+      absoluteMinY -= maxError
+      if absoluteMinY == 0
+        minY = -0.5
+      else if absoluteMinY > 0
         minY = absoluteMinY * 0.95
       else
         minY = absoluteMinY * 1.05
 
-      maxY = d3.max(data.flatMap((row) -> headers.slice(1).map((header) -> parseFloat(row[header]))))
+      maxY = d3.max(data.flatMap((row) -> legend_headers.map((header) -> parseFloat(row[header]))))
+      maxY += maxError
 
-      console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
+      # console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
       yScale = d3.scaleLinear()
         .domain([minY, maxY])
         .nice()  # expands domain to "nice" human-friendly values
@@ -119,7 +146,7 @@ class TimeSeries
       svg.selectAll('*').remove()
 
       svg_height = height + margin.top + margin.bottom
-      console.log('svg_height: ' + svg_height)
+      # console.log('svg_height: ' + svg_height)
       svg = svg
         .attr("width", width + margin.left + margin.right)
         .attr("height", svg_height)
@@ -187,12 +214,14 @@ class TimeSeries
 
       headers.slice(1).forEach((key, i) ->
         line_configs_idx = i % line_configs.length
-        console.info "Main loop: " + key + "  " + i
+        # console.info "Main loop: " + key + "  " + i
 
         # Filter data to exclude rows with null, undefined, or non-numeric values for the current key
-        validData = data.filter((d) ->
-          d[key]? and not isNaN(d[key]) # Ensure value exists and is numeric
-        )
+        filteredData = data.filter (d) ->
+          d[index]? and d[key]? and d[index] isnt "" and d[key] isnt "" and \
+          not (typeof d[index] isnt 'string' and (d[index] is null or isNaN(d[index]))) and \
+          not (typeof d[key] isnt 'string' and (d[key] is null or isNaN(d[key])))
+        # console.log 'filteredData: ' + JSON.stringify(filteredData)
 
         # Line generator
         lineGen = d3.line()
@@ -204,30 +233,72 @@ class TimeSeries
             yScale(d[key])
           )
 
-        svg.append("path")
-          .datum(validData) # Use filtered data
-          .attr("fill", "none")
-          .attr("stroke-width", 2)
-          .attr("stroke", col_colors[i+1])
-          .attr("stroke-dasharray", line_configs[line_configs_idx].dash)
-          .attr("d", lineGen)
+        if key != err_key
+          svg.append("path")
+            .datum(filteredData) # Use filtered data
+            .attr("fill", "none")
+            .attr("stroke-width", 2)
+            .attr("stroke", col_colors[i+1])
+            .attr("stroke-dasharray", line_configs[line_configs_idx].dash)
+            .attr("d", lineGen)
 
-        # Add data points with different symbols
-        svg.selectAll(".symbol-#{i}")
-          .data(validData) # Use filtered data
-          .enter().append("path")
-          .attr("class", "symbol symbol-#{i}")
-          .attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol))
-          .attr("transform", (d) ->
-            # Ensure valid x and y before applying transform
-            xVal = parseFloat(d[index])
-            yVal = parseFloat(d[key])
-            if not isNaN(xVal) and not isNaN(yVal)
-              "translate(#{xScale(xVal)}, #{yScale(yVal)})"
-            else
-              null # Skip invalid points
-          )
-          .style("fill", col_colors[i+1])
+          # Add data points with different symbols
+          svg.selectAll(".symbol-#{i}")
+            .data(filteredData) # Use filtered data
+            .enter().append("path")
+            .attr("class", "symbol symbol-#{i}")
+            .attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol))
+            .attr("transform", (d) ->
+              # Ensure valid x and y before applying transform
+              xVal = parseFloat(d[index])
+              yVal = parseFloat(d[key])
+              if not isNaN(xVal) and not isNaN(yVal)
+                "translate(#{xScale(xVal)}, #{yScale(yVal)})"
+              else
+                null # Skip invalid points
+            )
+            .style("fill", col_colors[i+1])
+        else
+          svg.selectAll(".error-bar")
+            .data(filteredData)
+            .enter()
+            .append("line")
+            .attr("class", "error-bar")
+            .attr "x1", (d) -> xScale(d[index])
+            .attr "x2", (d) -> xScale(d[index])
+            .attr "y1", (d) -> yScale(d[avg_key] - d[err_key])
+            .attr "y2", (d) -> yScale(d[avg_key] + d[err_key])
+            .attr "stroke", avg_col.ColumnColor
+            .attr "stroke-width", 1
+
+          # Caps
+          capWidth = 0.5
+
+          # Top cap
+          svg.selectAll(".error-cap-top")
+            .data(filteredData)
+            .enter()
+            .append("line")
+            .attr("class", "error-cap-top")
+            .attr "x1", (d) -> xScale(d[index] - capWidth/2)
+            .attr "x2", (d) -> xScale(d[index] + capWidth/2)
+            .attr "y1", (d) -> yScale(d[avg_key] + d[err_key])
+            .attr "y2", (d) -> yScale(d[avg_key] + d[err_key])
+            .attr "stroke", avg_col.ColumnColor
+            .attr "stroke-width", 1
+
+          # Bottom cap
+          svg.selectAll(".error-cap-bottom")
+            .data(filteredData)
+            .enter()
+            .append("line")
+            .attr("class", "error-cap-bottom")
+            .attr "x1", (d) -> xScale(d[index] - capWidth/2)
+            .attr "x2", (d) -> xScale(d[index] + capWidth/2)
+            .attr "y1", (d) -> yScale(d[avg_key] - d[err_key])
+            .attr "y2", (d) -> yScale(d[avg_key] - d[err_key])
+            .attr "stroke", avg_col.ColumnColor
+            .attr "stroke-width", 1
       )
 
       # Add legend
@@ -237,7 +308,7 @@ class TimeSeries
 
       # Add legend items
       legendItems = legend.selectAll("g")
-        .data(headers.slice(1))
+        .data(legend_headers)
         .enter().append("g")
         .attr("transform", (d, i) ->
           xOffset = parseFloat((i % Math.floor(width / 100)) * 100)  # Horizontal spacing

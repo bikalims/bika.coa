@@ -66,7 +66,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, col_colors, col_types, columns, curve_val, data, error, h, headers, height, i, index, interp, legend, legendItems, line_configs, margin, maxY, minY, svg, svg_height, values, visible_cols, visible_idxs, visible_values, width, xScale, yScale, y_offset;
+        var absoluteMinY, avg_col, avg_columns, avg_key, c, col_colors, col_types, columns, curve_val, data, err_col, err_key, error, error_columns, headers, height, i, index, interp, legend, legendItems, legend_headers, line_configs, margin, maxError, maxY, minY, svg, svg_height, values, visible_cols, visible_idxs, visible_values, width, xScale, yScale, y_offset;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -76,11 +76,20 @@ TimeSeries = function () {
             this.container.current.appendChild([]);
             return;
           }
+          // console.log 'Graph raw data: ' + values
           // Get datasets
           columns = this.props.item.time_series_columns;
-          visible_cols = columns.filter(function (i) {
-            return i.ColumnHide !== 'on';
-          });
+          visible_cols = function () {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = columns.length; j < len; j++) {
+              c = columns[j];
+              if (c.ColumnHide !== 'on') {
+                results.push(c);
+              }
+            }
+            return results;
+          }();
           if (visible_cols.length === 0) {
             return;
           }
@@ -93,13 +102,59 @@ TimeSeries = function () {
           headers = visible_cols.map(function (i) {
             return i.ColumnTitle;
           });
+          // console.log 'Graph headers: ' + headers
           index = headers[0];
+          err_col = "";
+          err_key = "";
+          error_columns = function () {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = columns.length; j < len; j++) {
+              c = columns[j];
+              if (c.ColumnType === 'errorbar') {
+                results.push(c);
+              }
+            }
+            return results;
+          }();
+          if (error_columns.length === 1) {
+            err_col = error_columns[0];
+            err_key = error_columns[0].ColumnTitle;
+          }
+          avg_col = "";
+          avg_key = "";
+          avg_columns = function () {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = columns.length; j < len; j++) {
+              c = columns[j];
+              if (c.ColumnType === 'average') {
+                results.push(c);
+              }
+            }
+            return results;
+          }();
+          if (avg_columns.length === 1) {
+            avg_col = avg_columns[0];
+            avg_key = avg_columns[0].ColumnTitle;
+          }
+          legend_headers = function () {
+            var j, len, results;
+            results = [];
+            for (j = 0, len = columns.length; j < len; j++) {
+              c = columns[j];
+              if (c.ColumnHide !== 'on' && c.ColumnType !== 'errorbar') {
+                results.push(c.ColumnTitle);
+              }
+            }
+            return results;
+          }().slice(1);
           visible_idxs = function () {
             var j, len, results;
             results = [];
             for (i = j = 0, len = columns.length; j < len; i = ++j) {
-              h = columns[i];
-              if (h.ColumnHide !== 'on') {
+              c = columns[i];
+              if (c.ColumnHide !== 'on') {
                 results.push(i);
               }
             }
@@ -114,7 +169,10 @@ TimeSeries = function () {
             }
             return results;
           });
-          data = this.to_matrix(visible_values, headers);
+          // console.log 'visible_values: ' + JSON.stringify(visible_values)
+          data = this.to_matrix(visible_values, headers, 'graph');
+          // console.log 'data: ' + JSON.stringify(data)
+
           // Generate the line colors (exclude index)
           line_configs = getLineConfigs(headers.length - 1);
           // Set up dimensions
@@ -131,22 +189,32 @@ TimeSeries = function () {
             return parseFloat(d[index]);
           })).range([0, width]);
           // Set up Y scale with trimmed domain
+          maxError = 0;
+          if (err_key) {
+            maxError = d3.max(data.flatMap(function (row) {
+              return parseFloat(row[err_key]);
+            }));
+          }
           absoluteMinY = d3.min(data.flatMap(function (row) {
-            return headers.slice(1).map(function (header) {
+            return legend_headers.map(function (header) {
               return parseFloat(row[header]);
             });
           }));
-          if (absoluteMinY > 0) {
+          absoluteMinY -= maxError;
+          if (absoluteMinY === 0) {
+            minY = -0.5;
+          } else if (absoluteMinY > 0) {
             minY = absoluteMinY * 0.95;
           } else {
             minY = absoluteMinY * 1.05;
           }
           maxY = d3.max(data.flatMap(function (row) {
-            return headers.slice(1).map(function (header) {
+            return legend_headers.map(function (header) {
               return parseFloat(row[header]);
             });
           }));
-          console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height);
+          maxY += maxError;
+          // console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
           yScale = d3.scaleLinear().domain([minY, maxY]).nice().range([height, 0]); // expands domain to "nice" human-friendly values
           // Create SVG container
           y_offset = 140;
@@ -155,7 +223,7 @@ TimeSeries = function () {
           // Remove any previous SVG content
           svg.selectAll('*').remove();
           svg_height = height + margin.top + margin.bottom;
-          console.log('svg_height: ' + svg_height);
+          // console.log('svg_height: ' + svg_height)
           svg = svg.attr("width", width + margin.left + margin.right).attr("height", svg_height).attr('xmlns', 'http://www.w3.org/2000/svg').append("g").attr("transform", "translate(".concat(margin.left, ",").concat(margin.top, ")"));
           // Graph title
           svg.append("text").attr("x", width / 2).attr("y", -margin.top / 2).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text(this.props.item.time_series_graph_title);
@@ -175,39 +243,76 @@ TimeSeries = function () {
           // console.log(interp)
           curve_val = d3[interp];
           headers.slice(1).forEach(function (key, i) {
-            var lineGen, line_configs_idx, validData;
+            var capWidth, filteredData, lineGen, line_configs_idx;
             line_configs_idx = i % line_configs.length;
-            console.info("Main loop: " + key + "  " + i);
+            // console.info "Main loop: " + key + "  " + i
+
             // Filter data to exclude rows with null, undefined, or non-numeric values for the current key
-            validData = data.filter(function (d) {
-              return d[key] != null && !isNaN(d[key]);
+            filteredData = data.filter(function (d) {
+              return d[index] != null && d[key] != null && d[index] !== "" && d[key] !== "" && !(typeof d[index] !== 'string' && (d[index] === null || isNaN(d[index]))) && !(typeof d[key] !== 'string' && (d[key] === null || isNaN(d[key])));
             });
+            // console.log 'filteredData: ' + JSON.stringify(filteredData)
+
             // Line generator
             lineGen = d3.line().curve(curve_val).x(function (d) {
               return xScale(d[index]);
             }).y(function (d) {
               return yScale(d[key]);
             });
-            svg.append("path").datum(validData).attr("fill", "none").attr("stroke-width", 2).attr("stroke", col_colors[i + 1]).attr("stroke-dasharray", line_configs[line_configs_idx].dash).attr("d", lineGen); // Use filtered data
-            // Add data points with different symbols
-            return svg.selectAll(".symbol-".concat(i)).data(validData).enter().append("path").attr("class", "symbol symbol-".concat(i // Use filtered data
-            )).attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol)).attr("transform", function (d) {
-              var xVal, yVal;
-              // Ensure valid x and y before applying transform
-              xVal = parseFloat(d[index]);
-              yVal = parseFloat(d[key]);
-              if (!isNaN(xVal) && !isNaN(yVal)) {
-                return "translate(".concat(xScale(xVal), ", ").concat(yScale(yVal), ")");
-              } else {
-                return null; // Skip invalid points
-              }
-            }).style("fill", col_colors[i + 1]);
+            if (key !== err_key) {
+              svg.append("path").datum(filteredData).attr("fill", "none").attr("stroke-width", 2).attr("stroke", col_colors[i + 1]).attr("stroke-dasharray", line_configs[line_configs_idx].dash).attr("d", lineGen); // Use filtered data
+              // Add data points with different symbols
+              return svg.selectAll(".symbol-".concat(i)).data(filteredData).enter().append("path").attr("class", "symbol symbol-".concat(i // Use filtered data
+              )).attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol)).attr("transform", function (d) {
+                var xVal, yVal;
+                // Ensure valid x and y before applying transform
+                xVal = parseFloat(d[index]);
+                yVal = parseFloat(d[key]);
+                if (!isNaN(xVal) && !isNaN(yVal)) {
+                  return "translate(".concat(xScale(xVal), ", ").concat(yScale(yVal), ")");
+                } else {
+                  return null; // Skip invalid points
+                }
+              }).style("fill", col_colors[i + 1]);
+            } else {
+              svg.selectAll(".error-bar").data(filteredData).enter().append("line").attr("class", "error-bar").attr("x1", function (d) {
+                return xScale(d[index]);
+              }).attr("x2", function (d) {
+                return xScale(d[index]);
+              }).attr("y1", function (d) {
+                return yScale(d[avg_key] - d[err_key]);
+              }).attr("y2", function (d) {
+                return yScale(d[avg_key] + d[err_key]);
+              }).attr("stroke", avg_col.ColumnColor).attr("stroke-width", 1);
+              // Caps
+              capWidth = 0.5;
+              // Top cap
+              svg.selectAll(".error-cap-top").data(filteredData).enter().append("line").attr("class", "error-cap-top").attr("x1", function (d) {
+                return xScale(d[index] - capWidth / 2);
+              }).attr("x2", function (d) {
+                return xScale(d[index] + capWidth / 2);
+              }).attr("y1", function (d) {
+                return yScale(d[avg_key] + d[err_key]);
+              }).attr("y2", function (d) {
+                return yScale(d[avg_key] + d[err_key]);
+              }).attr("stroke", avg_col.ColumnColor).attr("stroke-width", 1);
+              // Bottom cap
+              return svg.selectAll(".error-cap-bottom").data(filteredData).enter().append("line").attr("class", "error-cap-bottom").attr("x1", function (d) {
+                return xScale(d[index] - capWidth / 2);
+              }).attr("x2", function (d) {
+                return xScale(d[index] + capWidth / 2);
+              }).attr("y1", function (d) {
+                return yScale(d[avg_key] - d[err_key]);
+              }).attr("y2", function (d) {
+                return yScale(d[avg_key] - d[err_key]);
+              }).attr("stroke", avg_col.ColumnColor).attr("stroke-width", 1);
+            }
           });
           // Add legend
           legend = svg.append("g").attr("class", "legend").attr("transform", "translate(50, ".concat(height + 50, ")"));
 
           // Add legend items
-          legendItems = legend.selectAll("g").data(headers.slice(1)).enter().append("g").attr("transform", function (d, i) {
+          legendItems = legend.selectAll("g").data(legend_headers).enter().append("g").attr("transform", function (d, i) {
             var xOffset, yOffset;
             xOffset = parseFloat(i % Math.floor(width / 100) * 100); // Horizontal spacing
             yOffset = parseFloat(Math.floor(i / Math.floor(width / 100)) * 20); // Vertical spacing

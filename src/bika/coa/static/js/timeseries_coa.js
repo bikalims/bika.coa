@@ -66,6 +66,7 @@ function get_time_series_config(element) {
       let graph_yaxis = element.getAttribute('data-graph_yaxis');
       let results = element.getAttribute('data-results');
       
+      // console.log('Results: ' + results)
       try {
         columns = JSON.parse(columns);
         results = JSON.parse(results);
@@ -81,12 +82,11 @@ function get_time_series_config(element) {
         for (let j = 0; j < row.length; j++) {
           item = row[j];
           val = item['val'];
-          if (val.length > 0) {
-            new_row.push(val);
-          }
+          new_row.push(val);
         };
         new_results.push(new_row);
       }
+      // console.log('NewResults: ' + new_results)
       
       // Create config for TimeSeries
       return {
