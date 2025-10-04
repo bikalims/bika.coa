@@ -12,12 +12,15 @@ from bika.coa.vocabulary import SEXES
 
 from bika.lims import api
 from bika.lims.api import _marker
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils.analysis import _format_decimal_or_sci
 from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -330,7 +333,6 @@ class SingleReportView(SRV, ReportView):
         dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
 
-
     def json_dumps(self, data):
         return json.dumps(data)
 
@@ -584,6 +586,55 @@ class SingleReportView(SRV, ReportView):
 
         return col1, col2
 
+    def convert_units(self, analysis, value):
+        calc = analysis.getCalculation()
+        if not calc:
+            return ""
+
+        formula = calc.getFormula()
+        interim_fields = calc.getInterimFields()
+        if len(interim_fields) != 1:
+            return ""
+
+        keyword = interim_fields[0].get("keyword", "")
+        # Replace placeholder with actual number
+        word = '[{}]'.format(keyword)
+        expr = formula.replace(word, str(value))
+
+        # Scientific notation?
+        # Get the default precision for scientific notation
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        threshold = analysis.getExponentialFormatPrecision()
+        precision = analysis.getPrecision()
+        result = eval(expr)
+        if result == 0:
+            return str(result)
+        formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
+        return formatted
+
+    def get_converted_specs(self, analysis):
+        specs = analysis.getResultsRange()
+        specs["min"] = self.convert_units(analysis, specs.get('min', None))
+        specs["max"] = self.convert_units(analysis, specs.get('max', None))
+
+        # get the min operator
+        min_operator = specs.get("min_operator") or ""
+        min_operator = MIN_OPERATORS.getValue(min_operator, default=">")
+
+        # get the max operator
+        max_operator = specs.get("max_operator") or ""
+        max_operator = MAX_OPERATORS.getValue(max_operator, default="<")
+
+        fs = ''
+        if specs.get('min', None) and specs.get('max', None):
+            fs = '%s - %s' % (specs['min'], specs['max'])
+        elif specs.get('min', None):
+            fs = '%s' % (specs['min'])
+        elif specs.get('max', None):
+            fs = '%s' % (specs['max'])
+        return '[{}]'.format(formatDecimalMark(fs, analysis.aq_parent.getDecimalMark()))
+
 
 class MultiReportView(MRV, ReportView):
     """View for Bika COA Multi Reports"""
@@ -607,7 +658,6 @@ class MultiReportView(MRV, ReportView):
         num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
-
 
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
