@@ -635,6 +635,42 @@ class SingleReportView(SRV, ReportView):
             fs = '%s' % (specs['max'])
         return '[{}]'.format(formatDecimalMark(fs, analysis.aq_parent.getDecimalMark()))
 
+    def get_millreport_address(self, location):
+        address_lst1 = []
+        address = location.getAddress()[0].get("address")
+        if address:
+            address_lst1.append(address)
+        city = location.getAddress()[0].get("city")
+        if city:
+            address_lst1.append(city)
+
+        address_lst2 = []
+        country = location.getAddress()[0].get("country")
+        if country:
+            address_lst2.append(country)
+        zipc = location.getAddress()[0].get("zip")
+        if zipc:
+            address_lst2.append(zipc)
+        address1 = ", ".join(address_lst1)
+        address2 = ", ".join(address_lst2)
+        return [address1, address2]
+
+    def get_millreport_supplier_address(self, supplier):
+        address_lst = []
+        address = supplier.address[0]
+        if address.get("address"):
+            address_lst.append(address["address"])
+        if address.get("city"):
+            address_lst.append(address["city"])
+        address_lst2 = []
+        if address.get("country"):
+            address_lst2.append(address["country"])
+        if address.get("zip"):
+            address_lst2.append(address["zip"])
+        address1 = ", ".join(address_lst)
+        address2 = ", ".join(address_lst2)
+        return [address1, address2]
+
 
 class MultiReportView(MRV, ReportView):
     """View for Bika COA Multi Reports"""
