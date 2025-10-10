@@ -314,12 +314,10 @@ class ReportView(object):
             qcs = sample.getQCAnalyses(["verified", "published"])
             for qc in qcs:
                 if qc.getReferenceDefinition():
-                    title = qc.getReferenceDefinition().Title()
+                    title = qc.aq_parent.Title()
                     if title not in titles:
                         titles.append(title)
-        for Title in titles:
-            final_titles = final_titles + ", " + Title
-        return final_titles
+        return ", ".join(titles)
 
 
 class SingleReportView(SRV, ReportView):
