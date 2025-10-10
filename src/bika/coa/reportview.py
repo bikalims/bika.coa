@@ -307,6 +307,20 @@ class ReportView(object):
 
         return verifier
 
+    def reference_definition_titles(self, samples):
+        final_titles = ""
+        titles = []
+        for sample in samples:
+            qcs = sample.getQCAnalyses(["verified", "published"])
+            for qc in qcs:
+                if qc.getReferenceDefinition():
+                    title = qc.getReferenceDefinition().Title()
+                    if title not in titles:
+                        titles.append(title)
+        for Title in titles:
+            final_titles = final_titles + ", " + Title
+        return final_titles
+
 
 class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
@@ -1040,20 +1054,6 @@ class MultiReportView(MRV, ReportView):
             else:
                 qc_list.append(qc)
         return True
-
-    def reference_definition_titles(self, samples):
-        final_titles = ""
-        titles = []
-        for sample in samples:
-            qcs = sample.getQCAnalyses(["verified", "published"])
-            for qc in qcs:
-                if qc.getReferenceDefinition():
-                    title = qc.getReferenceDefinition().Title()
-                    if title not in titles:
-                        titles.append(title)
-        for Title in titles:
-            final_titles = final_titles + ", " + Title
-        return final_titles
 
     def get_date_string(self, num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
