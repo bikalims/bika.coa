@@ -627,8 +627,10 @@ class SingleReportView(SRV, ReportView):
 
     def get_converted_specs(self, analysis):
         specs = analysis.getResultsRange()
-        specs["min"] = self.convert_units(analysis, specs.get('min', None))
-        specs["max"] = self.convert_units(analysis, specs.get('max', None))
+        if specs.get('min', None):
+            specs["min"] = self.convert_units(analysis, specs.get('min', None))
+        if specs.get('max', None):
+            specs["max"] = self.convert_units(analysis, specs.get('max', None))
 
         # get the min operator
         min_operator = specs.get("min_operator") or ""
