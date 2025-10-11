@@ -599,6 +599,8 @@ class SingleReportView(SRV, ReportView):
         return col1, col2
 
     def convert_units(self, analysis, value):
+        if not value:
+            return ""
         calc = analysis.getCalculation()
         if not calc:
             return ""
