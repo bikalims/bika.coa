@@ -89,7 +89,7 @@ class TimeSeries
       if avg_columns.length == 1
           avg_col = avg_columns[0]
           avg_key = avg_columns[0].ColumnTitle
-      legend_headers = (c.ColumnTitle for c in columns when c.ColumnHide != 'on' and c.ColumnType != 'errorbar').slice(1)
+      drawn_lines = ({'idx': i, 'title': c.ColumnTitle; 'color': c.ColumnColor} for c, i in columns when c.ColumnHide != 'on' and c.ColumnType != 'errorbar').slice(1)
 
       visible_idxs = (i for c, i in columns when c.ColumnHide != 'on')
       visible_values = values.map (row) ->
@@ -117,7 +117,8 @@ class TimeSeries
       if err_key
         maxError = d3.max(data.flatMap((row) -> parseFloat(row[err_key])))
 
-      absoluteMinY = d3.min(data.flatMap((row) -> legend_headers.map((header) -> parseFloat(row[header]))))
+      all_values = data.flatMap((row) -> drawn_lines.map((header) -> parseFloat(row[header['title']])))
+      absoluteMinY = d3.min(all_values)
       absoluteMinY -= maxError
       if absoluteMinY == 0
         minY = -0.5
@@ -126,7 +127,7 @@ class TimeSeries
       else
         minY = absoluteMinY * 1.05
 
-      maxY = d3.max(data.flatMap((row) -> legend_headers.map((header) -> parseFloat(row[header]))))
+      maxY = d3.max(all_values)
       maxY += maxError
 
       # console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
@@ -212,6 +213,7 @@ class TimeSeries
       # console.log(interp)
       curve_val = d3[interp]
 
+      drawn_line_counter = 0
       headers.slice(1).forEach((key, i) ->
         line_configs_idx = i % line_configs.length
         # console.info "Main loop: " + key + "  " + i
@@ -242,12 +244,13 @@ class TimeSeries
             .attr("stroke-dasharray", line_configs[line_configs_idx].dash)
             .attr("d", lineGen)
 
+          symbol = line_configs[line_configs_idx].symbol
           # Add data points with different symbols
           svg.selectAll(".symbol-#{i}")
             .data(filteredData) # Use filtered data
             .enter().append("path")
             .attr("class", "symbol symbol-#{i}")
-            .attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol))
+            .attr("d", symbolGenerator.type(symbol))
             .attr("transform", (d) ->
               # Ensure valid x and y before applying transform
               xVal = parseFloat(d[index])
@@ -258,6 +261,8 @@ class TimeSeries
                 null # Skip invalid points
             )
             .style("fill", col_colors[i+1])
+          drawn_lines[drawn_line_counter]['symbol'] = symbol
+          drawn_line_counter += 1
         else
           svg.selectAll(".error-bar")
             .data(filteredData)
@@ -308,7 +313,7 @@ class TimeSeries
 
       # Add legend items
       legendItems = legend.selectAll("g")
-        .data(legend_headers)
+        .data(drawn_lines)
         .enter().append("g")
         .attr("transform", (d, i) ->
           xOffset = parseFloat((i % Math.floor(width / 100)) * 100)  # Horizontal spacing
@@ -319,11 +324,11 @@ class TimeSeries
       # Add legend color symbols
       legendItems.append("path")
         .attr("d", (d, i) ->
-          line_configs_idx = i % line_configs.length
-          d3.symbol().type(line_configs[line_configs_idx].symbol).size(100)()
+          console.log('d: ' + d)
+          d3.symbol().type(d['symbol']).size(100)()
         )
         .attr("transform", "translate(9, 9)")  # Center the symbol within the legend item
-        .style("fill", (d, i) -> col_colors[i+1])
+        .style("fill", (d, i) -> d['color'])
 
       # Add legend text
       legendItems.append("text")
@@ -331,7 +336,7 @@ class TimeSeries
         .attr("y", 9)
         .attr("dy", "0.35em")
         .style("font-size", "12px")
-        .text((d) -> d)
+        .text((d) -> d['title'])
 
       console.log "TimeSeries::build_graph: ended"
 

@@ -1,5 +1,8 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
+/*!*******************************!*\
+  !*** ./app/TimeSeries.coffee ***!
+  \*******************************/
 
 
 function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
@@ -66,7 +69,7 @@ TimeSeries = function () {
     }, {
       key: "build_graph",
       value: function build_graph() {
-        var absoluteMinY, avg_col, avg_columns, avg_key, c, col_colors, col_types, columns, curve_val, data, err_col, err_key, error, error_columns, headers, height, i, index, interp, legend, legendItems, legend_headers, line_configs, margin, maxError, maxY, minY, svg, svg_height, values, visible_cols, visible_idxs, visible_values, width, xScale, yScale, y_offset;
+        var absoluteMinY, all_values, avg_col, avg_columns, avg_key, c, col_colors, col_types, columns, curve_val, data, drawn_line_counter, drawn_lines, err_col, err_key, error, error_columns, headers, height, i, index, interp, legend, legendItems, line_configs, margin, maxError, maxY, minY, svg, svg_height, values, visible_cols, visible_idxs, visible_values, width, xScale, yScale, y_offset;
         try {
           // console.log("Data being used for rendering:", this.state.value)  # Log the data
           // console.log "TimeSeries::build_graph: entered"
@@ -138,13 +141,17 @@ TimeSeries = function () {
             avg_col = avg_columns[0];
             avg_key = avg_columns[0].ColumnTitle;
           }
-          legend_headers = function () {
+          drawn_lines = function () {
             var j, len, results;
             results = [];
-            for (j = 0, len = columns.length; j < len; j++) {
-              c = columns[j];
+            for (i = j = 0, len = columns.length; j < len; i = ++j) {
+              c = columns[i];
               if (c.ColumnHide !== 'on' && c.ColumnType !== 'errorbar') {
-                results.push(c.ColumnTitle);
+                results.push({
+                  'idx': i,
+                  'title': c.ColumnTitle,
+                  'color': c.ColumnColor
+                });
               }
             }
             return results;
@@ -195,11 +202,12 @@ TimeSeries = function () {
               return parseFloat(row[err_key]);
             }));
           }
-          absoluteMinY = d3.min(data.flatMap(function (row) {
-            return legend_headers.map(function (header) {
-              return parseFloat(row[header]);
+          all_values = data.flatMap(function (row) {
+            return drawn_lines.map(function (header) {
+              return parseFloat(row[header['title']]);
             });
-          }));
+          });
+          absoluteMinY = d3.min(all_values);
           absoluteMinY -= maxError;
           if (absoluteMinY === 0) {
             minY = -0.5;
@@ -208,11 +216,7 @@ TimeSeries = function () {
           } else {
             minY = absoluteMinY * 1.05;
           }
-          maxY = d3.max(data.flatMap(function (row) {
-            return legend_headers.map(function (header) {
-              return parseFloat(row[header]);
-            });
-          }));
+          maxY = d3.max(all_values);
           maxY += maxError;
           // console.log('minY: ' + minY + ' maxY: ' + maxY + " height: " + height)
           yScale = d3.scaleLinear().domain([minY, maxY]).nice().range([height, 0]); // expands domain to "nice" human-friendly values
@@ -242,8 +246,9 @@ TimeSeries = function () {
           interp = this.props.item.time_series_graph_interpolation;
           // console.log(interp)
           curve_val = d3[interp];
+          drawn_line_counter = 0;
           headers.slice(1).forEach(function (key, i) {
-            var capWidth, filteredData, lineGen, line_configs_idx;
+            var capWidth, filteredData, lineGen, line_configs_idx, symbol;
             line_configs_idx = i % line_configs.length;
             // console.info "Main loop: " + key + "  " + i
 
@@ -261,9 +266,10 @@ TimeSeries = function () {
             });
             if (key !== err_key) {
               svg.append("path").datum(filteredData).attr("fill", "none").attr("stroke-width", 2).attr("stroke", col_colors[i + 1]).attr("stroke-dasharray", line_configs[line_configs_idx].dash).attr("d", lineGen); // Use filtered data
+              symbol = line_configs[line_configs_idx].symbol;
               // Add data points with different symbols
-              return svg.selectAll(".symbol-".concat(i)).data(filteredData).enter().append("path").attr("class", "symbol symbol-".concat(i // Use filtered data
-              )).attr("d", symbolGenerator.type(line_configs[line_configs_idx].symbol)).attr("transform", function (d) {
+              svg.selectAll(".symbol-".concat(i)).data(filteredData).enter().append("path").attr("class", "symbol symbol-".concat(i // Use filtered data
+              )).attr("d", symbolGenerator.type(symbol)).attr("transform", function (d) {
                 var xVal, yVal;
                 // Ensure valid x and y before applying transform
                 xVal = parseFloat(d[index]);
@@ -274,6 +280,8 @@ TimeSeries = function () {
                   return null; // Skip invalid points
                 }
               }).style("fill", col_colors[i + 1]);
+              drawn_lines[drawn_line_counter]['symbol'] = symbol;
+              return drawn_line_counter += 1;
             } else {
               svg.selectAll(".error-bar").data(filteredData).enter().append("line").attr("class", "error-bar").attr("x1", function (d) {
                 return xScale(d[index]);
@@ -312,7 +320,7 @@ TimeSeries = function () {
           legend = svg.append("g").attr("class", "legend").attr("transform", "translate(50, ".concat(height + 50, ")"));
 
           // Add legend items
-          legendItems = legend.selectAll("g").data(legend_headers).enter().append("g").attr("transform", function (d, i) {
+          legendItems = legend.selectAll("g").data(drawn_lines).enter().append("g").attr("transform", function (d, i) {
             var xOffset, yOffset;
             xOffset = parseFloat(i % Math.floor(width / 100) * 100); // Horizontal spacing
             yOffset = parseFloat(Math.floor(i / Math.floor(width / 100)) * 20); // Vertical spacing
@@ -320,16 +328,15 @@ TimeSeries = function () {
           });
           // Add legend color symbols
           legendItems.append("path").attr("d", function (d, i) {
-            var line_configs_idx;
-            line_configs_idx = i % line_configs.length;
-            return d3.symbol().type(line_configs[line_configs_idx].symbol).size(100)();
+            console.log('d: ' + d);
+            return d3.symbol().type(d['symbol']).size(100)();
           }).attr("transform", "translate(9, 9)").style("fill", function (d, i) {
             // Center the symbol within the legend item
-            return col_colors[i + 1];
+            return d['color'];
           });
           // Add legend text
           legendItems.append("text").attr("x", 24).attr("y", 9).attr("dy", "0.35em").style("font-size", "12px").text(function (d) {
-            return d;
+            return d['title'];
           });
           return console.log("TimeSeries::build_graph: ended");
         } catch (error1) {
