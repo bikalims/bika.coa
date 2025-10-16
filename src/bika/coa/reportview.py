@@ -12,12 +12,15 @@ from bika.coa.vocabulary import SEXES
 
 from bika.lims import api
 from bika.lims.api import _marker
+from bika.lims.config import MAX_OPERATORS
+from bika.lims.config import MIN_OPERATORS
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils.analysis import _format_decimal_or_sci
 from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, IResultOutOfRange
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -253,6 +256,9 @@ class ReportView(object):
     def to_localized_date(self, date):
         return self.to_localized_time(date)[:10]
 
+    def to_custom_date(self, date):
+        return date.strftime('%d-%b-%y') or ''
+
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
             if analysis.Method.Supplier:
@@ -301,6 +307,18 @@ class ReportView(object):
 
         return verifier
 
+    def reference_definition_titles(self, samples):
+        final_titles = ""
+        titles = []
+        for sample in samples:
+            qcs = sample.getQCAnalyses(["verified", "published"])
+            for qc in qcs:
+                if qc.getReferenceDefinition():
+                    title = qc.aq_parent.Title()
+                    if title not in titles:
+                        titles.append(title)
+        return ", ".join(titles)
+
 
 class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
@@ -322,11 +340,10 @@ class SingleReportView(SRV, ReportView):
         increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
         items = self.get_items()
         if items:
-            increment += items.index(self.model.uid) 
+            increment += items.index(self.model.uid)
         num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
-
 
     def json_dumps(self, data):
         return json.dumps(data)
@@ -524,6 +541,152 @@ class SingleReportView(SRV, ReportView):
             row_data.append([mat_class, mat_type, mix_material_title, specific_gravity, amount])
         return row_data
 
+    def split_categories(self, model):
+        categories = self.get_analyses_by_category(model)
+        analyses = self.get_analyses_by(model)
+        total = len(analyses)
+        half = total / 2
+
+        col1, col2 = [], []
+        count = 0
+
+        for cat in categories:
+            category = {"title": cat.title}
+            analyses = self.get_analyses_by(model, category=cat)
+            category["analyses"] = analyses
+            if count + len(analyses) <= half:
+                col1.append(category)
+                count += len(analyses)
+            else:
+                col2.append(category)
+
+        return col1, col2
+
+    def split_categories_qc(self, sample):
+        analyses = sample.getQCAnalyses(["verified", "published"])
+        categories = []
+        for analysis in analyses:
+            category = analysis.getCategory()
+            if category not in categories:
+                categories.append(category)
+
+        total = len(analyses)
+        half = total / 2
+
+        col1, col2 = [], []
+        count = 0
+
+        for cat in categories:
+            category = {"title": cat.title}
+            cats = []
+            if len(categories) == 1 and len(analyses) < 10:
+                category["analyses"] = analyses
+                col1.append(category)
+                return col1, col2
+        for cat in categories:
+            category = {"title": cat.title}
+            cats = []
+            for an in analyses:
+                if an.getCategory().title == cat.title:
+                    cats.append(an)
+            category["analyses"] = cats
+            if count + len(cats) <= half:
+                col1.append(category)
+                count += len(cats)
+            else:
+                col2.append(category)
+
+        return col1, col2
+
+    def convert_units(self, analysis, value):
+        if not value:
+            return ""
+        calc = analysis.getCalculation()
+        if not calc:
+            return ""
+
+        formula = calc.getFormula()
+        interim_fields = calc.getInterimFields()
+        if len(interim_fields) != 1:
+            return ""
+
+        keyword = interim_fields[0].get("keyword", "")
+        # Replace placeholder with actual number
+        word = '[{}]'.format(keyword)
+        expr = formula.replace(word, str(value))
+
+        # Scientific notation?
+        # Get the default precision for scientific notation
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        threshold = analysis.getExponentialFormatPrecision()
+        precision = analysis.getPrecision()
+        result = eval(expr)
+        if result == 0:
+            return str(result)
+        formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
+        return formatted
+
+    def get_converted_specs(self, analysis):
+        specs = analysis.getResultsRange()
+        if specs.get('min', None):
+            specs["min"] = self.convert_units(analysis, specs.get('min', None))
+        if specs.get('max', None):
+            specs["max"] = self.convert_units(analysis, specs.get('max', None))
+
+        # get the min operator
+        min_operator = specs.get("min_operator") or ""
+        min_operator = MIN_OPERATORS.getValue(min_operator, default=">")
+
+        # get the max operator
+        max_operator = specs.get("max_operator") or ""
+        max_operator = MAX_OPERATORS.getValue(max_operator, default="<")
+
+        fs = ''
+        if specs.get('min', None) and specs.get('max', None):
+            fs = '%s - %s' % (specs['min'], specs['max'])
+        elif specs.get('min', None):
+            fs = '%s' % (specs['min'])
+        elif specs.get('max', None):
+            fs = '%s' % (specs['max'])
+        return '[{}]'.format(formatDecimalMark(fs, analysis.aq_parent.getDecimalMark()))
+
+    def get_millreport_address(self, location):
+        address_lst1 = []
+        address = location.getAddress()[0].get("address")
+        if address:
+            address_lst1.append(address)
+        city = location.getAddress()[0].get("city")
+        if city:
+            address_lst1.append(city)
+
+        address_lst2 = []
+        country = location.getAddress()[0].get("country")
+        if country:
+            address_lst2.append(country)
+        zipc = location.getAddress()[0].get("zip")
+        if zipc:
+            address_lst2.append(zipc)
+        address1 = ", ".join(address_lst1)
+        address2 = ", ".join(address_lst2)
+        return [address1, address2]
+
+    def get_millreport_supplier_address(self, supplier):
+        address_lst = []
+        address = supplier.address[0]
+        if address.get("address"):
+            address_lst.append(address["address"])
+        if address.get("city"):
+            address_lst.append(address["city"])
+        address_lst2 = []
+        if address.get("country"):
+            address_lst2.append(address["country"])
+        if address.get("zip"):
+            address_lst2.append(address["zip"])
+        address1 = ", ".join(address_lst)
+        address2 = ", ".join(address_lst2)
+        return [address1, address2]
+
 
 class MultiReportView(MRV, ReportView):
     """View for Bika COA Multi Reports"""
@@ -547,7 +710,6 @@ class MultiReportView(MRV, ReportView):
         num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
         dry_run = coa_num.replace(coa_num.split("-")[-1], num)
         return dry_run
-
 
     def get_pages(self, options):
         if options.get("orientation", "") == "portrait":
@@ -894,20 +1056,6 @@ class MultiReportView(MRV, ReportView):
             else:
                 qc_list.append(qc)
         return True
-
-    def reference_definition_titles(self, samples):
-        final_titles = ""
-        titles = []
-        for sample in samples:
-            qcs = sample.getQCAnalyses(["verified", "published"])
-            for qc in qcs:
-                if qc.getReferenceDefinition():
-                    title = qc.getReferenceDefinition().Title()
-                    if title not in titles:
-                        titles.append(title)
-        for Title in titles:
-            final_titles = final_titles + ", " + Title
-        return final_titles
 
     def get_date_string(self, num_date):
         return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
@@ -1882,24 +2030,3 @@ class MultiReportView(MRV, ReportView):
         if not tracking_id:
             return "-"
         return tracking_id[:12]
-
-    def split_categories(self, collection):
-        categories = self.get_analyses_by_category(collection)
-        analyses = self.get_analyses_by(collection)
-        total = len(analyses)
-        half = total / 2
-
-        col1, col2 = [], []
-        count = 0
-
-        for cat in categories:
-            category = {"title": cat.title}
-            analyses = self.get_analyses_by(collection, category=cat)
-            category["analyses"] = analyses
-            if count + len(analyses) <= half:
-                col1.append(category)
-                count += len(analyses)
-            else:
-                col2.append(category)
-
-        return col1, col2
