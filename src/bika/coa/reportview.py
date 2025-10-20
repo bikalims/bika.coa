@@ -308,7 +308,6 @@ class ReportView(object):
         return verifier
 
     def reference_definition_titles(self, samples):
-        final_titles = ""
         titles = []
         for sample in samples:
             qcs = sample.getQCAnalyses(["verified", "published"])
@@ -318,6 +317,40 @@ class ReportView(object):
                     if title not in titles:
                         titles.append(title)
         return ", ".join(titles)
+
+    def get_analysts(self, collection):
+        analyses = self.get_analyses_by(collection)
+        analysts = []
+        for analysis in analyses:
+            analyst = self.get_analyst_by_analysis(analysis)
+            if analyst in analysts:
+                continue
+            analysts.append(analyst)
+        return analysts
+
+    def get_analyst_by_analysis(self, analysis):
+        analysis = api.get_object(analysis)
+        actor = getTransitionUsers(analysis, "submit")
+        analyst = {"fullname": "", "email": "", "analyst": ""}
+        if not actor:
+            return analyst
+
+        user_name = actor[0] if actor else ""
+        user_obj = api.get_user(user_name)
+        contact = api.get_user_contact(user_obj)
+        if not contact:
+            return analyst
+
+        analyst["fullname"] = contact.getFullname()
+        analyst["email"] = contact.getEmailAddress()
+        if contact.getSalutation():
+            analyst["analyst"] = "{}. {}".format(
+                contact.getSalutation(), contact.getFullname()
+            )
+        else:
+            analyst["analyst"] = "{}".format(contact.getFullname())
+
+        return analyst
 
 
 class SingleReportView(SRV, ReportView):
@@ -416,30 +449,6 @@ class SingleReportView(SRV, ReportView):
             from_date = all_dates[0].strftime("%d-%b-%y")
             to_date = all_dates[-1].strftime("%d-%b-%y")
         return [from_date, to_date]
-
-    def get_analyst_by_analysis(self, analysis):
-        analysis = api.get_object(analysis)
-        actor = getTransitionUsers(analysis, "submit")
-        analyst = {"fullname": "", "email": "", "analyst": ""}
-        if not actor:
-            return analyst
-
-        user_name = actor[0] if actor else ""
-        user_obj = api.get_user(user_name)
-        contact = api.get_user_contact(user_obj)
-        if not contact:
-            return analyst
-
-        analyst["fullname"] = contact.getFullname()
-        analyst["email"] = contact.getEmailAddress()
-        if contact.getSalutation():
-            analyst["analyst"] = "{}. {}".format(
-                contact.getSalutation(), contact.getFullname()
-            )
-        else:
-            analyst["analyst"] = "{}".format(contact.getFullname())
-
-        return analyst
 
     def get_mix_design(self, model):
         batch = model.Batch
@@ -2015,16 +2024,6 @@ class MultiReportView(MRV, ReportView):
             analyst["analyst"] = "{}".format(contact.getFullname())
 
         return analyst
-
-    def get_analysts(self, collection):
-        analyses = self.get_analyses_by(collection)
-        analysts = []
-        for analysis in analyses:
-            analyst = self.get_analyst_by_analysis(analysis)
-            if analyst in analysts:
-                continue
-            analysts.append(analyst)
-        return analysts
 
     def get_tracking_id(self, tracking_id):
         if not tracking_id:
