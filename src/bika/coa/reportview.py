@@ -180,6 +180,14 @@ class ReportView(object):
         formatted = format_timeseries(analysis, result)
         return formatted
 
+    def get_timeseries_visible_columns(self, model, analysis):
+        """Return the list if columns that are visible"""
+        if analysis.ResultOptionsType != "timeseries":
+            return []
+        return [
+            i for i in analysis.TimeSeriesColumns if i["ColumnHide"] != "on"
+        ]
+
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
         sciformat = int(setup.getScientificNotationReport())
