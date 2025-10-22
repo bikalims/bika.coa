@@ -551,8 +551,12 @@ class SingleReportView(SRV, ReportView):
         return row_data
 
     def split_categories(self, model):
-        categories = self.get_analyses_by_category(model)
         analyses = self.get_analyses_by(model)
+        analyses = filter(lambda a: a.getResultType() != "timeseries", analyses)
+        categories = []
+        for analysis in analyses:
+            if analysis.Category not in categories:
+                categories.append(analysis.Category)
         total = len(analyses)
         half = total / 2
 
