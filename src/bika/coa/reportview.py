@@ -384,6 +384,16 @@ class ReportView(object):
 
         return analyst
 
+    def get_general_resultsintepretation(self, model):
+        out = model.get_resultsinterpretation()
+        new_out = []
+        for ri in out:
+            if callable(ri["title"]) and ri["title"]() == "General":
+                new_out.append(ri)
+            if callable(ri["title"]) is False and ri["title"] == "General":
+                new_out.append(ri)
+        return new_out
+
 
 class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
