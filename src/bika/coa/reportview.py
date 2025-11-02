@@ -35,6 +35,7 @@ from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
 try:
     from senaite.timeseries.utils import format_timeseries
+    from senaite.timeseries.browser.results import get_timeseries_analyses
 except Exception:
     pass
 
@@ -757,6 +758,24 @@ class SingleReportView(SRV, ReportView):
         address1 = ", ".join(address_lst)
         address2 = ", ".join(address_lst2)
         return [address1, address2]
+
+    def can_plot(self, model):
+        """Returns True/False if the graph can be plotted"""
+        can_plot = False
+        analyses = get_timeseries_analyses(model)
+        for obj in analyses:
+            if not hasattr(obj, "TimeSeriesColumns"):
+                continue
+
+            for col in obj.TimeSeriesColumns:
+                if not col.get("ColumnHide"):
+                    can_plot = True
+                    break
+
+            if can_plot:
+                break
+
+        return can_plot
 
 
 class MultiReportView(MRV, ReportView):
