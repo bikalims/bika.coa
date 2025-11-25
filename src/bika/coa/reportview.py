@@ -673,10 +673,23 @@ class SingleReportView(SRV, ReportView):
         if not calc:
             return ""
 
-        formula = calc.getFormula()
-        interim_fields = calc.getInterimFields()
-        if len(interim_fields) != 1:
+        interim_fields = ""
+        # formula = calc.getFormula()
+        formula = calc.getConversionFormula()
+        if not formula:
+            sc = api.get_tool(SETUP_CATALOG)
+            brains = sc(portal_type="Calculation", title=calc.Title())
+            if len(brains) != 1:
+                return ""
+            formula = brains[0].getObject().getConversionFormula()
+            interim_fields = brains[0].getObject().getInterimFields()
+        if not formula:
             return ""
+
+        if not interim_fields:
+            interim_fields = calc.getInterimFields()
+            if len(interim_fields) != 1:
+                return ""
 
         keyword = interim_fields[0].get("keyword", "")
         # Replace placeholder with actual number
@@ -697,12 +710,55 @@ class SingleReportView(SRV, ReportView):
         )
         return formatted
 
+    def convert_inverse_units(self, analysis, value):
+        if not value:
+            return ""
+        calc = analysis.getCalculation()
+        if not calc:
+            return ""
+
+        interim_fields = ""
+        formula = calc.getInverseFormula()
+        if not formula:
+            sc = api.get_tool(SETUP_CATALOG)
+            brains = sc(portal_type="Calculation", title=calc.Title())
+            if len(brains) != 1:
+                return ""
+            formula = brains[0].getObject().getInverseFormula()
+            interim_fields = brains[0].getObject().getInterimFields()
+        if not formula:
+            return ""
+
+        if not interim_fields:
+            interim_fields = calc.getInterimFields()
+
+        for interim_field in interim_fields:
+            keyword = interim_field.get("keyword", "")
+            # Replace placeholder with actual number
+            word = '[{}]'.format(keyword)
+            expr = formula.replace(word, str(value))
+
+        # Scientific notation?
+        # Get the default precision for scientific notation
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        threshold = analysis.getExponentialFormatPrecision()
+        precision = analysis.getPrecision()
+        result = eval(expr)
+        if result == 0:
+            return str(result)
+        formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
+        return formatted
+
+
     def get_converted_specs(self, analysis):
         specs = analysis.getResultsRange()
-        if specs.get("min", None):
-            specs["min"] = self.convert_units(analysis, specs.get("min", None))
-        if specs.get("max", None):
-            specs["max"] = self.convert_units(analysis, specs.get("max", None))
+        calc = analysis.getCalculation()
+        is_report = self.get_result_variables(analysis)
+        if specs.get('min', None) and calc and is_report:
+            specs["min"] = self.convert_inverse_units(analysis, specs.get('min', None))
+        if specs.get('max', None) and calc and is_report:
+            specs["max"] = self.convert_inverse_units(analysis, specs.get('max', None))
 
         # get the min operator
         min_operator = specs.get("min_operator") or ""
