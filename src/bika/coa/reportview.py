@@ -682,12 +682,12 @@ class SingleReportView(SRV, ReportView):
             if len(brains) != 1:
                 return ""
             formula = brains[0].getObject().getConversionFormula()
-            interim_fields = brains[0].getObject().getInterimFields()
+            interim_fields = brains[0].getObject().getConversionInterimFields()
         if not formula:
             return ""
 
         if not interim_fields:
-            interim_fields = calc.getInterimFields()
+            interim_fields = calc.getConversionInterimFields()
             if len(interim_fields) != 1:
                 return ""
 
@@ -725,12 +725,12 @@ class SingleReportView(SRV, ReportView):
             if len(brains) != 1:
                 return ""
             formula = brains[0].getObject().getInverseFormula()
-            interim_fields = brains[0].getObject().getInterimFields()
+            interim_fields = brains[0].getObject().getConversionInterimFields()
         if not formula:
             return ""
 
         if not interim_fields:
-            interim_fields = calc.getInterimFields()
+            interim_fields = calc.getConversionInterimFields()
 
         for interim_field in interim_fields:
             keyword = interim_field.get("keyword", "")
