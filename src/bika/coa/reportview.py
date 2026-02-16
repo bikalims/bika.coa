@@ -16,7 +16,11 @@ from bika.lims.config import MAX_OPERATORS
 from bika.lims.config import MIN_OPERATORS
 from bika.lims.utils import formatDecimalMark
 from bika.lims.utils.analysis import _format_decimal_or_sci
-from bika.lims.interfaces import IAnalysis, IReferenceAnalysis, IResultOutOfRange
+from bika.lims.interfaces import (
+    IAnalysis,
+    IReferenceAnalysis,
+    IResultOutOfRange,
+)
 from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
@@ -40,7 +44,9 @@ LOGO = "/++plone++bika.coa.static/images/bikalimslogo.png"
 qc_list = []
 
 
-def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
+def is_out_of_range(
+    brain_or_object, result=_marker, spec_type="Specification"
+):
     """
     Taken from bika.lims.api.analysis is_out_of_range and inculded the
     spec_type.
@@ -48,9 +54,9 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
     Specficification or PublicationSpecification type result_range
     """
     analysis = api.get_object(brain_or_object)
-    if not IAnalysis.providedBy(analysis) and not IReferenceAnalysis.providedBy(
+    if not IAnalysis.providedBy(
         analysis
-    ):
+    ) and not IReferenceAnalysis.providedBy(analysis):
         api.fail(
             "{} is not supported. Needs to be IAnalysis or "
             "IReferenceAnalysis".format(repr(analysis))
@@ -81,7 +87,9 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
             return True, True
 
         # Does analysis has result options enabled or non-floatable?
-        if analysis.getResultOptions() or not api.is_floatable(original_result):
+        if analysis.getResultOptions() or not api.is_floatable(
+            original_result
+        ):
             # Let's always assume the result is 'out from shoulders', cause we
             # consider the shoulders are precisely the duplicate variation %
             out_of_range = original_result != result
@@ -158,8 +166,8 @@ def is_out_of_range(brain_or_object, result=_marker, spec_type="Specification"):
         return False, False
 
     # Out of range, check shoulders. If no explicit warn_min or warn_max have
-    # been defined, no shoulders must be considered for this analysis. Thus, use
-    # specs' min and max as default fallback values
+    # been defined, no shoulders must be considered for this analysis. Thus,
+    # use specs' min and max as default fallback values
     warn_min = api.to_float(result_range.warn_min, specs_min)
     warn_max = api.to_float(result_range.warn_max, specs_max)
     in_shoulder = warn_min <= result <= warn_max
@@ -172,6 +180,14 @@ class ReportView(object):
         result = model.get_formatted_result(analysis)
         formatted = format_timeseries(analysis, result)
         return formatted
+
+    def get_timeseries_visible_columns(self, model, analysis):
+        """Return the list if columns that are visible"""
+        if analysis.ResultOptionsType != "timeseries":
+            return []
+        return [
+            i for i in analysis.TimeSeriesColumns if i["ColumnHide"] != "on"
+        ]
 
     def get_formatted_uncertainty(self, analysis):
         setup = api.get_setup()
@@ -187,14 +203,18 @@ class ReportView(object):
         return
 
     def get_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
+        outofrange_symbol_url = (
+            "{}/++resource++bika.coa.images/outofrange.png".format(
+                self.portal_url
+            )
         )
         subcontracted_symbol_url = (
-            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
+            "{}/++resource++bika.coa.images/subcontracted.png".format(
+                self.portal_url
+            )
         )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
+        accredited_symbol_url = (
+            "{}/++resource++bika.coa.images/star.png".format(self.portal_url)
         )
         datum = {
             "outofrange_symbol_url": outofrange_symbol_url,
@@ -204,17 +224,23 @@ class ReportView(object):
         return datum
 
     def get_extended_report_images(self):
-        outofrange_symbol_url = "{}/++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
+        outofrange_symbol_url = (
+            "{}/++resource++bika.coa.images/outofrange.png".format(
+                self.portal_url
+            )
         )
         subcontracted_symbol_url = (
-            "{}/++resource++bika.coa.images/subcontracted.png".format(self.portal_url)
+            "{}/++resource++bika.coa.images/subcontracted.png".format(
+                self.portal_url
+            )
         )
-        accredited_symbol_url = "{}/++resource++bika.coa.images/star.png".format(
-            self.portal_url
+        accredited_symbol_url = (
+            "{}/++resource++bika.coa.images/star.png".format(self.portal_url)
         )
         savcregistered_symbol_url = (
-            "{}/++resource++bika.coa.images/savcregistered.png".format(self.portal_url)
+            "{}/++resource++bika.coa.images/savcregistered.png".format(
+                self.portal_url
+            )
         )
         datum = {
             "outofrange_symbol_url": outofrange_symbol_url,
@@ -242,7 +268,9 @@ class ReportView(object):
             ac_style = registry["senaite.coa_logo_accredition_styles"]
         except (AttributeError, KeyError):
             styles["ac_styles"] = "max-height:68px;"
-        css = map(lambda ac_style: "{}:{};".format(*ac_style), ac_style.items())
+        css = map(
+            lambda ac_style: "{}:{};".format(*ac_style), ac_style.items()
+        )
         css.append("max-width:200px;")
         styles["ac_styles"] = " ".join(css)
 
@@ -250,7 +278,9 @@ class ReportView(object):
             logo_style = registry["senaite.coa_logo_styles"]
         except (AttributeError, KeyError):
             styles["logo_styles"] = "height:15px;"
-        css = map(lambda logo_style: "{}:{};".format(*logo_style), logo_style.items())
+        css = map(
+            lambda logo_style: "{}:{};".format(*logo_style), logo_style.items()
+        )
         styles["logo_styles"] = " ".join(css)
         return styles
 
@@ -258,7 +288,7 @@ class ReportView(object):
         return self.to_localized_time(date)[:10]
 
     def to_custom_date(self, date):
-        return date.strftime('%d-%b-%y') or ''
+        return date.strftime("%d-%b-%y") or ""
 
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
@@ -304,7 +334,9 @@ class ReportView(object):
         else:
             verifier["verifier"] = "{}".format(contact.getFullname())
         if contact.getSignature():
-            verifier["signature"] = "{}/Signature".format(contact.absolute_url())
+            verifier["signature"] = "{}/Signature".format(
+                contact.absolute_url()
+            )
 
         return verifier
 
@@ -369,12 +401,13 @@ class SingleReportView(SRV, ReportView):
 
     def get_items(self):
         from urlparse import urlparse, parse_qs
+
         referer = self.request.get_header("referer")
         parsed_url = urlparse(referer)
         query_params = parse_qs(parsed_url.query)
         items = query_params.get("items", [])
         if not items:
-            return[]
+            return []
         items = items[0]
         return filter(api.is_uid, items.split(","))
 
@@ -534,7 +567,10 @@ class SingleReportView(SRV, ReportView):
     def get_mix_material_row_data(self, model):
         row_data = []
         mix_material_amount_objs = self.get_mix_material_amounts(model)
-        mix_material_objs = [api.get_object_by_uid(x.mix_material) for x in mix_material_amount_objs]
+        mix_material_objs = [
+            api.get_object_by_uid(x.mix_material)
+            for x in mix_material_amount_objs
+        ]
         for row_num, mix_mat_amount in enumerate(mix_material_amount_objs):
 
             mat_type_uid = mix_material_objs[row_num].material_type
@@ -558,7 +594,15 @@ class SingleReportView(SRV, ReportView):
 
             specific_gravity = mix_material_objs[row_num].specific_gravity
             amount = mix_mat_amount.amounts
-            row_data.append([mat_class, mat_type, mix_material_title, specific_gravity, amount])
+            row_data.append(
+                [
+                    mat_class,
+                    mat_type,
+                    mix_material_title,
+                    specific_gravity,
+                    amount,
+                ]
+            )
         return row_data
 
     def split_categories(self, model):
@@ -629,15 +673,70 @@ class SingleReportView(SRV, ReportView):
         if not calc:
             return ""
 
-        formula = calc.getFormula()
-        interim_fields = calc.getInterimFields()
-        if len(interim_fields) != 1:
+        interim_fields = ""
+        # formula = calc.getFormula()
+        formula = calc.getConversionFormula()
+        if not formula:
+            sc = api.get_tool(SETUP_CATALOG)
+            brains = sc(portal_type="Calculation", title=calc.Title())
+            if len(brains) != 1:
+                return ""
+            formula = brains[0].getObject().getConversionFormula()
+            interim_fields = brains[0].getObject().getConversionInterimFields()
+        if not formula:
             return ""
+
+        if not interim_fields:
+            interim_fields = calc.getConversionInterimFields()
+            if len(interim_fields) != 1:
+                return ""
 
         keyword = interim_fields[0].get("keyword", "")
         # Replace placeholder with actual number
-        word = '[{}]'.format(keyword)
+        word = "[{}]".format(keyword)
         expr = formula.replace(word, str(value))
+
+        # Scientific notation?
+        # Get the default precision for scientific notation
+        setup = api.get_setup()
+        sciformat = int(setup.getScientificNotationReport())
+        threshold = analysis.getExponentialFormatPrecision()
+        precision = analysis.getPrecision()
+        result = eval(expr)
+        if result == 0:
+            return str(result)
+        formatted = _format_decimal_or_sci(
+            result, precision, threshold, sciformat
+        )
+        return formatted
+
+    def convert_inverse_units(self, analysis, value):
+        if not value:
+            return ""
+        calc = analysis.getCalculation()
+        if not calc:
+            return ""
+
+        interim_fields = ""
+        formula = calc.getInverseFormula()
+        if not formula:
+            sc = api.get_tool(SETUP_CATALOG)
+            brains = sc(portal_type="Calculation", title=calc.Title())
+            if len(brains) != 1:
+                return ""
+            formula = brains[0].getObject().getInverseFormula()
+            interim_fields = brains[0].getObject().getConversionInterimFields()
+        if not formula:
+            return ""
+
+        if not interim_fields:
+            interim_fields = calc.getConversionInterimFields()
+
+        for interim_field in interim_fields:
+            keyword = interim_field.get("keyword", "")
+            # Replace placeholder with actual number
+            word = '[{}]'.format(keyword)
+            expr = formula.replace(word, str(value))
 
         # Scientific notation?
         # Get the default precision for scientific notation
@@ -651,12 +750,15 @@ class SingleReportView(SRV, ReportView):
         formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
         return formatted
 
+
     def get_converted_specs(self, analysis):
         specs = analysis.getResultsRange()
-        if specs.get('min', None):
-            specs["min"] = self.convert_units(analysis, specs.get('min', None))
-        if specs.get('max', None):
-            specs["max"] = self.convert_units(analysis, specs.get('max', None))
+        calc = analysis.getCalculation()
+        is_report = self.get_result_variables(analysis)
+        if specs.get('min', None) and calc and is_report:
+            specs["min"] = self.convert_inverse_units(analysis, specs.get('min', None))
+        if specs.get('max', None) and calc and is_report:
+            specs["max"] = self.convert_inverse_units(analysis, specs.get('max', None))
 
         # get the min operator
         min_operator = specs.get("min_operator") or ""
@@ -666,14 +768,16 @@ class SingleReportView(SRV, ReportView):
         max_operator = specs.get("max_operator") or ""
         max_operator = MAX_OPERATORS.getValue(max_operator, default="<")
 
-        fs = ''
-        if specs.get('min', None) and specs.get('max', None):
-            fs = '%s - %s' % (specs['min'], specs['max'])
-        elif specs.get('min', None):
-            fs = '%s' % (specs['min'])
-        elif specs.get('max', None):
-            fs = '%s' % (specs['max'])
-        return '[{}]'.format(formatDecimalMark(fs, analysis.aq_parent.getDecimalMark()))
+        fs = ""
+        if specs.get("min", None) and specs.get("max", None):
+            fs = "%s - %s" % (specs["min"], specs["max"])
+        elif specs.get("min", None):
+            fs = "%s" % (specs["min"])
+        elif specs.get("max", None):
+            fs = "%s" % (specs["max"])
+        return "[{}]".format(
+            formatDecimalMark(fs, analysis.aq_parent.getDecimalMark())
+        )
 
     def get_millreport_address(self, location):
         address_lst1 = []
@@ -734,7 +838,9 @@ class MultiReportView(MRV, ReportView):
     """View for Bika COA Multi Reports"""
 
     def __init__(self, collection, request):
-        logger.info("MultiReportView::__init__:collection={}".format(collection))
+        logger.info(
+            "MultiReportView::__init__:collection={}".format(collection)
+        )
         super(MultiReportView, self).__init__(collection, request)
         self.collection = collection
         self.request = request
@@ -856,7 +962,13 @@ class MultiReportView(MRV, ReportView):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         common_data = []
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-", ""]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+                "",
+            ]
             verifier = self.get_verifier_by_analysis(analysis)
             datum[4] = verifier.get("verifier", "-")
             if analysis.Method:
@@ -909,23 +1021,25 @@ class MultiReportView(MRV, ReportView):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-    # ---------------------------------- Z labs start ------------------------------------------
+    # ---------------------------------- Z labs start ------------------------
     def get_methods_data(self, collection):
         analyses = self.get_analyses_by(collection)
         methods = {}
         for analysis in analyses:
-            if (
-                analysis.Method
-            ):  # add variable to analysis.method.Title, try not to pass 80 characters on a line.
+            if analysis.Method:
                 if analysis.Method.Title() not in methods.keys():
                     methods[analysis.Method.Title()] = [
                         analysis.Method.Title(),
                         analysis.Title(),
                         analysis.Method.description,
                     ]
-                elif analysis.Title() not in methods[analysis.Method.Title()][1]:
+                elif (
+                    analysis.Title() not in methods[analysis.Method.Title()][1]
+                ):
                     methods[analysis.Method.Title()][1] = (
-                        methods[analysis.Method.Title()][1] + ", " + analysis.Title()
+                        methods[analysis.Method.Title()][1]
+                        + ", "
+                        + analysis.Title()
                     )
         return methods
 
@@ -937,11 +1051,15 @@ class MultiReportView(MRV, ReportView):
         )
         if sample_data:
             removal_keys = self.get_index_of_columns_to_be_removed(sample_data)
-        body, sample_data = self.remove_empty_services(body, sample_data, removal_keys)
+        body, sample_data = self.remove_empty_services(
+            body, sample_data, removal_keys
+        )
         return [body, sample_data]
 
     def get_zlabs_body(self):
-        eligible_analysis_services = api.get_setup().bika_analysisservices.values()
+        eligible_analysis_services = (
+            api.get_setup().bika_analysisservices.values()
+        )
         analysis_Ids_list = ["Analysis"]
         methods_list = ["Method"]
         unit_list = ["Unit"]
@@ -953,7 +1071,9 @@ class MultiReportView(MRV, ReportView):
             else:
                 methods_list.append("")
             if self.is_analysis_accredited(analysis_service):
-                analysis_Ids_list.append(analysis_service.Title() + "accredited")
+                analysis_Ids_list.append(
+                    analysis_service.Title() + "accredited"
+                )
             else:
                 analysis_Ids_list.append(analysis_service.Title())
             unit_list.append(analysis_service.getUnit())
@@ -970,12 +1090,16 @@ class MultiReportView(MRV, ReportView):
             return [True, service_title.replace("accredited", "")]
         return [False, service_title]
 
-    def get_zlabs_analysis_request(self, samples, analysis_services, extra_column):
+    def get_zlabs_analysis_request(
+        self, samples, analysis_services, extra_column
+    ):
         sorted_samples = sorted(samples, key=lambda x: x.ClientSampleID)
         sample_data = []
         sample_analyses, sample_analyses_ids = self.get_sample_analyses(
             sorted_samples
-        )  # The first entry is the sample and the rest are the analyses of those samples
+        )
+        # The first entry is the sample and
+        # the rest are the analyses of those samples
         for indx, sample in enumerate(sample_analyses):
             sample_results = [sample[0].ClientSampleID]
             if extra_column:
@@ -1073,7 +1197,9 @@ class MultiReportView(MRV, ReportView):
             float_max = float(max)
         except ValueError:
             float_max = None
-        if all(res is not None for res in [float_result, float_min, float_max]):
+        if all(
+            res is not None for res in [float_result, float_min, float_max]
+        ):
             if float_result >= float_min and float_result <= float_max:
                 return "Pass"
         return "Fail"
@@ -1100,9 +1226,15 @@ class MultiReportView(MRV, ReportView):
         return True
 
     def get_date_string(self, num_date):
-        return str(num_date.day()) + " " + num_date.Month() + " " + str(num_date.year())
+        return (
+            str(num_date.day())
+            + " "
+            + num_date.Month()
+            + " "
+            + str(num_date.year())
+        )
 
-    # ----------------zlabs end-------------------------------------------------
+    # ----------zlabs end-------------------------------------------------
 
     # -----------------------Imx begin---------------------------------------
 
@@ -1418,8 +1550,9 @@ class MultiReportView(MRV, ReportView):
         template = options.get("report_options", {}).get("template", None)
         if not template:
             template = api.get_registry_record(
-                "senaite.impress.default_template")
-        hydro_template = 'bika.coa:HydroChem2025'
+                "senaite.impress.default_template"
+            )
+        hydro_template = "bika.coa:HydroChem2025"
         if orientation == "landscape" and hydro_template in template:
             return True
         return False
@@ -1433,7 +1566,9 @@ class MultiReportView(MRV, ReportView):
             return False
 
     def same_sample_point_location(self, collection=None):
-        sample_point_locations = [i.getSamplePointLocation() for i in collection]
+        sample_point_locations = [
+            i.getSamplePointLocation() for i in collection
+        ]
         return len(set(sample_point_locations)) == 1
 
     def meets_hydrochem_conditions(self, collection=None, **kwargs):
@@ -1542,7 +1677,7 @@ class MultiReportView(MRV, ReportView):
     def get_all_attachments(self, collection):
         attachments = []
         for sample in collection:
-            sample_attachments = sample.get_sorted_attachments('r')
+            sample_attachments = sample.get_sorted_attachments("r")
             if sample_attachments:
                 attachments.extend(sample_attachments)
         return attachments
@@ -1618,7 +1753,12 @@ class MultiReportView(MRV, ReportView):
         if not analyses:
             return
         for analysis in analyses:
-            datum = [analysis.Title(), "-", model.get_formatted_unit(analysis), "-"]
+            datum = [
+                analysis.Title(),
+                "-",
+                model.get_formatted_unit(analysis),
+                "-",
+            ]
             if analysis.Method:
                 datum[1] = analysis.Method.Title()
             instruments = analysis.getAnalysisService().getInstruments()
@@ -1635,7 +1775,9 @@ class MultiReportView(MRV, ReportView):
         unique_data = self.uniquify_items(common_data)
         return unique_data
 
-    def get_analyses_parameters(self, collection=None, poc=None, category=None):
+    def get_analyses_parameters(
+        self, collection=None, poc=None, category=None
+    ):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         analyses_parameters = []
         for c, analysis in enumerate(analyses):
@@ -1658,7 +1800,9 @@ class MultiReportView(MRV, ReportView):
         items = sorted(analyses_parameters, key=lambda item: item["method_id"])
         return items
 
-    def get_analyses_instruments(self, collection=None, poc=None, category=None):
+    def get_analyses_instruments(
+        self, collection=None, poc=None, category=None
+    ):
         analyses = self.get_analyses_by(collection, poc=poc, category=category)
         analyses_parameters = []
         for c, analysis in enumerate(analyses):
@@ -1670,10 +1814,14 @@ class MultiReportView(MRV, ReportView):
                 if rec in analyses_parameters:
                     continue
                 analyses_parameters.append(rec)
-        items = sorted(analyses_parameters, key=lambda item: item["description"])
+        items = sorted(
+            analyses_parameters, key=lambda item: item["description"]
+        )
         return items
 
-    def get_analyses_preparations(self, collection=None, poc=None, category=None):
+    def get_analyses_preparations(
+        self, collection=None, poc=None, category=None
+    ):
         query = {"portal_type": "AnalysisCategory", "title": "Preparation"}
         super_cat = False
         analyses = []
@@ -1691,7 +1839,11 @@ class MultiReportView(MRV, ReportView):
             description = an_service.Description()
             sort_key = an_service.getSortKey()
             an_parameter = "{}. {}".format(title, description)
-            rec = {"title": title, "sortKey": sort_key, "an_parameter": an_parameter}
+            rec = {
+                "title": title,
+                "sortKey": sort_key,
+                "an_parameter": an_parameter,
+            }
             if rec in analyses_parameters:
                 continue
             analyses_parameters.append(rec)
@@ -1775,11 +1927,15 @@ class MultiReportView(MRV, ReportView):
         accredited_symbol = "{}//++resource++bika.coa.images/star.png".format(
             self.portal_url
         )
-        subcontracted_method = "{}//++resource++bika.coa.images/outsourced.png".format(
-            self.portal_url
+        subcontracted_method = (
+            "{}//++resource++bika.coa.images/outsourced.png".format(
+                self.portal_url
+            )
         )
-        outofrange_symbol = "{}//++resource++bika.coa.images/outofrange.png".format(
-            self.portal_url
+        outofrange_symbol = (
+            "{}//++resource++bika.coa.images/outofrange.png".format(
+                self.portal_url
+            )
         )
         datum = {
             "methods": [],
@@ -1870,7 +2026,9 @@ class MultiReportView(MRV, ReportView):
         else:
             supervisor["supervisor"] = "{}".format(contact.getFullname())
         if contact.getSignature():
-            supervisor["signature"] = "{}/Signature".format(contact.absolute_url())
+            supervisor["signature"] = "{}/Signature".format(
+                contact.absolute_url()
+            )
 
         return supervisor
 
@@ -1905,7 +2063,7 @@ class MultiReportView(MRV, ReportView):
         return publisher
 
     def get_publisher_rgn(self):
-        """ No salutation """
+        """No salutation"""
 
         publisher = {
             "today": "{}".format(DateTime().strftime("%Y-%m-%d")),
@@ -1949,7 +2107,9 @@ class MultiReportView(MRV, ReportView):
 
     def has_additional_info(self, collection):
         has_additional_info = False
-        if self.has_results_intepretation(collection) or self.has_remarks(collection):
+        if self.has_results_intepretation(collection) or self.has_remarks(
+            collection
+        ):
             has_additional_info = True
         return has_additional_info
 
@@ -1985,7 +2145,8 @@ class MultiReportView(MRV, ReportView):
 
     def get_countries(self):
         items = map(
-            lambda country: (_(country.alpha_2), _(country.name)), geo.get_countries()
+            lambda country: (_(country.alpha_2), _(country.name)),
+            geo.get_countries(),
         )
         return DisplayList(items)
 
