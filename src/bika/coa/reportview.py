@@ -25,6 +25,7 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
+from bika.lims.utils import get_image
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -242,11 +243,23 @@ class ReportView(object):
                 self.portal_url
             )
         )
+        blank_symbol_url = (
+            "{}/++plone++bika.ui.static/assets/icons/blank.png".format(
+                self.portal_url
+            )
+        )
+        control_symbol_url = (
+            "{}/++plone++bika.ui.static/assets/icons/control.png".format(
+                self.portal_url
+            )
+        )
         datum = {
             "outofrange_symbol_url": outofrange_symbol_url,
             "subcontracted_symbol_url": subcontracted_symbol_url,
             "accredited_symbol_url": accredited_symbol_url,
             "savcregistered_symbol_url": savcregistered_symbol_url,
+            "blank_symbol_url": blank_symbol_url,
+            "control_symbol_url": control_symbol_url,
         }
         return datum
 
@@ -606,8 +619,8 @@ class SingleReportView(SRV, ReportView):
         return row_data
 
     def split_categories(self, model):
-        analyses = self.get_analyses_by(model)
-        analyses = filter(lambda a: a.getResultType() != "timeseries", analyses)
+        ans = self.get_analyses_by(model)
+        analyses = filter(lambda a: a.getResultType() != "timeseries", ans)
         categories = []
         for analysis in analyses:
             if analysis.Category not in categories:
@@ -747,9 +760,9 @@ class SingleReportView(SRV, ReportView):
         result = eval(expr)
         if result == 0:
             return str(result)
-        formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
+        formatted = _format_decimal_or_sci(
+                result, precision, threshold, sciformat)
         return formatted
-
 
     def get_converted_specs(self, analysis):
         specs = analysis.getResultsRange()
@@ -1214,6 +1227,37 @@ class MultiReportView(MRV, ReportView):
                 max = res.get("max")
                 return [result, min, max]
         return ["", "", ""]
+
+    def is_qc_data(self, collection):
+        is_data = False
+        for sample in collection:
+            qcs = sample.getQCAnalyses(["verified", "published"])
+            if qcs:
+                is_data = True
+                break
+        return is_data
+
+    def get_qc_data(self, qc):
+        if IDuplicateAnalysis.providedBy(qc):
+            an_type = "d"
+            img_name = "duplicate.png"
+        else:
+            an_type = obj.getReferenceType()
+            img_name = an_type == "c" and "control.png" or "blank.png"
+
+        icon = "{}/++plone++bika.ui.static/assets/icons/{}"
+        icon_url = icon.format(self.portal_url, img_name)
+        method_title = qc.getMethod().Title() if qc.getMethod() else ""
+        instr_title = qc.getInstrument().Title() if qc.getInstrument() else ""
+        analyst = api.get_user_fullname(qc.getAnalyst())
+        data = {"icon": icon_url,
+                "method": method_title,
+                "instrument": instr_title,
+                "analyst": analyst,
+                "min": "",
+                "max": "",
+                }
+        return data
 
     def is_unique_qc(self, qc):
         if len(qc_list) == 0:
