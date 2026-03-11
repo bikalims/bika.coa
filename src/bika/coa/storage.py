@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import transaction
-from bika.lims import api
 from DateTime import DateTime
+from plone.namedfile.file import NamedBlobFile
+
+from bika.lims import api
 from senaite.impress import logger
 from senaite.impress.decorators import synchronized
 from senaite.impress.storage import PdfReportStorageAdapter as PRSA
@@ -43,15 +45,64 @@ class PdfReportStorageAdapter(PRSA):
 
         return reports
 
+    # @synchronized(max_connections=1)
+    # def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
+    #     """Create a new report object
+
+    #     NOTE: We limit the creation of reports to 1 to avoid conflict errors on
+    #           simultaneous publication.
+
+    #     :param parent: parent object where to create the report inside
+    #     :returns: ARReport
+    #     """
+
+    #     import pdb; pdb.set_trace()
+    #     parent_id = api.get_id(parent)
+    #     logger.info("Create Report for {} ...".format(parent_id))
+
+    #     # Manually update the view on the database to avoid conflict errors
+    #     parent._p_jar.sync()
+
+    #     if coa_num is None:
+    #         coa_num = self.get_coa_number()
+
+    #     # Create the report object
+    #     report = api.create(
+    #         parent,
+    #         "ARReport",
+    #         AnalysisRequest=api.get_uid(parent),
+    #         title=coa_num,
+    #         Pdf=pdf,
+    #         Html=html,
+    #         CSV=csv_text,
+    #         ContainedAnalysisRequests=uids,
+    #         Metadata=metadata)
+    #     import pdb; pdb.set_trace()
+    #     fld = report.getField('Pdf')
+    #     fld.get(report).setFilename(coa_num + ".pdf")
+    #     fld.get(report).setContentType('application/pdf')
+    #     fld = report.getField('CSV')
+    #     fld.get(report).setFilename(coa_num + ".csv")
+    #     fld.get(report).setContentType('text/csv')
+
+    #     # Commit the changes
+    #     transaction.commit()
+
+    #     logger.info("Create Report for {} [DONE]".format(parent_id))
+
+    #     return report
+
     @synchronized(max_connections=1)
     def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
         """Create a new report object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
-              simultaneous publication.
+              simultaneous publication. The transaction is committed once for
+              all reports in the store() method using savepoints for rollback
+              capability.
 
         :param parent: parent object where to create the report inside
-        :returns: ARReport
+        :returns: ResultsReport
         """
 
         parent_id = api.get_id(parent)
@@ -63,26 +114,34 @@ class PdfReportStorageAdapter(PRSA):
         if coa_num is None:
             coa_num = self.get_coa_number()
 
+        # Convert PDF binary data to NamedBlobFile
+        pdf_filename = "{}.pdf".format(coa_num)
+        pdf_blob = NamedBlobFile(
+            data=pdf,
+            filename=api.safe_unicode(pdf_filename),
+            contentType="application/pdf"
+        )
+        # Convert CSV binary data to NamedBlobFile
+        csv_filename = "{}.csv".format(coa_num)
+        csv_blob = NamedBlobFile(
+            data=csv_text,
+            filename=api.safe_unicode(csv_filename),
+            contentType="text/csv"
+        )
+
         # Create the report object
+        # Field setters are called automatically by api.create(), including
+        # UIDReferenceField.set() which creates backreferences via event
+        # handler
+        import pdb; pdb.set_trace()
         report = api.create(
             parent,
-            "ARReport",
-            AnalysisRequest=api.get_uid(parent),
-            title=coa_num,
-            Pdf=pdf,
-            Html=html,
-            CSV=csv_text,
-            ContainedAnalysisRequests=uids,
-            Metadata=metadata)
-        fld = report.getField('Pdf')
-        fld.get(report).setFilename(coa_num + ".pdf")
-        fld.get(report).setContentType('application/pdf')
-        fld = report.getField('CSV')
-        fld.get(report).setFilename(coa_num + ".csv")
-        fld.get(report).setContentType('text/csv')
-
-        # Commit the changes
-        transaction.commit()
+            "ResultsReport",
+            sample=api.get_uid(parent),
+            contained_samples=uids if uids else [],
+            pdf=pdf_blob,
+            csv=csv_blob,
+            metadata=metadata if metadata else {})
 
         logger.info("Create Report for {} [DONE]".format(parent_id))
 

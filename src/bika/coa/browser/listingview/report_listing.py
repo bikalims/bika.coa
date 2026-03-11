@@ -54,39 +54,60 @@ class ReportsListingViewAdapter(object):
             self.listing.review_states[i]["columns"].append("COA")
             self.listing.review_states[i]["columns"].append("CSV")
 
+    # def folder_item(self, obj, item, index):
+    #     if not is_installed():
+    #         return item
+    #     obj = api.get_object(obj)
+    #     csv = self.get_csv(obj)
+    #     filesize_csv = self.listing.get_filesize(csv)
+    #     if filesize_csv > 0:
+    #         url = "{}/at_download/CSV".format(obj.absolute_url())
+    #         item["replace"]["CSV"] = get_link(
+    #             url, value="CSV", target="_blank")
+
+    #     pdf = self.listing.get_pdf(obj)
+    #     filesize_pdf = self.listing.get_filesize(pdf)
+    #     if filesize_pdf > 0:
+    #         url = "{}/at_download/Pdf".format(obj.absolute_url())
+    #         item["replace"]["PDF"] = get_link(
+    #             url, value="PDF", target="_blank")
+
+    #     pdf_filename = pdf.filename
+    #     pdf_filename_value = 'Unknown'
+    #     if pdf_filename:
+    #         pdf_filename_value = pdf_filename.split('.')[0]
+    #     ar = obj.getAnalysisRequest()
+    #     item["replace"]["COA"] = get_link(
+    #         ar.absolute_url(), value=pdf_filename_value
+    #     )
+
+    #     return item
+
     def folder_item(self, obj, item, index):
-        if not is_installed():
-            return item
+        """Augment folder listing item
+        """
         obj = api.get_object(obj)
         csv = self.get_csv(obj)
-        filesize_csv = self.listing.get_filesize(csv)
-        if filesize_csv > 0:
-            url = "{}/at_download/CSV".format(obj.absolute_url())
+        if not csv:
+            return item
+
+        filesize = self.listing.get_filesize(csv)
+        if filesize > 0:
+            url = "{}/download_csv".format(obj.absolute_url())
             item["replace"]["CSV"] = get_link(
                 url, value="CSV", target="_blank")
-
-        pdf = self.listing.get_pdf(obj)
-        filesize_pdf = self.listing.get_filesize(pdf)
-        if filesize_pdf > 0:
-            url = "{}/at_download/Pdf".format(obj.absolute_url())
-            item["replace"]["PDF"] = get_link(
-                url, value="PDF", target="_blank")
-
-        pdf_filename = pdf.filename
+        pdf_filename = csv.filename
         pdf_filename_value = 'Unknown'
-        if pdf_filename:
-            pdf_filename_value = pdf_filename.split('.')[0]
         ar = obj.getAnalysisRequest()
         item["replace"]["COA"] = get_link(
             ar.absolute_url(), value=pdf_filename_value
         )
-
         return item
 
     def get_csv(self, obj):
         """Get the report csv
         """
         try:
-            return obj.CSV
-        except (POSKeyError, TypeError):
+            return obj.csv
+        except (POSKeyError, TypeError, AttributeError):
             return None
