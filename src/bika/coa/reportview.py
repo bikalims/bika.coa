@@ -2103,6 +2103,9 @@ class MultiReportView(MRV, ReportView):
         publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
         if user.getSignature():
             publisher["user_url"] = user.absolute_url()
+            publisher["signature"] = "{}/Signature".format(
+                user.absolute_url()
+            )
 
         return publisher
 
