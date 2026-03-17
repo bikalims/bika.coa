@@ -553,7 +553,8 @@
         <table class="table table-sm table-condensed" title="QC Results">
           <thead>
             <tr>
-              <th>Analysis</th>
+              <th colspan="2">Analysis</th>
+              <th>QC ID</th>
               <th>Result</th>
               <th>Unit</th>
               <th>+-</th>
@@ -565,14 +566,18 @@
             </tr>
           </thead>
           <tbody>
-            <tal:model repeat="model collection">
-              <tal:allqc define="qcanalyses python:model.getQCAnalyses()"><!--Remove Assigned later-->
+              <tal:allqc define="qcanalyses python:view.get_qcs(collection)"><!--Remove Assigned later-->
                 <tal:qc repeat="qc qcanalyses">
                   <tal:qc_data define="qc_data python:view.get_qc_data(qc)">
                       <tr>
                         <td>
                           <img src="" tal:attributes="src qc_data/icon|nothing" style="width:16px;height:16px"/>
+                        </td>
+                        <td>
                           <span tal:content="python:qc.getAnalysisService().Title()"/>
+                        </td>
+                        <td>
+                          <span tal:content="python:qc.getReferenceAnalysesGroupID()"/>
                         </td>
                         <td>
                           <span tal:content="python:qc.Result"/>
@@ -602,7 +607,6 @@
                   </tal:qc_data>
                 </tal:qc>
               </tal:allqc>
-            </tal:model>
           </tbody>
         </table>
        </div>

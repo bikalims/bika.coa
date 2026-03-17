@@ -25,7 +25,6 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.utils import get_image
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
@@ -769,9 +768,11 @@ class SingleReportView(SRV, ReportView):
         calc = analysis.getCalculation()
         is_report = self.get_result_variables(analysis)
         if specs.get('min', None) and calc and is_report:
-            specs["min"] = self.convert_inverse_units(analysis, specs.get('min', None))
+            specs["min"] = \
+                self.convert_inverse_units(analysis, specs.get('min', None))
         if specs.get('max', None) and calc and is_report:
-            specs["max"] = self.convert_inverse_units(analysis, specs.get('max', None))
+            specs["max"] = \
+                self.convert_inverse_units(analysis, specs.get('max', None))
 
         # get the min operator
         min_operator = specs.get("min_operator") or ""
@@ -1237,16 +1238,27 @@ class MultiReportView(MRV, ReportView):
                 break
         return is_data
 
+    def get_qcs(self, collection):
+        qcs = []
+        for sample in collection:
+            qc_analyses = sample.getQCAnalyses(["verified", "published"])
+            for qc in qc_analyses:
+                qc_id = qc.getReferenceAnalysesGroupID()
+                if qc_id not in qcs:
+                    qcs.append(qc)
+        return qcs
+
     def get_qc_data(self, qc):
         if IDuplicateAnalysis.providedBy(qc):
             an_type = "d"
             img_name = "duplicate.png"
         else:
-            an_type = obj.getReferenceType()
+            an_type = qc.getReferenceType()
             img_name = an_type == "c" and "control.png" or "blank.png"
-
         icon = "{}/++plone++bika.ui.static/assets/icons/{}"
         icon_url = icon.format(self.portal_url, img_name)
+
+        ref_result = qc.getResultsRange()
         method_title = qc.getMethod().Title() if qc.getMethod() else ""
         instr_title = qc.getInstrument().Title() if qc.getInstrument() else ""
         analyst = api.get_user_fullname(qc.getAnalyst())
@@ -1254,8 +1266,9 @@ class MultiReportView(MRV, ReportView):
                 "method": method_title,
                 "instrument": instr_title,
                 "analyst": analyst,
-                "min": "",
-                "max": "",
+                "min": ref_result.get("min"),
+                "max": ref_result.get("max"),
+                "qc_id": qc.getReferenceAnalysesGroupID(),
                 }
         return data
 
