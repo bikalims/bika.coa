@@ -1239,12 +1239,14 @@ class MultiReportView(MRV, ReportView):
         return is_data
 
     def get_qcs(self, collection):
+        qc_ids = []
         qcs = []
         for sample in collection:
             qc_analyses = sample.getQCAnalyses(["verified", "published"])
             for qc in qc_analyses:
                 qc_id = qc.getReferenceAnalysesGroupID()
-                if qc_id not in qcs:
+                if qc_id not in qc_ids:
+                    qc_ids.append(qc_id)
                     qcs.append(qc)
         return qcs
 
