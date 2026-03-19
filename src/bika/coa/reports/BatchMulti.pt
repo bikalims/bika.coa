@@ -64,8 +64,10 @@
      .report .font-size-120 { font-size: 120%; }
      .report .font-size-100 { font-size: 100%; }
      .report .colon-after:after { content: ":"; }
+     .report .noborder{ border: none; }
      .report address { margin: 1rem 0; }
      .report table.noborder td, .report table.noborder th { border: none; }
+     .report table. td.noborder{ border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
      .report table td.paddedlabel { padding-left: 1.2rem;}
@@ -384,26 +386,26 @@
           <h2 tal:content="python:view.points_of_capture.get(poc)"></h2>
           <div class="table small">
             <div class="table-row">
-              <div class="table-header">Sample ID</div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <div class="table-cell"></div>
-              <tal:ar repeat="model page">
-                <div class="table-cell font-weight-normal">
-                  <div class="text-primary text-center"
-                      tal:content="model/Title"/>
-                </div>
-              </tal:ar>
-            </div>
-            <div class="table-row">
               <div class="table-header" class="noborder">Client Sample ID</div>
               <div class="table-cell"></div>
               <div class="table-cell"></div>
               <div class="table-cell"></div>
               <tal:ar repeat="model page">
                 <div class="table-cell font-weight-normal">
+                  <div class="text-primary text-center"
+                      tal:content="python:model.ClientSampleID or '-'" style="font-size:12px"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header">Sample ID</div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
                   <div class="text-center"
-                      tal:content="python:model.ClientSampleID or '-'"/>
+                      tal:content="model/Title"/>
                 </div>
               </tal:ar>
             </div>
@@ -541,6 +543,9 @@
                     </tal:analysis>
                   </tal:analyses>
                 </tal:results>
+              </div>
+              <div class="table-row">
+                  <div class='table-cell noborder' style="color:white !important">.</div>
               </div>
             </tal:categories_in_poc>
           </div>
