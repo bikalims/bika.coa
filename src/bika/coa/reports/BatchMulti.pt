@@ -422,6 +422,21 @@
               </tal:ar>
             </div>
             <div class="table-row">
+              <div class="table-header" class="noborder">Specification</div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <tal:spec_values tal:define="specification model/Specification;
+                                    publication_specification model/PublicationSpecification;
+                                    spec python:publication_specification or specification;">
+                    <div class="text-center" tal:condition="spec" tal:content="python: spec.Title() or '-'"/>
+                  </tal:spec_values>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
               <div class="table-header" class="noborder">Sample Point</div>
               <div class="table-cell"></div>
               <div class="table-cell"></div>
@@ -466,6 +481,19 @@
                 <div class="table-cell font-weight-normal">
                   <div class="text-center"
                       tal:content="python:model.DateReceived and view.to_localized_date(model.DateReceived) or '-'"/>
+                </div>
+              </tal:ar>
+            </div>
+            <div class="table-row">
+              <div class="table-header" class="noborder">Date Analysed</div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <div class="table-cell"></div>
+              <tal:ar repeat="model page">
+                <div class="table-cell font-weight-normal">
+                  <div class="text-center"
+                      tal:condition="python:view.get_date_analysed(model)"
+                      tal:content="python:view.get_date_analysed(model)[-1] or '-'"/>
                 </div>
               </tal:ar>
             </div>
