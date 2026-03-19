@@ -555,14 +555,13 @@
             <tr>
               <th colspan="2">Analysis</th>
               <th>QC ID</th>
-              <th>Result</th>
-              <th>Unit</th>
-              <th>+-</th>
-              <th>Min</th>
-              <th>Max</th>
-              <th>Method</th>
-              <th>Instrument</th>
-              <th>Analyst</th>
+              <th class="text-center">Result</th>
+              <th class="text-center">Unit</th>
+              <th class="text-center">+-</th>
+              <th class="text-center">Min</th>
+              <th class="text-center">Max</th>
+              <th class="text-center">Method</th>
+              <th class="text-center">Instrument</th>
             </tr>
           </thead>
           <tbody>
@@ -570,38 +569,35 @@
                 <tal:qc repeat="qc qcanalyses">
                   <tal:qc_data define="qc_data python:view.get_qc_data(qc)">
                       <tr>
-                        <td>
+                        <td class="text-right">
                           <img src="" tal:attributes="src qc_data/icon|nothing" style="width:16px;height:16px"/>
                         </td>
-                        <td>
+                        <td class="text-left">
                           <span tal:content="python:qc.getAnalysisService().Title()"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="python:qc.getReferenceAnalysesGroupID()"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="python:qc.Result"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="python:qc.getUnit()"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="python:qc.getUncertainty()"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="qc_data/min|nothing"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="qc_data/max|nothing"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="qc_data/method|nothing"/>
                         </td>
-                        <td>
+                        <td class="text-center">
                           <span tal:content="qc_data/instrument|nothing"/>
-                        </td>
-                        <td>
-                          <span tal:content="qc_data/analyst|nothing"/>
                         </td>
                       </tr>
                   </tal:qc_data>

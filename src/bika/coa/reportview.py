@@ -1,4 +1,5 @@
 import json
+from operator import attrgetter
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from plone import api as ploneapi
@@ -1248,7 +1249,8 @@ class MultiReportView(MRV, ReportView):
                 if qc_id not in qc_ids:
                     qc_ids.append(qc_id)
                     qcs.append(qc)
-        return qcs
+        items = sorted(qcs, key=attrgetter("title", "ReferenceAnalysesGroupID"))
+        return items
 
     def get_qc_data(self, qc):
         if IDuplicateAnalysis.providedBy(qc):
