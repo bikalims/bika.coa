@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 from operator import attrgetter
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
@@ -903,45 +904,107 @@ class MultiReportView(MRV, ReportView):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
-    def get_pages_aqua_culture(self, category_model, sample_model=None):
-        """ """
-        data = {}
-        num_per_page = 5
-        pages = []
-        new_page = []
-        for model in self.collection:
-            for analysis in model.getAnalyses():
-                an_super = SuperModel(analysis.UID)
-                category = an_super.Category
-                if category not in data:
-                    data[category] = {model: [an_super]}
-                else:
-                    if model not in data[category]:
-                        data[category][model] = [an_super]
-                    else:
-                        data[category][model].append(an_super)
 
-        if sample_model:
-            sample = data[category_model][sample_model]
-            for idx, col in enumerate(sample):
-                if idx % num_per_page == 0:
-                    if len(new_page):
-                        pages.append(new_page)
-                        logger.info("New page len = {}".format(len(new_page)))
-                    new_page = [col]
-                    continue
-                new_page.append(col)
 
-            if len(new_page) > 0:
-                if len(new_page) < num_per_page:
-                    for i in range(num_per_page - len(new_page)):
-                        new_page.append("")
-                pages.append(new_page)
-                logger.info("Last page len = {}".format(len(new_page)))
-            data[category_model][sample_model] = pages
-            return data[category_model][sample_model]
+    def chunk_list(self, items, size):
+        chunks = []
+        for i in range(0, len(items), size):
+            chunk = list(items[i:i + size])
+            if len(chunk) < size:
+                chunk += [""] * (size - len(chunk))
+            chunks.append(chunk)
+        return chunks
 
-        return data[category_model]
+
+    def get_category_pdf_tables(self, num_per_page=5):
+        """
+        Build PDF-ready folded tables per category.
+
+        Returns:
+            [
+                {
+                    "category": <category model>,
+                    "table": [
+                        [header row...],
+                        [sample row...],
+                        [sample row...],
+                    ]
+                },
+                ...
+            ]
+        """
+        categories = self.get_analyses_by_category(self.collection)
+        blocks = []
+
+        fixed_headers = [
+            "Pool ID",
+            "Sample Name",
+            "Lot/Batch Number",
+            "Pond",
+            "Species",
+            "Specimen",
+        ]
+
+        for category, analyses in categories.items():
+            # Keep sample order as first seen
+            sample_map = OrderedDict()
+
+            # Build: sample -> {analysis keyword: result}
+            for analysis in analyses:
+                sample = analysis.aq_parent
+
+                if sample not in sample_map:
+                    sample_map[sample] = {}
+
+                keyword = getattr(analysis, "Keyword", "") or ""
+                result = getattr(analysis, "Result", "") or ""
+                sample_map[sample][keyword] = result
+
+            # Category-level analysis headers in first-seen order
+            analysis_names = []
+            seen = set()
+            for analysis in analyses:
+                keyword = getattr(analysis, "Keyword", "") or ""
+                if keyword and keyword not in seen:
+                    seen.add(keyword)
+                    analysis_names.append(keyword)
+
+            analysis_pages = self.chunk_list(analysis_names, num_per_page)
+
+            for analysis_page in analysis_pages:
+                headers = fixed_headers + analysis_page
+                table_data = [headers]
+
+                for sample, results_map in sample_map.items():
+                    batch = sample.getBatch()
+                    client_batch_id = batch.getClientBatchID() if batch else ""
+                    sample_pool_id = sample.PoolID
+                    pool_id = "{} {}".format(client_batch_id, sample_pool_id)
+                    client_sample_id = sample.getClientSampleID()
+                    lot = sample.Lot
+                    pond = sample.getSamplePointTitle()
+                    species = api.get_object_by_uid(sample.Species).Title()
+                    specimen = sample.getSampleTypeTitle()
+
+                    row = [
+                        pool_id,
+                        client_sample_id,
+                        lot,
+                        pond,
+                        species,
+                        specimen,
+                    ]
+
+                    row.extend([results_map.get(name, "") for name in analysis_page])
+                    table_data.append(row)
+
+                blocks.append({
+                    "category": category,
+                    "table": table_data,
+                })
+
+        return blocks
+
 
     def get_pages_awtc(self, options):
         if options.get("orientation", "") == "portrait":
