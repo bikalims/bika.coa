@@ -960,7 +960,7 @@ class MultiReportView(MRV, ReportView):
                 if sample not in sample_map:
                     sample_map[sample] = {}
 
-                keyword = getattr(analysis, "Keyword", "") or ""
+                keyword = getattr(analysis, "ShortTitle", "") or ""
                 result = SM(sample).get_formatted_result(analysis)
                 sample_map[sample][keyword] = result
 
@@ -968,7 +968,7 @@ class MultiReportView(MRV, ReportView):
             analysis_names = []
             seen = set()
             for analysis in analyses:
-                keyword = getattr(analysis, "Keyword", "") or ""
+                keyword = getattr(analysis, "ShortTitle", "") or ""
                 if keyword and keyword not in seen:
                     seen.add(keyword)
                     analysis_names.append(keyword)
