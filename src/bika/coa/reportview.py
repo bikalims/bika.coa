@@ -911,8 +911,8 @@ class MultiReportView(MRV, ReportView):
         chunks = []
         for i in range(0, len(items), size):
             chunk = list(items[i:i + size])
-            if len(chunk) < size:
-                chunk += [""] * (size - len(chunk))
+            # if len(chunk) < size:
+            #     chunk += [""] * (size - len(chunk))
             chunks.append(chunk)
         return chunks
 
@@ -959,7 +959,7 @@ class MultiReportView(MRV, ReportView):
 
                 keyword = getattr(analysis, "Keyword", "") or ""
                 result = SM(sample).get_formatted_result(analysis)
-                sample_map[sample][keyword] = result
+                sample_map[sample][keyword] = result or "N/A"
 
             # Category-level analysis headers in first-seen order
             analysis_names = []
