@@ -959,7 +959,7 @@ class MultiReportView(MRV, ReportView):
 
                 keyword = getattr(analysis, "Keyword", "") or ""
                 result = SM(sample).get_formatted_result(analysis)
-                sample_map[sample][keyword] = result or "N/A"
+                sample_map[sample][keyword] = result
 
             # Category-level analysis headers in first-seen order
             analysis_names = []
@@ -1003,6 +1003,110 @@ class MultiReportView(MRV, ReportView):
                     "category": category,
                     "table": table_data,
                 })
+
+        return blocks
+
+    def get_category_pdf_tables(self, num_per_page=5):
+        """
+        Build PDF-ready folded tables per category.
+
+        Returns:
+            [
+                {
+                    "category": <category model>,
+                    "table": [
+                        [header row...],
+                        [sample row...],
+                        [sample row...],
+                        [],
+                        [header row...],
+                        [sample row...],
+                        [sample row...],
+                    ]
+                },
+                ...
+            ]
+        """
+        categories = self.get_analyses_by_category(self.collection)
+        blocks = []
+
+        fixed_headers = [
+            "Pool ID",
+            "Sample Name",
+            "Lot/Batch Number",
+            "Pond",
+            "Species",
+            "Specimen",
+        ]
+
+        for category, analyses in categories.items():
+            sample_map = OrderedDict()
+
+            # sample -> {analysis keyword: formatted result}
+            for analysis in analyses:
+                sample = analysis.aq_parent
+
+                if sample not in sample_map:
+                    sample_map[sample] = {}
+
+                keyword = getattr(analysis, "Keyword", "") or ""
+                result = SM(sample).get_formatted_result(analysis)
+                sample_map[sample][keyword] = result or "N/A"
+
+            # Analysis headers in first-seen order
+            analysis_names = []
+            seen = set()
+            for analysis in analyses:
+                keyword = getattr(analysis, "Keyword", "") or ""
+                if keyword and keyword not in seen:
+                    seen.add(keyword)
+                    analysis_names.append(keyword)
+
+            analysis_pages = self.chunk_list(analysis_names, num_per_page)
+
+            table_data = []
+
+            for page_index, analysis_page in enumerate(analysis_pages):
+                # blank row between folded parts
+                if page_index > 0:
+                    table_data.append([])
+
+                headers = fixed_headers + analysis_page
+                table_data.append(headers)
+
+                for sample, results_map in sample_map.items():
+                    batch = sample.getBatch()
+                    client_batch_id = batch.getClientBatchID() if batch else ""
+                    sample_pool_id = getattr(sample, "PoolID", "") or ""
+                    pool_id = "{} {}".format(client_batch_id, sample_pool_id).strip()
+
+                    client_sample_id = sample.getClientSampleID() or ""
+                    lot = getattr(sample, "Lot", "") or ""
+                    pond = sample.getSamplePointTitle() or ""
+
+                    species = ""
+                    if getattr(sample, "Species", None):
+                        species_obj = api.get_object_by_uid(sample.Species)
+                        species = species_obj.Title() if species_obj else ""
+
+                    specimen = sample.getSampleTypeTitle() or ""
+
+                    row = [
+                        pool_id,
+                        client_sample_id,
+                        lot,
+                        pond,
+                        species,
+                        specimen,
+                    ]
+
+                    row.extend([results_map.get(name, "") for name in analysis_page])
+                    table_data.append(row)
+
+            blocks.append({
+                "category": category,
+                "table": table_data,
+            })
 
         return blocks
 
