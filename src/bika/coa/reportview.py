@@ -958,7 +958,7 @@ class MultiReportView(MRV, ReportView):
 
                 keyword = getattr(analysis, "Keyword", "") or ""
                 result = getattr(analysis, "Result", "") or ""
-                sample_map[sample][keyword] = result
+                sample_map[sample][keyword] = sample.get_formatted_result(analysis)
 
             # Category-level analysis headers in first-seen order
             analysis_names = []
