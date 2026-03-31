@@ -962,7 +962,7 @@ class MultiReportView(MRV, ReportView):
 
                 keyword = getattr(analysis, "Keyword", "") or ""
                 result = SM(sample).get_formatted_result(analysis)
-                sample_map[sample][keyword] = result or "N/A"
+                sample_map[sample][keyword] = result
 
             # Analysis headers in first-seen order
             analysis_names = []
@@ -1011,7 +1011,7 @@ class MultiReportView(MRV, ReportView):
                         specimen,
                     ]
 
-                    row.extend([results_map.get(name, "") for name in analysis_page])
+                    row.extend([results_map.get(name, "N/A") for name in analysis_page])
                     table_data.append(row)
 
             blocks.append({
