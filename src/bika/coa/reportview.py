@@ -993,7 +993,7 @@ class MultiReportView(MRV, ReportView):
 
                     client_sample_id = sample.getClientSampleID() or ""
                     lot = getattr(sample, "Lot", "") or ""
-                    pond = sample.getSamplePointTitle() or ""
+                    pond = sample.getSamplePointTitle() or "N/A"
 
                     species = ""
                     if getattr(sample, "Species", None):
