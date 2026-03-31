@@ -917,7 +917,7 @@ class MultiReportView(MRV, ReportView):
         return chunks
 
 
-    def get_category_pdf_tables(self, num_per_page=5):
+    def get_category_pdf_tables(self, num_per_page=6):
         """
         Build PDF-ready folded tables per category.
 
