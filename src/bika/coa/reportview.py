@@ -32,6 +32,7 @@ from bika.lims.workflow import getTransitionUsers
 
 from senaite.app.supermodel import SuperModel
 from senaite.core.api import geo
+from senaite.impress.analysisrequest.model import SuperModel as SM
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
@@ -957,8 +958,8 @@ class MultiReportView(MRV, ReportView):
                     sample_map[sample] = {}
 
                 keyword = getattr(analysis, "Keyword", "") or ""
-                result = getattr(analysis, "Result", "") or ""
-                sample_map[sample][keyword] = sample.get_formatted_result(analysis)
+                result = SM(sample).get_formatted_result(analysis)
+                sample_map[sample][keyword] = result
 
             # Category-level analysis headers in first-seen order
             analysis_names = []
