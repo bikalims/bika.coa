@@ -2183,7 +2183,8 @@ class MultiReportView(MRV, ReportView):
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
         if not user:
-            publisher["publisher"] = "{}".format(current_user.id)
+            fullname = api.get_user_fullname(current_user.id)
+            publisher["publisher"] = fullname
             return publisher
 
         publisher["email"] = "{}".format(user.getEmailAddress())
