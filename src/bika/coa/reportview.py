@@ -980,7 +980,10 @@ class MultiReportView(MRV, ReportView):
                     table_data.append([])
 
                 analysis_count = len(analysis_page)
-                table_width = "{}mm".format(200 + (analysis_count * 9.5))
+                if analysis_count == num_per_page:
+                    table_width = "100%"
+                else:
+                    table_width = "{}mm".format(200 + (analysis_count * 9.5))
                 headers = fixed_headers + analysis_page
                 table_data.append(headers)
 
