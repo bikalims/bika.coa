@@ -763,7 +763,7 @@ class SingleReportView(SRV, ReportView):
         if result == 0:
             return str(result)
         formatted = _format_decimal_or_sci(
-                result, precision, threshold, sciformat)
+            result, precision, threshold, sciformat)
         return formatted
 
     def get_converted_specs(self, analysis):
@@ -905,8 +905,6 @@ class MultiReportView(MRV, ReportView):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
-
-
     def chunk_list(self, items, size):
         chunks = []
         for i in range(0, len(items), size):
@@ -916,8 +914,7 @@ class MultiReportView(MRV, ReportView):
             chunks.append(chunk)
         return chunks
 
-
-    def get_category_pdf_tables(self, num_per_page=6):
+    def get_category_pdf_tables(self, num_per_page=8):
         """
         Build PDF-ready folded tables per category.
 
@@ -982,6 +979,8 @@ class MultiReportView(MRV, ReportView):
                 if page_index > 0:
                     table_data.append([])
 
+                analysis_count = len(analysis_page)
+                table_width = "{}mm".format(200 + (analysis_count * 9.5))
                 headers = fixed_headers + analysis_page
                 table_data.append(headers)
 
@@ -1017,10 +1016,10 @@ class MultiReportView(MRV, ReportView):
             blocks.append({
                 "category": category,
                 "table": table_data,
+                "table_width": table_width,
             })
 
         return blocks
-
 
     def get_pages_awtc(self, options):
         if options.get("orientation", "") == "portrait":
