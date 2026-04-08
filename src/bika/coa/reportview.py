@@ -949,6 +949,7 @@ class MultiReportView(MRV, ReportView):
 
         for category, analyses in categories.items():
             sample_map = OrderedDict()
+            table_width = None
 
             # sample -> {analysis keyword: formatted result}
             for analysis in analyses:
@@ -978,12 +979,8 @@ class MultiReportView(MRV, ReportView):
                 # blank row between folded parts
                 if page_index > 0:
                     table_data.append([])
+                headers = fixed_headers + analysis_page
 
-                analysis_count = len(analysis_page)
-                if analysis_count == num_per_page:
-                    table_width = "100%"
-                else:
-                    table_width = "{}mm".format(200 + (analysis_count * 9.5))
                 headers = fixed_headers + analysis_page
                 table_data.append(headers)
 
@@ -1015,6 +1012,20 @@ class MultiReportView(MRV, ReportView):
 
                     row.extend([results_map.get(name, "N/A") for name in analysis_page])
                     table_data.append(row)
+
+                if not table_width:
+                    default = "255mm"
+                    if len(analysis_page) == num_per_page:
+                        table_width = default
+                    else:
+                        extra_cols = (len(headers) * 9.5)
+                        table_width_mm = 18 * len(headers)
+                        if table_width_mm > 255:
+                            table_width = default
+                        elif table_width_mm < 160:
+                            table_width = "160mm"
+                        else:
+                            table_width = "{}mm".format(table_width_mm)
 
             blocks.append({
                 "category": category,
