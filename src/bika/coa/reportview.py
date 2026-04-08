@@ -1022,8 +1022,8 @@ class MultiReportView(MRV, ReportView):
                         table_width_mm = 18 * len(headers)
                         if table_width_mm > 255:
                             table_width = default
-                        elif table_width_mm < 160:
-                            table_width = "160mm"
+                        elif table_width_mm < 200:
+                            table_width = "200mm"
                         else:
                             table_width = "{}mm".format(table_width_mm)
 
