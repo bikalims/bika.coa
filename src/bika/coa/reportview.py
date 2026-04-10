@@ -2350,7 +2350,7 @@ class MultiReportView(MRV, ReportView):
 
     def get_batch_purpose_of_testing(self, batch):
         purpose = batch.PurposeOfTesting
-        return ", ".join([api.get_brain_by_uid(i).Title for i in purpose])
+        return ", ".join([api.get_object(i).Title() for i in purpose])
 
     def get_analyst_by_analysis(self, analysis):
         analysis = api.get_object(analysis)
