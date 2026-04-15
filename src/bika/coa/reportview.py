@@ -1008,7 +1008,7 @@ class MultiReportView(MRV, ReportView):
                     row.extend([results_map.get(name, "N/A") for name in analysis_page])
                     table_data.append(row)
 
-                table_width_mm = 150 + (len(analysis_page) * 12)
+                table_width_mm = 160 + (len(analysis_page) * 12)
                 table_width = "{}mm".format(table_width_mm)
 
                 table_datas.append({
