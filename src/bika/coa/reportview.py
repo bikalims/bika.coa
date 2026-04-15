@@ -1013,7 +1013,7 @@ class MultiReportView(MRV, ReportView):
 
                 if not table_width:
                     default = "255mm"
-                    table_width_mm = 115 + len(analysis_page) * 13
+                    table_width_mm = 200 + len(analysis_page) * 9.5
                     table_width = "{}mm".format(table_width_mm)
 
             blocks.append({
