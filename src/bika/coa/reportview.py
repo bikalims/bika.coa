@@ -980,8 +980,6 @@ class MultiReportView(MRV, ReportView):
                 if page_index > 0:
                     table_data.append([])
                 headers = fixed_headers + analysis_page
-
-                headers = fixed_headers + analysis_page
                 table_data.append(headers)
 
                 for sample, results_map in sample_map.items():
@@ -1015,17 +1013,8 @@ class MultiReportView(MRV, ReportView):
 
                 if not table_width:
                     default = "255mm"
-                    if len(analysis_page) == num_per_page:
-                        table_width = default
-                    else:
-                        extra_cols = (len(headers) * 9.5)
-                        table_width_mm = 18 * len(headers)
-                        if table_width_mm > 255:
-                            table_width = default
-                        elif table_width_mm < 200:
-                            table_width = "200mm"
-                        else:
-                            table_width = "{}mm".format(table_width_mm)
+                    table_width_mm = 115 + len(analysis_page) * 13
+                    table_width = "{}mm".format(table_width_mm)
 
             blocks.append({
                 "category": category,
