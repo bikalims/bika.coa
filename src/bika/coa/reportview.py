@@ -922,14 +922,16 @@ class MultiReportView(MRV, ReportView):
             [
                 {
                     "category": <category model>,
-                    "table": [
-                        [header row...],
-                        [sample row...],
-                        [sample row...],
-                        [],
-                        [header row...],
-                        [sample row...],
-                        [sample row...],
+                    "tables": [
+                        {
+                            "table": [
+                                [header row...],
+                                [sample row...],
+                                [sample row...],
+                            ],
+                            "table_width": "255mm",
+                        },
+                        ...
                     ]
                 },
                 ...
@@ -949,9 +951,8 @@ class MultiReportView(MRV, ReportView):
 
         for category, analyses in categories.items():
             sample_map = OrderedDict()
-            table_width = None
 
-            # sample -> {analysis keyword: formatted result}
+            # sample -> {analysis short title: formatted result}
             for analysis in analyses:
                 sample = analysis.aq_parent
 
@@ -972,15 +973,11 @@ class MultiReportView(MRV, ReportView):
                     analysis_names.append(keyword)
 
             analysis_pages = self.chunk_list(analysis_names, num_per_page)
+            table_datas = []
 
-            table_data = []
-
-            for page_index, analysis_page in enumerate(analysis_pages):
-                # blank row between folded parts
-                if page_index > 0:
-                    table_data.append([])
+            for analysis_page in analysis_pages:
                 headers = fixed_headers + analysis_page
-                table_data.append(headers)
+                table_data = [headers]
 
                 for sample, results_map in sample_map.items():
                     batch = sample.getBatch()
@@ -1011,15 +1008,17 @@ class MultiReportView(MRV, ReportView):
                     row.extend([results_map.get(name, "N/A") for name in analysis_page])
                     table_data.append(row)
 
-                if not table_width:
-                    default = "255mm"
-                    table_width_mm = 150 + len(analysis_page) * 12
-                    table_width = "{}mm".format(table_width_mm)
+                table_width_mm = 150 + (len(analysis_page) * 12)
+                table_width = "{}mm".format(table_width_mm)
+
+                table_datas.append({
+                    "table": table_data,
+                    "table_width": table_width,
+                })
 
             blocks.append({
                 "category": category,
-                "table": table_data,
-                "table_width": table_width,
+                "tables": table_datas,
             })
 
         return blocks
