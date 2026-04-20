@@ -914,7 +914,7 @@ class MultiReportView(MRV, ReportView):
             chunks.append(chunk)
         return chunks
 
-    def get_category_pdf_tables(self, num_per_page=8):
+    def get_category_pdf_tables(self, num_per_page=10):
         """
         Build PDF-ready folded tables per category.
 
@@ -1008,7 +1008,7 @@ class MultiReportView(MRV, ReportView):
                     row.extend([results_map.get(name, "N/A") for name in analysis_page])
                     table_data.append(row)
 
-                table_width_mm = 96 + (len(analysis_page) * 20)
+                table_width_mm = 116 + (len(analysis_page) * 14.2)
                 table_width = "{}mm".format(table_width_mm)
 
                 table_datas.append({
