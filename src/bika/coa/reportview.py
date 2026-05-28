@@ -1,4 +1,6 @@
 import json
+from collections import OrderedDict
+from operator import attrgetter
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from plone import api as ploneapi
@@ -25,12 +27,12 @@ from bika.lims.catalog import SETUP_CATALOG
 from bika.lims.content.analysisspec import ResultsRangeDict
 from bika.lims.idserver import generateUniqueId
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.utils import get_image
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.workflow import getTransitionUsers
 
 from senaite.app.supermodel import SuperModel
 from senaite.core.api import geo
+from senaite.impress.analysisrequest.model import SuperModel as SM
 from senaite.impress.analysisrequest.reportview import MultiReportView as MRV
 from senaite.impress.analysisrequest.reportview import SingleReportView as SRV
 
@@ -761,7 +763,7 @@ class SingleReportView(SRV, ReportView):
         if result == 0:
             return str(result)
         formatted = _format_decimal_or_sci(
-                result, precision, threshold, sciformat)
+            result, precision, threshold, sciformat)
         return formatted
 
     def get_converted_specs(self, analysis):
@@ -769,9 +771,11 @@ class SingleReportView(SRV, ReportView):
         calc = analysis.getCalculation()
         is_report = self.get_result_variables(analysis)
         if specs.get('min', None) and calc and is_report:
-            specs["min"] = self.convert_inverse_units(analysis, specs.get('min', None))
+            specs["min"] = \
+                self.convert_inverse_units(analysis, specs.get('min', None))
         if specs.get('max', None) and calc and is_report:
-            specs["max"] = self.convert_inverse_units(analysis, specs.get('max', None))
+            specs["max"] = \
+                self.convert_inverse_units(analysis, specs.get('max', None))
 
         # get the min operator
         min_operator = specs.get("min_operator") or ""
@@ -901,45 +905,123 @@ class MultiReportView(MRV, ReportView):
             logger.info("Last page len = {}".format(len(new_page)))
         return pages
 
-    def get_pages_aqua_culture(self, category_model, sample_model=None):
-        """ """
-        data = {}
-        num_per_page = 5
-        pages = []
-        new_page = []
-        for model in self.collection:
-            for analysis in model.getAnalyses():
-                an_super = SuperModel(analysis.UID)
-                category = an_super.Category
-                if category not in data:
-                    data[category] = {model: [an_super]}
-                else:
-                    if model not in data[category]:
-                        data[category][model] = [an_super]
-                    else:
-                        data[category][model].append(an_super)
+    def chunk_list(self, items, size):
+        chunks = []
+        for i in range(0, len(items), size):
+            chunk = list(items[i:i + size])
+            # if len(chunk) < size:
+            #     chunk += [""] * (size - len(chunk))
+            chunks.append(chunk)
+        return chunks
 
-        if sample_model:
-            sample = data[category_model][sample_model]
-            for idx, col in enumerate(sample):
-                if idx % num_per_page == 0:
-                    if len(new_page):
-                        pages.append(new_page)
-                        logger.info("New page len = {}".format(len(new_page)))
-                    new_page = [col]
-                    continue
-                new_page.append(col)
+    def get_category_pdf_tables(self, num_per_page=10):
+        """
+        Build PDF-ready folded tables per category.
 
-            if len(new_page) > 0:
-                if len(new_page) < num_per_page:
-                    for i in range(num_per_page - len(new_page)):
-                        new_page.append("")
-                pages.append(new_page)
-                logger.info("Last page len = {}".format(len(new_page)))
-            data[category_model][sample_model] = pages
-            return data[category_model][sample_model]
+        Returns:
+            [
+                {
+                    "category": <category model>,
+                    "tables": [
+                        {
+                            "table": [
+                                [header row...],
+                                [sample row...],
+                                [sample row...],
+                            ],
+                            "table_width": "255mm",
+                        },
+                        ...
+                    ]
+                },
+                ...
+            ]
+        """
+        categories = self.get_analyses_by_category(self.collection)
+        blocks = []
 
-        return data[category_model]
+        fixed_headers = [
+            "Pool ID",
+            "Sample Name",
+            "Lot/Batch Number",
+            "Pond",
+            "Species",
+            "Specimen",
+        ]
+
+        for category, analyses in categories.items():
+            sample_map = OrderedDict()
+
+            # sample -> {analysis short title: formatted result}
+            for analysis in analyses:
+                sample = analysis.aq_parent
+
+                if sample not in sample_map:
+                    sample_map[sample] = {}
+
+                keyword = getattr(analysis, "ShortTitle", "") or ""
+                result = SM(sample).get_formatted_result(analysis)
+                sample_map[sample][keyword] = result
+
+            # Analysis headers in first-seen order
+            analysis_names = []
+            seen = set()
+            for analysis in analyses:
+                keyword = getattr(analysis, "ShortTitle", "") or ""
+                if keyword and keyword not in seen:
+                    seen.add(keyword)
+                    analysis_names.append(keyword)
+
+            analysis_pages = self.chunk_list(analysis_names, num_per_page)
+            table_datas = []
+
+            for analysis_page in analysis_pages:
+                headers = fixed_headers + analysis_page
+                table_data = [headers]
+
+                for sample, results_map in sample_map.items():
+                    batch = sample.getBatch()
+                    client_batch_id = batch.getClientBatchID() if batch else ""
+                    sample_pool_id = getattr(sample, "PoolID", "") or ""
+                    pool_id = "{} {}".format(client_batch_id, sample_pool_id).strip()
+
+                    client_sample_id = sample.getClientSampleID() or ""
+                    lot = getattr(sample, "Lot", "") or ""
+                    pond = sample.getSamplePointTitle() or "N/A"
+
+                    species = ""
+                    if getattr(sample, "Species", None):
+                        species_obj = api.get_object_by_uid(sample.Species)
+                        species = species_obj.Title() if species_obj else ""
+
+                    specimen = sample.getSampleTypeTitle() or ""
+
+                    row = [
+                        pool_id,
+                        client_sample_id,
+                        lot,
+                        pond,
+                        species,
+                        specimen,
+                    ]
+
+                    row.extend([results_map.get(name, "N/A") for name in analysis_page])
+                    table_data.append(row)
+
+                table_width_mm = 116 + (len(analysis_page) * 14.2)
+                table_width = "{}mm".format(table_width_mm)
+
+                table_datas.append({
+                    "table": table_data,
+                    "table_width": table_width,
+                })
+
+            blocks.append({
+                "category": category,
+                "tables": table_datas,
+            })
+
+        return blocks
 
     def get_pages_awtc(self, options):
         if options.get("orientation", "") == "portrait":
@@ -1237,16 +1319,30 @@ class MultiReportView(MRV, ReportView):
                 break
         return is_data
 
+    def get_qcs(self, collection):
+        qc_ids = []
+        qcs = []
+        for sample in collection:
+            qc_analyses = sample.getQCAnalyses(["verified", "published"])
+            for qc in qc_analyses:
+                qc_id = qc.getReferenceAnalysesGroupID()
+                if qc_id not in qc_ids:
+                    qc_ids.append(qc_id)
+                    qcs.append(qc)
+        items = sorted(qcs, key=attrgetter("title", "ReferenceAnalysesGroupID"))
+        return items
+
     def get_qc_data(self, qc):
         if IDuplicateAnalysis.providedBy(qc):
             an_type = "d"
             img_name = "duplicate.png"
         else:
-            an_type = obj.getReferenceType()
+            an_type = qc.getReferenceType()
             img_name = an_type == "c" and "control.png" or "blank.png"
-
         icon = "{}/++plone++bika.ui.static/assets/icons/{}"
         icon_url = icon.format(self.portal_url, img_name)
+
+        ref_result = qc.getResultsRange()
         method_title = qc.getMethod().Title() if qc.getMethod() else ""
         instr_title = qc.getInstrument().Title() if qc.getInstrument() else ""
         analyst = api.get_user_fullname(qc.getAnalyst())
@@ -1254,8 +1350,9 @@ class MultiReportView(MRV, ReportView):
                 "method": method_title,
                 "instrument": instr_title,
                 "analyst": analyst,
-                "min": "",
-                "max": "",
+                "min": ref_result.get("min"),
+                "max": ref_result.get("max"),
+                "qc_id": qc.getReferenceAnalysesGroupID(),
                 }
         return data
 
@@ -2087,7 +2184,8 @@ class MultiReportView(MRV, ReportView):
         user = api.get_user_contact(current_user)
         publisher["user_url"] = ""
         if not user:
-            publisher["publisher"] = "{}".format(current_user.id)
+            fullname = api.get_user_fullname(current_user.id)
+            publisher["publisher"] = fullname
             return publisher
 
         publisher["email"] = "{}".format(user.getEmailAddress())
@@ -2103,6 +2201,9 @@ class MultiReportView(MRV, ReportView):
         publisher["publisher_job"] = "{} - {}".format(fullname, jobtitle)
         if user.getSignature():
             publisher["user_url"] = user.absolute_url()
+            publisher["signature"] = "{}/Signature".format(
+                user.absolute_url()
+            )
 
         return publisher
 
@@ -2237,7 +2338,7 @@ class MultiReportView(MRV, ReportView):
 
     def get_batch_purpose_of_testing(self, batch):
         purpose = batch.PurposeOfTesting
-        return ", ".join([api.get_brain_by_uid(i).Title for i in purpose])
+        return ", ".join([api.get_object(i).Title() for i in purpose])
 
     def get_analyst_by_analysis(self, analysis):
         analysis = api.get_object(analysis)
