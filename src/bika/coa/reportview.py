@@ -427,7 +427,7 @@ class SingleReportView(SRV, ReportView):
         return filter(api.is_uid, items.split(","))
 
     def get_coa_number(self, model=None):  # some coa's use the model attribute
-        kwargs = {"portal_type": "ARReport", "dry_run": True}
+        kwargs = {"portal_type": "ResultsReport", "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
         increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
         items = self.get_items()
@@ -869,7 +869,7 @@ class MultiReportView(MRV, ReportView):
         return json.loads(data)
 
     def get_coa_number(self):
-        kwargs = {"portal_type": "ARReport", "dry_run": True}
+        kwargs = {"portal_type": "ResultsReport", "dry_run": True}
         coa_num = generateUniqueId(self.context, **kwargs)
         increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
         num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)

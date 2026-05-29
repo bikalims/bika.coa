@@ -2,7 +2,7 @@
 
 from setuptools import setup, find_packages
 
-version = "1.0.2"
+version = "2.7.0"
 
 setup(
     name="bika.coa",

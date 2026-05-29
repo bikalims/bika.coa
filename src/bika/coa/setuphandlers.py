@@ -37,5 +37,18 @@ def post_install(portal_setup):
         pc.addIndex('getSupplier', 'FieldIndex')
         pc.addColumn('getSupplier')
         pc.manage_reindexIndex('getSupplier')
+    add_results_report_extras_behavior(portal)
 
     logger.info("{} post-install handler [DONE]".format(PRODUCT_NAME.upper()))
+
+
+def add_results_report_extras_behavior(portal):
+    """Add IExtendedResultsReport behavior to ResultsReport."""
+    type_name = 'ResultsReport'
+    behavior_name = 'bika.coa.extenders.arreport.IExtendedResultsReport'
+
+    fti = api.get_tool('portal_types')[type_name]
+    behaviors = list(fti.behaviors)
+    if behavior_name not in behaviors:
+        behaviors.append(behavior_name)
+        fti.behaviors = tuple(behaviors)

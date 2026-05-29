@@ -86,7 +86,7 @@ class EmailView(EV):
         for report in self.reports:
             pdf = self.get_pdf(report)
             if pdf is not None:
-                filename = pdf.filename
+                filename = self.get_report_filename(report)
                 filedata = pdf.data
                 attachments.append(mailapi.to_email_attachment(filedata, filename))
                 # We don't send CSVs when it is single reports

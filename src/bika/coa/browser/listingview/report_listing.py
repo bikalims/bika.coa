@@ -11,6 +11,7 @@ from bika.coa import is_installed
 from bika.coa import _
 from senaite.app.listing.interfaces import IListingView
 from senaite.app.listing.interfaces import IListingViewAdapter
+from senaite.core.catalog import REPORT_CATALOG
 
 
 class ReportsListingViewAdapter(object):
@@ -54,54 +55,29 @@ class ReportsListingViewAdapter(object):
             self.listing.review_states[i]["columns"].append("COA")
             self.listing.review_states[i]["columns"].append("CSV")
 
-    # def folder_item(self, obj, item, index):
-    #     if not is_installed():
-    #         return item
-    #     obj = api.get_object(obj)
-    #     csv = self.get_csv(obj)
-    #     filesize_csv = self.listing.get_filesize(csv)
-    #     if filesize_csv > 0:
-    #         url = "{}/at_download/CSV".format(obj.absolute_url())
-    #         item["replace"]["CSV"] = get_link(
-    #             url, value="CSV", target="_blank")
-
-    #     pdf = self.listing.get_pdf(obj)
-    #     filesize_pdf = self.listing.get_filesize(pdf)
-    #     if filesize_pdf > 0:
-    #         url = "{}/at_download/Pdf".format(obj.absolute_url())
-    #         item["replace"]["PDF"] = get_link(
-    #             url, value="PDF", target="_blank")
-
-    #     pdf_filename = pdf.filename
-    #     pdf_filename_value = 'Unknown'
-    #     if pdf_filename:
-    #         pdf_filename_value = pdf_filename.split('.')[0]
-    #     ar = obj.getAnalysisRequest()
-    #     item["replace"]["COA"] = get_link(
-    #         ar.absolute_url(), value=pdf_filename_value
-    #     )
-
-    #     return item
-
     def folder_item(self, obj, item, index):
         """Augment folder listing item
         """
+        if not is_installed():
+            return item
+
         obj = api.get_object(obj)
+        sample = obj.getSample()
+        pdf = self.listing.get_pdf(obj)
+        item["replace"]["COA"] = get_link(
+            sample.absolute_url(), value=pdf.filename.split('.')[0]
+        )
+
         csv = self.get_csv(obj)
         if not csv:
             return item
 
         filesize = self.listing.get_filesize(csv)
         if filesize > 0:
-            url = "{}/download_csv".format(obj.absolute_url())
+            url = "{}/download/csv".format(obj.absolute_url())
             item["replace"]["CSV"] = get_link(
                 url, value="CSV", target="_blank")
-        pdf_filename = csv.filename
-        pdf_filename_value = 'Unknown'
-        ar = obj.getAnalysisRequest()
-        item["replace"]["COA"] = get_link(
-            ar.absolute_url(), value=pdf_filename_value
-        )
+
         return item
 
     def get_csv(self, obj):

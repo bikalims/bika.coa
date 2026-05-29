@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="ResultsReport" meta_type="Dexterity FTI"
+        i18n:domain="bika.coa"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        purge="False">
+
+  <!-- Dexterity behaviours for this type -->
+  <property name="behaviors" purge="False">
+    <element value="bika.coa.extenders.arreport.IExtendedResultsReport" />
+  </property>
+
+</object>
+

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import transaction
-from DateTime import DateTime
 from plone.namedfile.file import NamedBlobFile
 
 from bika.lims import api
+from bika.lims.idserver import generateUniqueId
 from senaite.impress import logger
 from senaite.impress.decorators import synchronized
 from senaite.impress.storage import PdfReportStorageAdapter as PRSA
@@ -14,7 +13,7 @@ class PdfReportStorageAdapter(PRSA):
     """Storage adapter for PDF reports
     """
 
-    def store(self, pdf, html, uids, metadata=None, csv_text=None, coa_num=None):
+    def store(self, pdf, html, uids, metadata=None, csv_text=None, coa_num=""):
         """Store the PDF
 
         :param pdf: generated PDF report (binary)
@@ -40,60 +39,15 @@ class PdfReportStorageAdapter(PRSA):
         reports = []
         for obj in objs:
             report = self.create_report(
-                obj, pdf, html, uids, metadata, csv_text=csv_text, coa_num=coa_num)
+                obj, pdf, html, uids, metadata,
+                csv_text=csv_text, coa_num=coa_num)
             reports.append(report)
 
         return reports
 
-    # @synchronized(max_connections=1)
-    # def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
-    #     """Create a new report object
-
-    #     NOTE: We limit the creation of reports to 1 to avoid conflict errors on
-    #           simultaneous publication.
-
-    #     :param parent: parent object where to create the report inside
-    #     :returns: ARReport
-    #     """
-
-    #     import pdb; pdb.set_trace()
-    #     parent_id = api.get_id(parent)
-    #     logger.info("Create Report for {} ...".format(parent_id))
-
-    #     # Manually update the view on the database to avoid conflict errors
-    #     parent._p_jar.sync()
-
-    #     if coa_num is None:
-    #         coa_num = self.get_coa_number()
-
-    #     # Create the report object
-    #     report = api.create(
-    #         parent,
-    #         "ARReport",
-    #         AnalysisRequest=api.get_uid(parent),
-    #         title=coa_num,
-    #         Pdf=pdf,
-    #         Html=html,
-    #         CSV=csv_text,
-    #         ContainedAnalysisRequests=uids,
-    #         Metadata=metadata)
-    #     import pdb; pdb.set_trace()
-    #     fld = report.getField('Pdf')
-    #     fld.get(report).setFilename(coa_num + ".pdf")
-    #     fld.get(report).setContentType('application/pdf')
-    #     fld = report.getField('CSV')
-    #     fld.get(report).setFilename(coa_num + ".csv")
-    #     fld.get(report).setContentType('text/csv')
-
-    #     # Commit the changes
-    #     transaction.commit()
-
-    #     logger.info("Create Report for {} [DONE]".format(parent_id))
-
-    #     return report
-
     @synchronized(max_connections=1)
-    def create_report(self, parent, pdf, html, uids, metadata, csv_text=None, coa_num=None):
+    def create_report(self, parent, pdf, html, uids, metadata,
+                      csv_text=None, coa_num=""):
         """Create a new report object
 
         NOTE: We limit the creation of reports to 1 to avoid conflict errors on
@@ -111,7 +65,7 @@ class PdfReportStorageAdapter(PRSA):
         # Manually update the view on the database to avoid conflict errors
         parent._p_jar.sync()
 
-        if coa_num is None:
+        if not coa_num:
             coa_num = self.get_coa_number()
 
         # Convert PDF binary data to NamedBlobFile
@@ -133,7 +87,6 @@ class PdfReportStorageAdapter(PRSA):
         # Field setters are called automatically by api.create(), including
         # UIDReferenceField.set() which creates backreferences via event
         # handler
-        import pdb; pdb.set_trace()
         report = api.create(
             parent,
             "ResultsReport",
@@ -148,19 +101,12 @@ class PdfReportStorageAdapter(PRSA):
         return report
 
     def get_coa_number(self):
-        today = DateTime()
-        query = {
-            "portal_type": "ARReport",
-            "created": {"query": today.Date(), "range": "min"},
-            "sort_on": "created",
-            "sort_order": "descending",
-        }
-        brains = api.search(query, "portal_catalog")
-        num = 1
-        if len(brains):
-            coa = brains[0]
-            num = coa.Title.split("-")[-1]
-            num = int(num)
-            num += 1
-        coa_num = "COA{}-{:02d}".format(today.strftime("%y%m%d"), num)
-        return coa_num
+        kwargs = {"portal_type": "ResultsReport", "dry_run": True}
+        coa_num = generateUniqueId(self.context, **kwargs)
+        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
+        items = self.get_items()
+        if items:
+            increment += items.index(self.model.uid)
+        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
+        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
+        return dry_run

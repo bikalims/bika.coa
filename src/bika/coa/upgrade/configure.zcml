@@ -1,7 +1,7 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
-    i18n_domain="senaite.queue">
+    i18n_domain="bika.coa">
 
  <genericsetup:upgradeStep
      title="Upgrade to BIKA.COA 1.0.1"
@@ -17,6 +17,14 @@
      source="1.0.1"
      destination="1.0.2"
      handler="bika.coa.upgrade.v01_00_002.upgrade"
+     profile="bika.coa:default"/>
+
+ <genericsetup:upgradeStep
+     title="Upgrade to BIKA.COA 2.7"
+     description="Results Report"
+     source="1.0.2"
+     destination="2.7.0"
+     handler="bika.coa.upgrade.v02_07_00.upgrade"
      profile="bika.coa:default"/>
 
 </configure>
