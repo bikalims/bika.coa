@@ -90,17 +90,15 @@ class EmailView(EV):
                 filedata = pdf.data
                 attachments.append(mailapi.to_email_attachment(filedata, filename))
                 # We don't send CSVs when it is single reports
-                if "Single" in report["Metadata"]["template"]:
+                if "Single" in report.metadata["template"]:
                     continue
                 # also send 1 csv only
                 if csv_found is True:
                     continue
 
-                if self.email_csv_report_enabled and report.CSV:
-                    filename = report.CSV.filename
-                    f = report.CSV.getBlob().open()
-                    filedata = f.read()
-                    f.close()
+                if self.email_csv_report_enabled and report.csv:
+                    filename = report.csv.filename
+                    filedata = report.csv.data
                     attachments.append(
                         mailapi.to_email_attachment(
                             filedata, filename, mime_type="text/csv"
