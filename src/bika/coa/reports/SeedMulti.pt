@@ -334,7 +334,7 @@
               <tr class="noborder" style="border:none !important">
                 <tal:ar repeat="model page">
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
-                        Sample ID
+                        Inspectorate Number
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center" tal:content="python:model.ClientSampleID or '-'"/>
@@ -353,7 +353,7 @@
               <tr class="noborder">
                 <tal:ar repeat="model page">
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
-                        <div class="text-left">Sample Type</div>
+                        <div class="text-left">Kind</div>
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center"
@@ -364,7 +364,7 @@
               <tr class="noborder">
                 <tal:ar repeat="model page">
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
-                        <div class="text-left">Cultivar</div>
+                        <div class="text-left">Variety</div>
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center" tal:condition="model/Cultivar"
@@ -376,7 +376,7 @@
               <tr class="noborder">
                 <tal:ar repeat="model page">
                   <th colspan="4" tal:condition="python: repeat['model'].start or page.index(model) == 0" class="noborder">
-                        <div class="text-left">Vintage</div>
+                        <div class="text-left">Production Year</div>
                   </th>
                   <th colspan="2" class="font-weight-normal text-center noborder">
                       <div class="text-center" tal:condition="model/Vintage"
@@ -394,7 +394,7 @@
                       tal:define="specification model/Specification;
                                   publication_specification model/PublicationSpecification;
                                   spec python:publication_specification or specification;">
-                      <div class="text-center" tal:content="python: spec.contextual_title() or '-'"/>
+                      <div class="text-center" tal:condition="spec" tal:content="python: spec.contextual_title() or '-'"/>
                   </th>
                 </tal:ar>
               </tr>
