@@ -281,7 +281,7 @@
                  tal:attributes="href model/absolute_url;">
               </a>
             </td>
-            <td class="label" i18n:translate="">Client SID</td>
+            <td class="label" i18n:translate="">Inspectorate Number</td>
             <td tal:content="model/ClientSampleID"></td>
           </tr>
           <tr tal:condition="batch">
@@ -295,15 +295,15 @@
             </td>
           </tr>
           <tr>
-            <td class="label" i18n:translate="">Sample Type</td>
+            <td class="label" i18n:translate="">Kind</td>
             <td tal:content="model/SampleType/title|nothing"></td>
-            <td class="label" i18n:translate="">Cultivar</td>
+            <td class="label" i18n:translate="">Variety</td>
             <td tal:content="model/Cultivar/title|nothing"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sample Point</td>
             <td tal:content="model/SamplePointTitle|nothing"></td>
-            <td class="label" i18n:translate="">Vintage</td>
+            <td class="label" i18n:translate="">Production Year</td>
             <td tal:content="model/Vintage/title|nothing"></td>
           </tr>
           <tr>

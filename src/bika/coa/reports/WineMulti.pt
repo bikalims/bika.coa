@@ -394,7 +394,7 @@
                       tal:define="specification model/Specification;
                                   publication_specification model/PublicationSpecification;
                                   spec python:publication_specification or specification;">
-                      <div class="text-center" tal:content="python: spec.contextual_title() or '-'"/>
+                      <div class="text-center" tal:condition="spec" tal:content="python: spec.contextual_title() or '-'"/>
                   </th>
                 </tal:ar>
               </tr>
