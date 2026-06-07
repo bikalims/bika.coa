@@ -1,7 +1,10 @@
+ # -*- coding: utf-8 -*-
+
+from Products.CMFCore.utils import getToolByName
 from bika.coa import PRODUCT_NAME
 from bika.coa import PROFILE_ID
 from bika.coa import logger
-from Products.CMFCore.utils import getToolByName
+from bika.lims import api
 
 
 def pre_install(portal_setup):
