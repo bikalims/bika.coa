@@ -410,6 +410,40 @@ class ReportView(object):
                 new_out.append(ri)
         return new_out
 
+    def get_legionella_analyses(self, model):
+        analyses = self.get_analyses_by(model)
+        new_analyses = []
+        legionella_analyses = ["legionella identification",
+                               "legionella count",
+                               "total volume filtered"]
+        for analysis in analyses:
+            if analysis.title.lower() in legionella_analyses:
+                new_analyses.append(analysis)
+        return new_analyses
+
+    def get_incubatedfrom(self, model):
+        analyses = self.get_analyses_by(model)
+        title = "-"
+        for analysis in analyses:
+            if analysis.Keyword.lower() == 'dateincubatedfrom':
+                title = analysis.title
+                break
+        return title
+
+    def get_last_analyzed_date(self, model):
+        analyzed_to = ""
+        all_dates = []
+        for analysis in model.Analyses:
+            date_analyzed = analysis.ResultCaptureDate
+            if date_analyzed:
+                all_dates.append(date_analyzed)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            analyzed_to = self.to_localized_date(all_dates[-1])
+        if len(all_dates) == 1:
+            analyzed_to = self.to_localized_date(all_dates[0])
+        return analyzed_to
+
 
 class SingleReportView(SRV, ReportView):
     """View for Bika COA Single Reports"""
@@ -492,6 +526,17 @@ class SingleReportView(SRV, ReportView):
             title = method.Title()
             description = method.Description()
             title_description_pair.append("{0} {1}".format(title, description))
+        return title_description_pair
+
+    def get_methods_descriptions(self, model):
+        analyses = self.get_analyses_by(model)
+        methods = [x.Method for x in analyses if x.Method]
+        unique_methods = {m.Title(): m for m in methods}.values()
+        sorted_methods = sorted(unique_methods, key=lambda m: m.Title())
+        title_description_pair = []
+        for method in sorted_methods:
+            description = method.Description()
+            title_description_pair.append(description)
         return title_description_pair
 
     def get_date_analysed(self, sample):
