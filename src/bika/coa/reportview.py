@@ -959,6 +959,12 @@ class MultiReportView(MRV, ReportView):
             chunks.append(chunk)
         return chunks
 
+    def get_analyses_by_category(self, model_or_collection):
+        """Groups the Analyses by their Category exclude hidden analyses
+        """
+        analyses = self.get_analyses_by(model_or_collection)
+        return self.group_items_by("Category", analyses)
+
     def get_category_pdf_tables(self, num_per_page=10):
         """
         Build PDF-ready folded tables per category.
