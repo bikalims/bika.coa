@@ -332,6 +332,9 @@ class ReportView(object):
         # date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
         if not contact:
+            fullname = api.get_user_fullname(user_obj.id)
+            verifier["fullname"] = fullname
+            verifier["verifier"] = fullname
             return verifier
 
         verifier["fullname"] = contact.getFullname()
