@@ -429,7 +429,7 @@ class ReportView(object):
         title = "-"
         for analysis in analyses:
             if analysis.Keyword.lower() == 'legionellaincubationstart':
-                title = analysis.title
+                title = model.get_formatted_result(analysis)
                 break
         return title
 
@@ -531,16 +531,20 @@ class SingleReportView(SRV, ReportView):
             title_description_pair.append("{0} {1}".format(title, description))
         return title_description_pair
 
-    def get_methods_descriptions(self, model):
+    def get_methods_instructions(self, model):
         analyses = self.get_analyses_by(model)
-        methods = [x.Method for x in analyses if x.Method]
+        methods = [
+            x.Method
+            for x in analyses
+            if x.Method and x.Title().startswith("Legionella")
+        ]
         unique_methods = {m.Title(): m for m in methods}.values()
         sorted_methods = sorted(unique_methods, key=lambda m: m.Title())
-        title_description_pair = []
+        instructions = []
         for method in sorted_methods:
-            description = method.Description()
-            title_description_pair.append(description)
-        return title_description_pair
+            instruction = method.getInstructions()
+            instructions.append(instruction)
+        return instructions
 
     def get_date_analysed(self, sample):
         from_date = ""

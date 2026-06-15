@@ -344,11 +344,11 @@
   <!--  RESULTS INTERPRETATION -->
   <tal:render condition="python:True">
     <div class="row section-resultsinterpretation no-gutters"
-         tal:define="methods python:view.get_sample_methods(model);">
+         tal:define="methods python:view.get_methods_instructions(model);">
       <div class="" tal:condition="methods">
         <h1 i18n:translate="">Method</h1>
         <tal:ri repeat="method methods">
-          <div class="text-info" tal:content="method|nothing"></div>
+          <div class="text-info" tal:replace="structure method|nothing"></div>
         </tal:ri>
       </div>
     </div>
