@@ -127,7 +127,7 @@
       <!-- Header Table -->
         <div class="col-6 text-right">
             <!-- Header Right -->
-            <div class="" style="margin-bottom:2px">
+            <div class="" style="margin-bottom:4px">
               <img class="logo image-fluid" style="object-fit:contain"
                    tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
             </div>
@@ -142,6 +142,7 @@
               <img class="img-fluid"
                    tal:condition="not:accreditation_logo"
                    tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
+            <br />
             <br />
             <span class="" tal:content="accreditation_ref|nothing"/>
             </div>
