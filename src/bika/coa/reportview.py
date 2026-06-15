@@ -425,7 +425,7 @@ class ReportView(object):
         analyses = self.get_analyses_by(model)
         title = "-"
         for analysis in analyses:
-            if analysis.Keyword.lower() == 'dateincubatedfrom':
+            if analysis.Keyword.lower() == 'legionellaincubationstart':
                 title = analysis.title
                 break
         return title
