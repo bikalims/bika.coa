@@ -425,7 +425,7 @@ class ReportView(object):
         return new_analyses
 
     def get_incubatedfrom(self, model):
-        analyses = self.get_analyses_by(model)
+        analyses = self.get_analyses(model)
         title = "-"
         for analysis in analyses:
             if analysis.Keyword.lower() == 'legionellaincubationstart':
