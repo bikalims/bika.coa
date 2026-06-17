@@ -418,7 +418,8 @@ class ReportView(object):
         new_analyses = []
         legionella_analyses = ["legionella identification",
                                "legionella count",
-                               "total volume filtered"]
+                               "total volume filtered",
+                               "legionella detection"]
         for analysis in analyses:
             if analysis.title.lower() in legionella_analyses:
                 new_analyses.append(analysis)
