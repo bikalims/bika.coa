@@ -414,7 +414,7 @@ class ReportView(object):
         return new_out
 
     def get_legionella_analyses(self, model):
-        analyses = self.get_analyses_by(model)
+        return self.get_analyses_by(model)
         new_analyses = []
         legionella_analyses = ["legionella identification",
                                "legionella count",

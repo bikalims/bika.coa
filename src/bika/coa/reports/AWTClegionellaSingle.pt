@@ -193,12 +193,12 @@
         <colgroup>
           <col style="width: 12%;">
           <col style="width: 38%">
-          <col style="width: 10%">
-          <col style="width: 40%">
+          <col style="width: 12%">
+          <col style="width: 38%">
         </colgroup>
         <tr>
-          <td class="text-center" colspan="2">
-              <h1 name='coa_num' tal:content="python: coa_num"/>
+          <td class="text-left" colspan="2">
+              <h1 name='coa_num' tal:content="python: coa_num" style="font-size:180% !important"/>
           </td>
           <td class="label" >Date</td>
           <td tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></td>
@@ -343,38 +343,30 @@
     </div>
   </tal:render>
 
-  <!--  RESULTS INTERPRETATION -->
   <tal:render condition="python:True">
     <div class="row section-resultsinterpretation no-gutters"
-         tal:define="methods python:view.get_methods_instructions(model);">
+         tal:define="methods python:view.get_methods_instructions(model);
+		     ris python:model.get_resultsinterpretation();
+		     has_ri python:any(map(lambda r: r.get('richtext'), ris));">
+      <!--  METHOD -->
       <div class="" tal:condition="methods">
         <h1 i18n:translate="">Method</h1>
         <tal:ri repeat="method methods">
-          <div class="text-info" tal:replace="structure method|nothing"></div>
+          <div class="" tal:replace="structure method|nothing"></div>
         </tal:ri>
+      </div>
+      <!--  REMARKS -->
+      <div class="" tal:condition="has_ri">
+        <h1 i18n:translate>Remarks</h1>
+	<div class="">
+           <tal:ri repeat="ri ris">
+             <div class="" tal:content="structure ri/richtext|nothing"></div>
+           </tal:ri>
+        </div>
       </div>
     </div>
   </tal:render>
 
-  <!--  REMARKS -->
-  <tal:render condition="python:True">
-      <div class="row section-remarks no-gutters">
-        <div class="">
-          <h1 i18n:translate>Remarks</h1>
-          <div class="text-info" 
-               tal:define="ris python:model.get_resultsinterpretation();
-                           has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-              <div class="" tal:condition="has_ri">
-                <tal:ri repeat="ri ris">
-                  <div class="text-info" tal:content="structure ri/richtext|nothing"></div>
-                </tal:ri>
-          </div>
-          <div class="text-info">
-              <div class="text-info" tal:content="spec/contextual_title|nothing"></div>
-          </div>
-        </div>
-      </div>
-  </tal:render>
 
   <!-- ATTACHMENTS -->
   <tal:render condition="python:True">
