@@ -11,6 +11,7 @@
           report_images python:view.get_report_images();
           styles python:view.get_coa_styles();
           coa_num python:view.get_coa_number(model);
+          accreditation_logo_url python:view.get_accreditation_logo_url();
           footer python:view.get_footer_text();
           report_options python:options.get('report_options', {});
           attachments_per_row python:int(report_options.get('attachments_per_row', 2));
@@ -56,9 +57,9 @@
   <tal:css>
     <style type="text/css">
      .report * { font: 9pt; }
-     .report h1 { font-size: 140%; }
-     .report h2 { font-size: 120%; }
-     .report h3 { font-size: 110%; }
+     .report h1 { font-size: 140%; margin-bottom: 0; }
+     .report h2 { font-size: 120%; margin-bottom: 0; }
+     .report h3 { font-size: 110%; margin-bottom: 0; }
      .report { font-family: TitilliumText22L-Regular; }
      .report .font-size-140 { font-size: 140%; }
      .report .font-size-120 { font-size: 120%; }
@@ -72,16 +73,13 @@
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo {
        max-height: 200px;
-       margin-bottom: 10px;
        }
      .report .barcode-hri { margin-top: -0.25em; font-size: 8pt; }
      .report .section-footer table td { border: none; }
      .report .section-footer {
        position: fixed;
        left: -20mm;
-       bottom: -20mm;
        margin-left: 20mm;
-       margin-top: 10mm;
        height: 20mm;
        width: 100%;
        text-align: left;
@@ -111,6 +109,9 @@
      }
      </tal:block>
      @page {
+       /* margins on every page */
+       margin-top: 10.0mm;
+       margin-bottom: 10.0mm;
        @bottom-right {
          vertical-align: top;
          margin-top: 2mm;
@@ -138,7 +139,7 @@
                  tal:condition="accredited">
               <img class="img-fluid"
                    tal:condition="accreditation_logo"
-                   tal:attributes="src accreditation_logo/absolute_url;style styles/ac_styles"/>
+                   tal:attributes="src accreditation_logo_url;style styles/ac_styles"/>
               <img class="img-fluid"
                    tal:condition="not:accreditation_logo"
                    tal:attributes="src python:view.get_resource_url('AccreditationBodyLogo.png', prefix='bika.lims.images');style styles/ac_styles"/>
