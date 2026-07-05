@@ -332,7 +332,8 @@
                   </td>
                   <td class="specs">
                     <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
-                    <span tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
+                    <span tal:condition="analysis.getResultType() == 'numeric'"
+                          tal:content="python:model.get_formatted_specs(analysis)">50 - 60</span>
                   </td>
                 </tr>
               </tal:analyses>
