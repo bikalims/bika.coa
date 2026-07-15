@@ -19,6 +19,9 @@ coa_remarks_field = ExtTextField(
             allow_file_upload=False,
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
+            helper_js=(
+                '++plone++senaite.core.static/js/senaite.core.analysisrequest.js',
+            ),
         ),
 )
 

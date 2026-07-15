@@ -1,6 +1,16 @@
 <configure xmlns="http://namespaces.zope.org/zope"
            xmlns:browser="http://namespaces.zope.org/browser">
 
+  <browser:viewlet
+      name="bika.coa.batch.coa_remarks_templates"
+      for="bika.lims.interfaces.IBatch"
+      layer="bika.coa.interfaces.IBikaCOALayer"
+      manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+      class=".coa_remarks.COARemarksTemplateSelector"
+      template="templates/coa_remarks_templates.pt"
+      permission="zope2.View"
+      />
+
   <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
   <include package="z3c.jbot" file="meta.zcml" />
 
