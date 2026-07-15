@@ -198,11 +198,19 @@
           <col style="width: 38%">
         </colgroup>
         <tr>
-          <td class="text-left" colspan="2">
+          <td class="text-left" colspan="2" rowspan="2">
               <h1 name='coa_num' tal:content="python: coa_num" style="font-size:180% !important"/>
           </td>
           <td class="label" >Date</td>
           <td tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></td>
+        </tr>
+        <tr>
+          <td class="text-left label" i18n:translate="">Sample ID</td>
+          <td class="text-left">
+            <a tal:content="model/getId"
+               tal:attributes="href model/absolute_url;">
+            </a>
+          </td>
         </tr>
         <tr>
           <td class="text-left label">Project ID</td>
@@ -249,12 +257,8 @@
 
         <table class="table table-sm table-condensed">
           <tr>
-            <td class="label" i18n:translate="">Sample ID</td>
-            <td>
-              <a tal:content="model/getId"
-                 tal:attributes="href model/absolute_url;">
-              </a>
-            </td>
+            <td class="label" i18n:translate="">Registration Number</td>
+            <td tal:content="python:model.getSamplePoint().registration_number"></td>
             <td class="label" i18n:translate="">Date Sampled</td>
             <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
           </tr>
