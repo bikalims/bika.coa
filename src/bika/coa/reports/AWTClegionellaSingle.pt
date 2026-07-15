@@ -205,18 +205,18 @@
           <td tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></td>
         </tr>
         <tr>
+          <td class="text-left label">Batch ID</td>
+          <td class="text-left"><span tal:content="batch/getId" /></td>
+        </tr>
+        <tr>
+          <td class="text-left label">Project ID</td>
+          <td class="text-left"><span tal:content="batch/ClientBatchID" /></td>
           <td class="text-left label" i18n:translate="">Sample ID</td>
           <td class="text-left">
             <a tal:content="model/getId"
                tal:attributes="href model/absolute_url;">
             </a>
           </td>
-        </tr>
-        <tr>
-          <td class="text-left label">Project ID</td>
-          <td class="text-left"><span tal:content="batch/ClientBatchID" /></td>
-          <td class="text-left label">Batch ID</td>
-          <td class="text-left"><span tal:content="batch/getId" /></td>
         </tr>
       </table>
     </div>
@@ -257,20 +257,20 @@
 
         <table class="table table-sm table-condensed">
           <tr>
-            <td class="label" i18n:translate="">Registration Number</td>
-            <td tal:content="python:model.getSamplePoint().registration_number"></td>
-            <td class="label" i18n:translate="">Date Sampled</td>
-            <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
-          </tr>
-          <tr>
             <td class="label" i18n:translate="">Sample Type</td>
             <td tal:content="model/SampleType/title|nothing"></td>
-            <td class="label" i18n:translate="">Date Received</td>
+            <td class="label" i18n:translate="">Date Sampled</td>
             <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sample Point</td>
             <td tal:content="model/SamplePointTitle|nothing"></td>
+            <td class="label" i18n:translate="">Date Received</td>
+            <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
+          </tr>
+          <tr>
+            <td class="label" i18n:translate="">Registration Number</td>
+            <td tal:content="python:model.getSamplePoint().registration_number"></td>
             <td class="label" i18n:translate="">Incubated From</td>
             <td tal:content="python:view.get_incubatedfrom(model)"></td>
           </tr>
