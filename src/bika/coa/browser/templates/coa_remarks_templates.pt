@@ -21,17 +21,4 @@
             class="btn btn-outline-primary btn-sm"
             i18n:translate="">Use Template</button>
   </div>
-  <script type="text/javascript">
-    jQuery(function($) {
-      var selector = $(".arinterpretationtemplates-selector[data-target='#COARemarks']");
-      var field = $("#archetypes-fieldname-COARemarks");
-      var editor = field.find(".mce-tinymce, textarea#COARemarks").first();
-      if (editor.length) {
-        editor.before(selector);
-      } else if (field.length) {
-        field.append(selector);
-      }
-      new window.AnalysisRequestView().bindInterpretationTemplateInsert();
-    });
-  </script>
 </div>

@@ -20,7 +20,7 @@ coa_remarks_field = ExtTextField(
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             helper_js=(
-                '++plone++senaite.core.static/js/senaite.core.analysisrequest.js',
+                '++plone++bika.coa.javascript/coa_remarks.js',
             ),
         ),
 )
