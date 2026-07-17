@@ -351,25 +351,13 @@
     </div>
   </tal:render>
 
-  <tal:render condition="python:True">
-    <div class="row section-resultsinterpretation no-gutters"
-         tal:define="methods python:view.get_methods_instructions(model);
-		     ris python:model.get_resultsinterpretation();
-		     has_ri python:any(map(lambda r: r.get('richtext'), ris));">
-      <!--  METHOD -->
-      <div class="" tal:condition="methods">
-        <h1 i18n:translate="">Method</h1>
-        <tal:ri repeat="method methods">
-          <div class="" tal:replace="structure method|nothing"></div>
-        </tal:ri>
-      </div>
-      <!--  REMARKS -->
-      <div class="" tal:condition="has_ri">
+  <tal:render condition="batch/COARemarks|nothing">
+    <div class="row section-resultsinterpretation no-gutters">
+      <!--  COA REMARKS -->
+      <div class="">
         <h1 i18n:translate>Remarks</h1>
-	<div class="">
-           <tal:ri repeat="ri ris">
-             <div class="" tal:content="structure ri/richtext|nothing"></div>
-           </tal:ri>
+        <div class="">
+             <div class="" tal:replace="structure batch/COARemarks"></div>
         </div>
       </div>
     </div>
