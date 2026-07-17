@@ -185,7 +185,7 @@
       </tr>
       <tr>
         <td colspan="2" style="text-align: left; vertical-align: middle;">
-          <div> <strong>Project Title :</strong> <span name='batch title' tal:content="batch/title"> </div>
+          <div> <strong>Project Title :</strong> <span name='batch title' tal:content="batch/title" /></div>
         </td>
       </tr>
     </table>
@@ -487,38 +487,6 @@
       <!-- Footer Line -->
       <div id="footer-line"></div>
       <div tal:replace="structure footer"/>
-    </div>
-  </tal:render>
-
-  <!-- DEFAULT FOOTER -->
-  <tal:render condition="python:False"
-              define="laboratory python:view.laboratory;">
-    <div class="row section-footer no-gutters">
-      <!-- Footer Line -->
-      <div id="footer-line"></div>
-      <table class="w-100">
-        <tr>
-          <td>
-            <div>
-              <strong tal:content="laboratory/Name">Lab Name</strong>
-              • <span tal:content="laboratory/PhysicalAddress/address">Lab Street and Number</span>
-              • <span tal:content="laboratory/PhysicalAddress/zip">Lab ZIP</span>
-                <span tal:content="laboratory/PhysicalAddress/city">Lab City</span>
-              • <span tal:content="laboratory/PhysicalAddress/country">Lab Country</span>
-            </div>
-            <div>
-              <span i18n:translate="">Phone</span>:
-              <span tal:content="laboratory/Phone">Lab Phone Number</span>
-              • <a href="#" tal:attributes="href string:mailto:${laboratory/EmailAddress}">
-                <span tal:content="laboratory/EmailAddress">Lab Email</span>
-              </a>
-              • <a href="#" tal:attributes="href laboratory/LabURL">
-                <span tal:content="laboratory/LabURL">Lab URL</span>
-              </a>
-            </div>
-          </td>
-        </tr>
-      </table>
     </div>
   </tal:render>
 

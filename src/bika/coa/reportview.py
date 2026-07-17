@@ -332,6 +332,9 @@ class ReportView(object):
         # date_verified = self.to_localized_time(model.getDateVerified())
         contact = api.get_user_contact(user_obj)
         if not contact:
+            fullname = api.get_user_fullname(user_obj.id)
+            verifier["fullname"] = fullname
+            verifier["verifier"] = fullname
             return verifier
 
         verifier["fullname"] = contact.getFullname()
@@ -409,6 +412,41 @@ class ReportView(object):
             if callable(ri["title"]) is False and ri["title"] == "General":
                 new_out.append(ri)
         return new_out
+
+    def get_legionella_analyses(self, model):
+        return self.get_analyses_by(model)
+        new_analyses = []
+        legionella_analyses = ["legionella identification",
+                               "legionella count",
+                               "total volume filtered",
+                               "legionella detection"]
+        for analysis in analyses:
+            if analysis.title.lower() in legionella_analyses:
+                new_analyses.append(analysis)
+        return new_analyses
+
+    def get_incubatedfrom(self, model):
+        analyses = self.get_analyses(model)
+        title = "-"
+        for analysis in analyses:
+            if analysis.Keyword.lower() == 'legionellaincubationstart':
+                title = model.get_formatted_result(analysis)
+                break
+        return title
+
+    def get_last_analyzed_date(self, model):
+        analyzed_to = ""
+        all_dates = []
+        for analysis in model.Analyses:
+            date_analyzed = analysis.ResultCaptureDate
+            if date_analyzed:
+                all_dates.append(date_analyzed)
+        all_dates.sort()
+        if len(all_dates) > 1:
+            analyzed_to = self.to_localized_date(all_dates[-1])
+        if len(all_dates) == 1:
+            analyzed_to = self.to_localized_date(all_dates[0])
+        return analyzed_to
 
 
 class SingleReportView(SRV, ReportView):
@@ -493,6 +531,21 @@ class SingleReportView(SRV, ReportView):
             description = method.Description()
             title_description_pair.append("{0} {1}".format(title, description))
         return title_description_pair
+
+    def get_methods_instructions(self, model):
+        analyses = self.get_analyses_by(model)
+        methods = [
+            x.Method
+            for x in analyses
+            if x.Method and x.Title().startswith("Legionella")
+        ]
+        unique_methods = {m.Title(): m for m in methods}.values()
+        sorted_methods = sorted(unique_methods, key=lambda m: m.Title())
+        instructions = []
+        for method in sorted_methods:
+            instruction = method.getInstructions()
+            instructions.append(instruction)
+        return instructions
 
     def get_date_analysed(self, sample):
         from_date = ""
@@ -913,6 +966,12 @@ class MultiReportView(MRV, ReportView):
             #     chunk += [""] * (size - len(chunk))
             chunks.append(chunk)
         return chunks
+
+    def get_analyses_by_category(self, model_or_collection):
+        """Groups the Analyses by their Category exclude hidden analyses
+        """
+        analyses = self.get_analyses_by(model_or_collection)
+        return self.group_items_by("Category", analyses)
 
     def get_category_pdf_tables(self, num_per_page=10):
         """

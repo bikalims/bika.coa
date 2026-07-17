@@ -1,0 +1,24 @@
+<div tal:condition="view/available"
+     class="input-group input-group-sm flex-nowrap d-inline-flex w-auto mb-3 arinterpretationtemplates-selector"
+     data-target="#COARemarks"
+     i18n:domain="senaite.core">
+  <div class="input-group-prepend">
+    <span class="input-group-text" i18n:translate="">Template</span>
+  </div>
+  <select id="interpretationtemplate"
+          name="interpretationtemplate"
+          class="custom-select">
+    <option value="" i18n:translate="">Select template</option>
+    <tal:templates repeat="template view/get_interpretation_templates">
+      <option tal:attributes="value template/uid"
+              tal:content="template/title"/>
+    </tal:templates>
+  </select>
+  <div class="input-group-append">
+    <button id="interpretationtemplate-insert"
+            name="interpretationtemplate-insert"
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            i18n:translate="">Use Template</button>
+  </div>
+</div>
