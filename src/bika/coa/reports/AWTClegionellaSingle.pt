@@ -355,7 +355,6 @@
     <div class="row section-resultsinterpretation no-gutters">
       <!--  COA REMARKS -->
       <div class="">
-        <h1 i18n:translate>Remarks</h1>
         <div class="">
              <div class="" tal:replace="structure batch/COARemarks"></div>
         </div>
