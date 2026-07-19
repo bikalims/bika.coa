@@ -69,6 +69,7 @@
      .report table.noborder td, .report table.noborder th { border: none; }
      .report table.nopadding td { padding: 0; }
      .report table td.label { padding-right: 0.3rem; font-weight: bold; }
+     .report .inline-label { padding-right: 0.3rem; font-weight: bold; }
      .report table.range-table td { padding: 0 0.3rem 0 0; border: none; }
      .report .section-header h1 { font-size: 175%; }
      .report .section-header img.logo {
@@ -180,6 +181,10 @@
               </div>
             </address>
           <!-- Header Left -->
+            <div class="inline-label">
+              <span class="label" >Date</span>
+              <span tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></span>
+            </div>
         </div>
     </div>
   </tal:render>
@@ -190,21 +195,17 @@
   <div class="row section-info no-gutters">
     <div class="w-100">
       <!-- Client Info -->
-      <table class="table table-sm table-condensed w-100 noborder">
+      <table class="table table-sm table-condensed w-100 noborder" style="margin-bottom: 0 !important">
         <colgroup>
           <col style="width: 12%;">
-          <col style="width: 38%">
-          <col style="width: 13%">
-          <col style="width: 37%">
+          <col style="width: 36%">
+          <col style="width: 16%">
+          <col style="width: 34%">
         </colgroup>
         <tr>
-          <td class="text-left" colspan="2" rowspan="2">
+          <td class="text-left" colspan="2">
               <h1 name='coa_num' tal:content="python: coa_num" style="font-size:180% !important"/>
           </td>
-          <td class="label" >Date</td>
-          <td tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></td>
-        </tr>
-        <tr>
           <td class="text-left label">Batch ID</td>
           <td class="text-left"><span tal:content="batch/getId" /></td>
         </tr>
@@ -257,10 +258,10 @@
 
         <table class="table table-sm table-condensed">
           <tr>
-            <td class="label" i18n:translate="">Sample Type</td>
-            <td tal:content="model/SampleType/title|nothing"></td>
-            <td class="label" i18n:translate="">Date Sampled</td>
-            <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
+            <td class="label" i18n:translate="" style="border-top: none">Sample Type</td>
+            <td  style="border-top: none" tal:content="model/SampleType/title|nothing"></td>
+            <td  style="border-top: none" class="label" i18n:translate="">Date Sampled</td>
+            <td  style="border-top: none" tal:content="python:view.to_localized_date(model.DateReceived)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sample Point</td>
