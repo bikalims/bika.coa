@@ -415,15 +415,6 @@ class ReportView(object):
 
     def get_legionella_analyses(self, model):
         return self.get_analyses_by(model)
-        new_analyses = []
-        legionella_analyses = ["legionella identification",
-                               "legionella count",
-                               "total volume filtered",
-                               "legionella detection"]
-        for analysis in analyses:
-            if analysis.title.lower() in legionella_analyses:
-                new_analyses.append(analysis)
-        return new_analyses
 
     def get_incubatedfrom(self, model):
         analyses = self.get_analyses(model)
@@ -433,6 +424,115 @@ class ReportView(object):
                 title = model.get_formatted_result(analysis)
                 break
         return title
+
+    def get_legionella_analysis(self, model, title):
+      """Return the first analysis whose title matches title."""
+      title = title.lower()
+      for analysis in self.get_analyses_by(model):
+          if analysis.title.lower() == title:
+              return analysis
+      return None
+
+    def get_legionella_result(self, model, title, default="-"):
+      analysis = self.get_legionella_analysis(model, title)
+      if not analysis:
+          return default
+
+      result = model.get_formatted_result(analysis)
+      if result in (None, ""):
+          return default
+      return result
+
+    def get_legionella_detection_limit(self, model, default="-"):
+      analysis = self.get_legionella_analysis(
+          model, "legionella count"
+      )
+      if not analysis:
+          analysis = self.get_legionella_analysis(
+              model, "legionella detection"
+          )
+      if not analysis:
+          return default
+
+      value = api.safe_getattr(
+          analysis, "getDetectionLimit", None
+      )
+      if value in (None, ""):
+          return default
+      return value
+
+    def _format_date_range(self, dates):
+      dates = sorted(filter(None, dates))
+      if not dates:
+          return "-"
+
+      first = self.to_localized_time(dates[0])
+      last = self.to_localized_time(dates[-1])
+
+      if first == last:
+          return first
+      return "{} - {}".format(first, last)
+
+    def get_collection_date_range(self, collection, field):
+      dates = [
+          getattr(model, field, None)
+          for model in collection
+      ]
+      return self._format_date_range(dates)
+
+    def get_collection_analyzed_range(self, collection):
+      """Earliest through latest result-capture datetime."""
+      dates = []
+
+      for model in collection:
+          dates.extend([
+              analysis.ResultCaptureDate
+              for analysis in model.Analyses
+              if analysis.ResultCaptureDate
+          ])
+
+      return self._format_date_range(dates)
+
+    def get_collection_incubation_range(self, collection):
+        """Earliest incubation start through latest incubation end."""
+        starts = []
+        ends = []
+
+        for model in collection:
+          for analysis in self.get_analyses(model):
+              keyword = (analysis.Keyword or "").lower()
+
+              if keyword not in (
+                  "legionellaincubationstart",
+                  "legionellaincubationend",
+              ):
+                  continue
+
+              result = analysis.getResult()
+              if not result:
+                  continue
+
+              try:
+                  value = DateTime(result)
+              except Exception:
+                  logger.warning(
+                      "Cannot parse Legionella incubation datetime: %r",
+                      result,
+                  )
+                  continue
+
+              if keyword == "legionellaincubationstart":
+                  starts.append(value)
+              else:
+                  ends.append(value)
+
+        if not starts and not ends:
+          return "-"
+
+        start = min(starts or ends)
+        end = max(ends or starts)
+
+        return self._format_date_range([start, end])
 
     def get_last_analyzed_date(self, model):
         analyzed_to = ""
