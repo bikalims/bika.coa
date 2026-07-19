@@ -108,6 +108,9 @@
        max-width: <tal:t replace="python:'{:.2f}mm'.format(cw)"/>;
        max-height: <tal:t replace="python:'{:.2f}mm'.format(ch * 0.75)"/>;
      }
+     .report .section-resultsinterpretation h5 {
+        font-size: 140%; margin-bottom: 0;
+     }
      </tal:block>
      @page {
        /* margins on every page */
