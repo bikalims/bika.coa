@@ -19,6 +19,15 @@
       layer="bika.coa.interfaces.IBikaCOALayer"
       />
 
+  <!-- Time-series resources for SENAITE Impress reports -->
+  <browser:viewlet
+      name="bika.coa.timeseries.resources"
+      manager="senaite.impress.browser.viewlets.interfaces.IPublishCustomHtmlHeadViewlets"
+      template="templates/timeseries_resources.pt"
+      permission="zope2.View"
+      layer="bika.coa.interfaces.IBikaCOALayer"
+      />
+
   <include package=".listingview" />
 
 </configure>

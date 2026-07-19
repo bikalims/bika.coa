@@ -1,62 +1,5 @@
 // console.log('timeseries_coa start');
 
-function isValidCharacter(char) {
-    const charCode = char.charCodeAt(0);
-    return charCode >= 0 && charCode <= 255; // Valid ASCII range
-}
-
-function sanitizeInput(data) {
-    let sanitizedString = '';
-    for (let i = 0; i < data.length; i++) {
-        if (isValidCharacter(data[i])) {
-            sanitizedString += data[i]; // Keep valid characters
-        } else if (data[i].charCodeAt(0) == 8722) {
-            sanitizedString += "-"
-        } else {
-            // Invalid characters are skipped (not added to sanitizedString)
-            console.error('Invalid char: ' + data[i] + ' = ' + data[i].charCodeAt(0));
-        };
-    }
-    return sanitizedString;
-}
-
-function safeBtoa(data) {
-  // Ensure proper SVG data URL encoding
-  try {
-    const sanitizedInput = sanitizeInput(data);
-    // Encode as base64 (btoa only handles Latin1, so we escape properly)
-    return window.btoa(unescape(encodeURIComponent(sanitizedInput)));
-  } catch (error) {
-    console.error('Failed to sanitize  object:', error);
-    throw error;
-  }
-}
-
-function insertSVGAsObject(svgElement, targetContainer) {
-  try {
-    // Serialize the SVG to a string
-    const svgData = new XMLSerializer().serializeToString(svgElement);
-    
-    b64 = safeBtoa(svgData);
-    const svgDataUrl = 'data:image/svg+xml;base64,' + b64;
-    
-    // Create an object element with the data URL
-    const objectElement = document.createElement('object');
-    objectElement.setAttribute('type', 'image/svg+xml');
-    objectElement.setAttribute('data', svgDataUrl);
-
-    // Append object to the target container
-    targetContainer.innerHTML = '';  // Clear existing content
-    targetContainer.appendChild(objectElement);
-    
-    return objectElement;
-
-  } catch (error) {
-    console.error('Failed to insert SVG as object:', error);
-    throw error;
-  }
-}
-
 function get_time_series_config(element) {
 
       let columns = element.getAttribute('data-columns');
@@ -111,13 +54,11 @@ function renderChart(el) {
   try {
     const container = d3.select(el);
     container.selectAll("svg").remove();  // Clear existing SVGs
-    container.selectAll("img").remove();  // Clear existing SVGs
+    container.selectAll("object").remove();
 
-    ts.build_graph(config);
-
-    const svg = container.selectAll("svg")
-    insertSVGAsObject(svg.node(), container.node())
-    console.log('insertSVGAsObject complete');
+    // Keep the generated SVG inline. Impress/PDF rendering cannot reliably
+    // wait for an SVG converted to an asynchronously loaded data-URL object.
+    ts.build_graph();
 
   } catch (e) {
     console.error("Graph build failed:", e);
