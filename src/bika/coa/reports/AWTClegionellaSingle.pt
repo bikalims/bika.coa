@@ -165,14 +165,14 @@
                 </div>
                 <div class="lab-city">
                     <span tal:condition="laboratory/PhysicalAddress/city|nothing">
-                      <span tal:condition="laboratory/PhysicalAddress/state|nothing">
+                      <span tal:condition="laboratory/PhysicalAddress/subdivision1|nothing">
                         <span tal:replace="string:${laboratory/PhysicalAddress/city|nothing},"/>
                       </span>
-                      <span tal:condition="not: laboratory/PhysicalAddress/state|nothing">
+                      <span tal:condition="not: laboratory/PhysicalAddress/subdivision1|nothing">
                         <span tal:replace="string:${laboratory/PhysicalAddress/city|nothing}"/>
                       </span>
                     </span>
-                    <span tal:replace="string:${laboratory/PhysicalAddress/state|nothing}"/>
+                    <span tal:replace="laboratory/PhysicalAddress/subdivision1|nothing"/>
                     <span tal:replace="laboratory/PostalAddress/zip|nothing"/>
                 </div>
                 <div class="lab-country">
