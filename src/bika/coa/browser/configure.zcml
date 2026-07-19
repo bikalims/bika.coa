@@ -11,14 +11,6 @@
       permission="zope2.View"
       />
 
-  <!-- Set overrides folder for Just-a-Bunch-Of-Templates product -->
-  <include package="z3c.jbot" file="meta.zcml" />
-
-  <browser:jbot
-      directory="overrides"
-      layer="bika.coa.interfaces.IBikaCOALayer"
-      />
-
   <!-- Time-series resources for SENAITE Impress reports -->
   <browser:viewlet
       name="bika.coa.timeseries.resources"
