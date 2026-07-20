@@ -444,6 +444,7 @@ class ReportView(object):
       return result
 
     def get_legionella_detection_limit(self, model, default="-"):
+      """Return the lower detection limit for the Legionella analysis."""
       analysis = self.get_legionella_analysis(
           model, "legionella count"
       )
@@ -454,9 +455,10 @@ class ReportView(object):
       if not analysis:
           return default
 
-      value = api.safe_getattr(
-          analysis, "getDetectionLimit", None
+      getter = api.safe_getattr(
+          analysis, "getLowerDetectionLimit", None
       )
+      value = getter() if callable(getter) else getter
       if value in (None, ""):
           return default
       return value
