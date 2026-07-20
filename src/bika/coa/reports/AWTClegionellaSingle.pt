@@ -338,7 +338,8 @@
                     <span class="units" tal:content="structure python:model.get_formatted_unit(analysis)"></span>
                   </td>
                   <td class="text-muted font-italic">
-                    <span class="text-center">MDL</span>
+                    <span class="text-center"
+                          tal:content="python:view.get_analysis_detection_limit(analysis)"/>
                   </td>
                   <td class="specs">
                     <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>

@@ -455,6 +455,10 @@ class ReportView(object):
       if not analysis:
           return default
 
+      return self.get_analysis_detection_limit(analysis, default=default)
+
+    def get_analysis_detection_limit(self, analysis, default="-"):
+      """Return the lower detection limit configured for an analysis."""
       getter = api.safe_getattr(
           analysis, "getLowerDetectionLimit", None
       )
