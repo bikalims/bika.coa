@@ -129,7 +129,8 @@
 
      .report .awtc-client td {
        border: none;
-       padding: 0.5mm 1mm;
+       padding: 1mm;
+       line-height: 1.4;
      }
 
      .report .awtc-title {
@@ -247,8 +248,8 @@
             <col style="width: 25%"/>
           </colgroup>
           <tr>
-            <td>Attention</td>
-            <td tal:content="contact/Fullname|nothing"/>
+            <td colspan="2"
+                tal:content="contact/Fullname|nothing"/>
             <td colspan="2"
                 tal:content="contact/Phone|nothing"/>
           </tr>
