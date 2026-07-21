@@ -365,7 +365,7 @@
             </td>
             <td tal:content="
               python:primarymodel.DateReceived
-              and view.to_localized_time(
+              and view.to_localized_date(
                 primarymodel.DateReceived
               )
               or '-'"/>

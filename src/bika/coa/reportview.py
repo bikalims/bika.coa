@@ -489,12 +489,12 @@ class ReportView(object):
       if not dates:
           return "-"
 
-      first = self.to_localized_time(dates[0])
-      last = self.to_localized_time(dates[-1])
+      first = self.to_localized_date(dates[0])
+      last = self.to_localized_date(dates[-1])
 
       if first == last:
           return first
-      return "{} - {}".format(first, last)
+      return "{} to {}".format(first, last)
 
     def get_collection_date_range(self, collection, field):
       dates = [
