@@ -94,6 +94,10 @@
      .report .section-footer #footer-contacts {
        margin-top: 3mm;
      }
+     .report a {
+       color: inherit;
+       text-decoration: none;
+     }
 
      <tal:block condition="python:content_width and content_height">
      <tal:block condition="python:all([content_width, content_height])"
