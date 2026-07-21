@@ -466,6 +466,11 @@ class ReportView(object):
 
     def get_analysis_detection_limit(self, analysis, default="-"):
       """Return the lower detection limit configured for an analysis."""
+      get_result_type = api.safe_getattr(analysis, "getResultType", None)
+      result_type = get_result_type() if callable(get_result_type) else None
+      if result_type != "numeric":
+          return default
+
       keyword = api.safe_getattr(analysis, "Keyword", "")
       if keyword.lower() == "vtotfiltered":
           return default
