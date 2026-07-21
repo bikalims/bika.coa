@@ -425,23 +425,29 @@ class ReportView(object):
                 break
         return title
 
-    def get_legionella_analysis(self, model, identifier):
+    def get_legionella_analysis(self, model, title=None, keyword=None):
       """Return the analysis matching a keyword or title."""
-      identifier = identifier.lower()
-      keyword = "".join(char for char in identifier if char.isalnum())
+      normalize = lambda value: "".join(
+          char for char in (value or "").lower() if char.isalnum()
+      )
+      title = normalize(title)
+      keyword = normalize(keyword)
       for analysis in self.get_analyses_by(model):
-          analysis_keyword = api.safe_getattr(analysis, "Keyword", "")
-          analysis_keyword = "".join(
-              char for char in analysis_keyword.lower() if char.isalnum()
+          analysis_keyword = normalize(
+              api.safe_getattr(analysis, "Keyword", "")
           )
-          if analysis_keyword == keyword:
+          if keyword and analysis_keyword == keyword:
               return analysis
-          if analysis.title.lower() == identifier:
+          analysis_title = normalize(analysis.title)
+          if title and analysis_title == title:
               return analysis
       return None
 
-    def get_legionella_result(self, model, identifier, default="-"):
-      analysis = self.get_legionella_analysis(model, identifier)
+    def get_legionella_result(self, model, title=None, keyword=None,
+                              default="-"):
+      analysis = self.get_legionella_analysis(
+          model, title=title, keyword=keyword
+      )
       if not analysis:
           return default
 
@@ -453,11 +459,11 @@ class ReportView(object):
     def get_legionella_detection_limit(self, model, default="-"):
       """Return the lower detection limit for the Legionella analysis."""
       analysis = self.get_legionella_analysis(
-          model, "legionellacount"
+          model, title="Legionella count", keyword="LegionellaCount"
       )
       if not analysis:
           analysis = self.get_legionella_analysis(
-              model, "legionelladetection"
+              model, title="Legionella Detection", keyword="LegionellaID"
           )
       if not analysis:
           return default

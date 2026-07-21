@@ -431,7 +431,9 @@
               <tr tal:define="
                 point model/getSamplePoint|nothing;
                 count python:view.get_legionella_analysis(
-                  model, 'legionellacount'
+                  model,
+                  title='Legionella count',
+                  keyword='LegionellaCount'
                 )">
 
                 <td tal:content="
@@ -448,12 +450,16 @@
                 <td class="numeric"
                     tal:content="
                       structure python:view.get_legionella_result(
-                        model, 'totalvolumefiltered'
+                        model,
+                        title='Total Volume Filtered',
+                        keyword='VTotFiltered'
                       )"/>
 
                 <td class="text-center" tal:content="
                   structure python:view.get_legionella_result(
-                    model, 'legionelladetection'
+                    model,
+                    title='Legionella Detection',
+                    keyword='LegionellaID'
                   )"/>
 
                 <td class="numeric"
@@ -465,7 +471,9 @@
                 <td class="numeric">
                   <span tal:content="
                     structure python:view.get_legionella_result(
-                      model, 'legionellacount'
+                      model,
+                      title='Legionella count',
+                      keyword='LegionellaCount'
                     )"/>
 
                   <span
