@@ -133,6 +133,10 @@
        line-height: 1.4;
      }
 
+     .report .awtc-project-id * {
+       font-size: 10pt;
+     }
+
      .report .awtc-title {
        margin: 2mm 0;
        text-align: center;
@@ -228,7 +232,9 @@
               </div>
               <div class="lab-street">
                 <span tal:replace="laboratory/phone|nothing"/>
-                <span tal:replace="laboratory/email|nothing"/>
+                <a tal:condition="laboratory/email|nothing"
+                   tal:content="laboratory/email"
+                   tal:attributes="href string:mailto:${laboratory/email}"></a>
               </div>
             </address>
           <!-- Header Left -->
@@ -240,27 +246,26 @@
   <tal:render condition="python:view.is_batch_unique(collection)">
     <div class="row section-info no-gutters">
       <div class="w-100">
-        <table class="table table-sm table-condensed w-100 awtc-client">
-          <colgroup>
-            <col style="width: 25%"/>
-            <col style="width: 25%"/>
-            <col style="width: 25%"/>
-            <col style="width: 25%"/>
-          </colgroup>
+        <table class="table table-sm table-condensed w-auto awtc-client">
           <tr>
-            <td colspan="2"
-                tal:content="contact/Fullname|nothing"/>
-            <td colspan="2"
-                tal:content="contact/Phone|nothing"/>
+            <td tal:content="contact/Fullname|nothing"/>
+            <td colspan="2">
+              <a tal:condition="contact/EmailAddress|nothing"
+                 tal:content="contact/EmailAddress"
+                 tal:attributes="href string:mailto:${contact/EmailAddress}"></a>
+            </td>
           </tr>
           <tr>
             <td tal:content="client/Name|nothing"/>
-            <td tal:content="client/ClientID|nothing"/>
-            <td colspan="2"
-                tal:content="contact/EmailAddress|nothing"/>
+            <td>
+                <span tal:content="client/ClientID|nothing"/>
+            </td>
+            <td>
+                <span tal:content="contact/Phone|nothing"/>
+            </td>
           </tr>
         </table>
-        <table class="table table-sm table-condensed w-100 noborder">
+        <table class="table table-sm table-condensed w-100 noborder awtc-project-id">
           <colgroup>
             <col style="width: 25%">
             <col style="width: 25%">
@@ -269,10 +274,14 @@
           </colgroup>
           <tr>
             <td class="text-right label">Project ID</td>
-            <td class="text-left"><span tal:content="batch/ClientBatchID" /></td>
+            <td class="text-left">
+              <a tal:content="batch/ClientBatchID"
+                 tal:attributes="href batch/absolute_url"></a>
+            </td>
             <td class="text-left label">Batch ID</td>
             <td class="text-left">
-                <span tal:content="batch/getId|nothing"/>
+                <a tal:content="batch/getId|nothing"
+                   tal:attributes="href batch/absolute_url"></a>
             </td>
           </tr>
         </table>

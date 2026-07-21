@@ -182,6 +182,10 @@
                   <div tal:replace="laboratory/PostalAddress/country|nothing"></div>
                 </div>
               </div>
+              <div class="lab-email" tal:condition="laboratory/email|nothing">
+                <a tal:content="laboratory/email"
+                   tal:attributes="href string:mailto:${laboratory/email}"></a>
+              </div>
             </address>
           <!-- Header Left -->
             <div class="inline-label">
@@ -210,11 +214,17 @@
               <h1 name='coa_num' tal:content="python: coa_num" style="font-size:180% !important"/>
           </td>
           <td class="text-left label">Batch ID</td>
-          <td class="text-left"><span tal:content="batch/getId" /></td>
+          <td class="text-left">
+            <a tal:content="batch/getId"
+               tal:attributes="href batch/absolute_url"></a>
+          </td>
         </tr>
         <tr>
           <td class="text-left label">Project ID</td>
-          <td class="text-left"><span tal:content="batch/ClientBatchID" /></td>
+          <td class="text-left">
+            <a tal:content="batch/ClientBatchID"
+               tal:attributes="href batch/absolute_url"></a>
+          </td>
           <td class="text-left label" i18n:translate="">Sample ID</td>
           <td class="text-left">
             <a tal:content="model/getId"
@@ -223,6 +233,10 @@
           </td>
         </tr>
       </table>
+      <div class="contact-email" tal:condition="contact/EmailAddress|nothing">
+        <a tal:content="contact/EmailAddress"
+           tal:attributes="href string:mailto:${contact/EmailAddress}"></a>
+      </div>
     </div>
     <!-- Clear Floats
          https://github.com/Kozea/WeasyPrint/issues/36
