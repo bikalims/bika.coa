@@ -128,7 +128,9 @@
        }
      }
      .report .awtc-client {
-       margin: 4mm 0 2mm;
+       clear: both;
+       float: left;
+       margin: 4mm auto 2mm 0;
      }
 
      .report .awtc-client td {
@@ -137,8 +139,12 @@
        line-height: 1.4;
      }
 
+     .report .awtc-project-id {
+       clear: both;
+     }
+
      .report .awtc-project-id * {
-       font-size: 10pt;
+       font-size: 12pt;
      }
 
      .report .awtc-title {
@@ -182,13 +188,13 @@
   <tal:render condition="python:True">
     <div class="row section-header no-gutters">
       <!-- Header Table -->
-        <div class="col-6 text-right">
+        <div class="col-6 text-left">
             <!-- Header Right -->
             <div class="" style="margin-bottom:4px">
               <img class="logo image-fluid" style="object-fit:contain"
                    tal:attributes="src python:view.get_toolbar_logo();style styles/logo_styles"/>
             </div>
-            <div class="text-center"
+            <div class="text-left"
                  tal:define="accredited laboratory/LaboratoryAccredited;
                              accreditation_logo laboratory/AccreditationBodyLogo;
                              accreditation_ref laboratory/AccreditationReference;"
