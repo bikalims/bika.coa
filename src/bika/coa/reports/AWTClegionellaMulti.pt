@@ -412,7 +412,7 @@
                 <br/>
                 mL
               </th>
-              <th class="text-center">Identification</th>
+              <th class="text-center">Detection</th>
               <th class="text-center">
                 Limit of Detection
                 <br/>
@@ -431,7 +431,7 @@
               <tr tal:define="
                 point model/getSamplePoint|nothing;
                 count python:view.get_legionella_analysis(
-                  model, 'legionella count'
+                  model, 'legionellacount'
                 )">
 
                 <td tal:content="
@@ -448,12 +448,12 @@
                 <td class="numeric"
                     tal:content="
                       structure python:view.get_legionella_result(
-                        model, 'total volume filtered'
+                        model, 'totalvolumefiltered'
                       )"/>
 
                 <td class="text-center" tal:content="
                   structure python:view.get_legionella_result(
-                    model, 'legionella identification'
+                    model, 'legionelladetection'
                   )"/>
 
                 <td class="numeric"
@@ -465,7 +465,7 @@
                 <td class="numeric">
                   <span tal:content="
                     structure python:view.get_legionella_result(
-                      model, 'legionella count'
+                      model, 'legionellacount'
                     )"/>
 
                   <span

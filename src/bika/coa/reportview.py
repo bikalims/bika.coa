@@ -425,16 +425,23 @@ class ReportView(object):
                 break
         return title
 
-    def get_legionella_analysis(self, model, title):
-      """Return the first analysis whose title matches title."""
-      title = title.lower()
+    def get_legionella_analysis(self, model, identifier):
+      """Return the analysis matching a keyword or title."""
+      identifier = identifier.lower()
+      keyword = "".join(char for char in identifier if char.isalnum())
       for analysis in self.get_analyses_by(model):
-          if analysis.title.lower() == title:
+          analysis_keyword = api.safe_getattr(analysis, "Keyword", "")
+          analysis_keyword = "".join(
+              char for char in analysis_keyword.lower() if char.isalnum()
+          )
+          if analysis_keyword == keyword:
+              return analysis
+          if analysis.title.lower() == identifier:
               return analysis
       return None
 
-    def get_legionella_result(self, model, title, default="-"):
-      analysis = self.get_legionella_analysis(model, title)
+    def get_legionella_result(self, model, identifier, default="-"):
+      analysis = self.get_legionella_analysis(model, identifier)
       if not analysis:
           return default
 
@@ -446,11 +453,11 @@ class ReportView(object):
     def get_legionella_detection_limit(self, model, default="-"):
       """Return the lower detection limit for the Legionella analysis."""
       analysis = self.get_legionella_analysis(
-          model, "legionella count"
+          model, "legionellacount"
       )
       if not analysis:
           analysis = self.get_legionella_analysis(
-              model, "legionella detection"
+              model, "legionelladetection"
           )
       if not analysis:
           return default
@@ -459,6 +466,10 @@ class ReportView(object):
 
     def get_analysis_detection_limit(self, analysis, default="-"):
       """Return the lower detection limit configured for an analysis."""
+      keyword = api.safe_getattr(analysis, "Keyword", "")
+      if keyword.lower() == "vtotfiltered":
+          return default
+
       getter = api.safe_getattr(
           analysis, "getLowerDetectionLimit", None
       )

@@ -339,7 +339,9 @@
                   </td>
                   <td class="text-muted font-italic">
                     <span class="text-center"
-                          tal:content="python:view.get_analysis_detection_limit(analysis)"/>
+                          tal:content="python:view.get_analysis_detection_limit(
+                            analysis, default=''
+                          )"/>
                   </td>
                   <td class="specs">
                     <span tal:content="python:'(RT)' if model.is_retest(analysis) else ''"></span>
