@@ -173,7 +173,7 @@
      }
 
      .report .numeric {
-       text-align: right;
+       text-align: center;
      }
 
     </style>
@@ -297,6 +297,10 @@
         </table>
 
         <div class="awtc-title">
+          <h2>
+            Cooling Tower Legionella Isolation and Enumeration
+            (ISO 11731)
+          </h2>
           <h1>
             <span name='coa_num'  tal:content="coa_num"/>
             <span tal:content="
@@ -304,11 +308,6 @@
                 primarymodel.DatePublished or view.timestamp
               )"/>
           </h1>
-
-          <h2>
-            Cooling Tower Legionella Isolation and Enumeration
-            (ISO 11731)
-          </h2>
         </div>
       </div>
     </div>
