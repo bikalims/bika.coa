@@ -133,7 +133,7 @@
             <div class="total_size discreet" i18n:translate="">
               <span id="attachment-files"
                     i18n:name="amount"
-                    tal:content="python:len(view.reports_data)"/>
+                    tal:content="view/attachment_count"/>
               attachments with a total size of
               <span id="email-size" i18n:name="total_size" tal:content="python:'%.2f Kb' % view.total_size"/>
             </div>

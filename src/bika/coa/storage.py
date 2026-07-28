@@ -30,10 +30,8 @@ class PdfReportStorageAdapter(PRSA):
         objs = map(api.get_object_by_uid, uids)
 
         # handle primary object storage
-        if not self.store_multireports_individually():
-            # reduce the list to the primary object only
-            items = sorted(objs, key=lambda item: item.ClientSampleID, reverse=True)
-            objs = [items[0]]
+        items = sorted(objs, key=lambda item: item.ClientSampleID, reverse=True)
+        objs = [items[0]]
 
         # generate the reports
         reports = []

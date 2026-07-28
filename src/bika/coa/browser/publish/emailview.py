@@ -18,13 +18,16 @@
 # Copyright 2018-2020 by it's authors.
 # Some rights reserved, see README and LICENSE.
 
-from bika.coa import logger
+import six
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from collections import OrderedDict
+from zope.interface import implements
+from zope.publisher.interfaces import IPublishTraverse
+
 from bika.lims import api
 from bika.lims.api import mail as mailapi
 from bika.lims.browser.publish.emailview import EmailView as EV
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from zope.interface import implements
-from zope.publisher.interfaces import IPublishTraverse
+from bika.coa import logger
 
 
 class EmailView(EV):
@@ -44,6 +47,19 @@ class EmailView(EV):
         enabled = api.get_registry_record("bika.coa.email_csv_report_enabled")
         logger.info("email_csv_report_enabled: is {}".format(enabled))
         return enabled
+
+    @property
+    def reports(self):
+        """Return the objects from the UIDs given in the request
+        """
+        # Create a mapping of source ARs for copy
+        uids = self.request.form.get("uids", [])
+        # handle 'uids' GET parameter coming from a redirect
+        if isinstance(uids, six.string_types):
+            uids = uids.split(",")
+        uids = filter(api.is_uid, uids)
+        unique_uids = OrderedDict().fromkeys(uids).keys()
+        return filter(None, map(self.get_object_by_uid, unique_uids))
 
     @property
     def get_batch(self):
@@ -115,6 +131,68 @@ class EmailView(EV):
 
         logger.info("email_attachments bika.coa exit with {}".format(len(attachments)))
         return attachments
+
+    @property
+    def generated_attachments(self):
+        """Return the generated PDF and CSV files attached to the email."""
+        files = []
+        csv_found = False
+
+        for report in self.reports:
+            pdf = self.get_pdf(report)
+            if pdf is None:
+                continue
+            files.append(pdf)
+
+            if "Single" in report.metadata["template"] or csv_found:
+                continue
+
+            csv_report = getattr(report, "csv", None)
+            # Keep this in sync with ``email_attachments``: this method is
+            # intentionally used as a boolean attribute by the existing view.
+            if self.email_csv_report_enabled and csv_report:
+                files.append(csv_report)
+                csv_found = True
+
+        return files
+
+    @property
+    def attachment_count(self):
+        """Return the number of files that will be attached to the email."""
+        return len(self.generated_attachments) + len(self.attachments)
+
+    @property
+    def total_size(self):
+        """Return the total size of generated and additional attachments."""
+        return self.get_total_size(self.generated_attachments, self.attachments)
+
+    def get_filesize(self, file_data):
+        """Return a file size in KB for both AT and Dexterity blob files."""
+        if file_data is None:
+            return 0.0
+
+        for accessor in ("get_size", "getSize"):
+            get_size = getattr(file_data, accessor, None)
+            if get_size is not None:
+                try:
+                    return float("%.2f" % (float(get_size()) / 1024))
+                except (TypeError, ValueError):
+                    pass
+
+        data = getattr(file_data, "data", None)
+        if data is None:
+            return 0.0
+        return float("%.2f" % (float(len(data)) / 1024))
+
+    def ajax_recalculate_size(self):
+        """Recalculate count and size after selecting extra attachments."""
+        total_size = self.total_size
+        return {
+            "files": self.attachment_count,
+            "size": "%.2f" % total_size,
+            "limit": self.max_email_size,
+            "limit_exceeded": total_size > self.max_email_size,
+        }
 
     def get_report_data(self, report):
         """Report data to be used in the template
