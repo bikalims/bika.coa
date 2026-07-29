@@ -304,7 +304,7 @@
           <h1>
             <span name='coa_num'  tal:content="coa_num"/>
             <span tal:content="
-              python:view.to_localized_date(
+              python:view.to_localized_time(
                 primarymodel.DatePublished or view.timestamp
               )"/>
           </h1>
@@ -365,7 +365,7 @@
             </td>
             <td tal:content="
               python:view.get_collection_date_range(
-                collection, 'DateSampled'
+                collection, 'DateSampled', include_time=True
               )"/>
 
             <td class="label" i18n:translate="">
@@ -373,7 +373,7 @@
             </td>
             <td tal:content="
               python:view.get_collection_incubation_range(
-                collection
+                collection, include_time=True
               )"/>
           </tr>
 
@@ -383,7 +383,7 @@
             </td>
             <td tal:content="
               python:primarymodel.DateReceived
-              and view.to_localized_date(
+              and view.to_localized_time(
                 primarymodel.DateReceived
               )
               or '-'"/>
@@ -393,7 +393,7 @@
             </td>
             <td tal:content="
               python:view.get_collection_analyzed_range(
-                collection
+                collection, include_time=True
               )"/>
           </tr>
         </table>

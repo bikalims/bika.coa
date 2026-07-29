@@ -194,7 +194,7 @@
           <!-- Header Left -->
             <div class="inline-label">
               <span class="label" >Date</span>
-              <span tal:content="python:view.to_localized_date(model.DatePublished or view.timestamp)"></span>
+              <span tal:content="python:view.to_localized_time(model.DatePublished or view.timestamp)"></span>
             </div>
         </div>
     </div>
@@ -282,13 +282,13 @@
             <td class="label" i18n:translate="" style="border-top: none">Sample Type</td>
             <td  style="border-top: none" tal:content="model/SampleType/title|nothing"></td>
             <td  style="border-top: none" class="label" i18n:translate="">Date Sampled</td>
-            <td  style="border-top: none" tal:content="python:view.to_localized_date(model.DateReceived)"></td>
+            <td  style="border-top: none" tal:content="python:view.to_localized_time(model.DateSampled)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Sample Point</td>
             <td tal:content="model/SamplePointTitle|nothing"></td>
             <td class="label" i18n:translate="">Date Received</td>
-            <td tal:content="python:view.to_localized_date(model.DateReceived)"></td>
+            <td tal:content="python:view.to_localized_time(model.DateReceived)"></td>
           </tr>
           <tr>
             <td class="label" i18n:translate="">Registration Number</td>
@@ -302,7 +302,7 @@
             <td class="label" i18n:translate="">Specification</td>
             <td tal:content="spec/contextual_title|nothing"></td>
             <td class="label" i18n:translate="">Date Analysed</td>
-            <td tal:content="python:view.get_last_analyzed_date(model)"></td>
+            <td tal:content="python:view.get_last_analyzed_date(model, include_time=True)"></td>
           </tr>
         </table>
       </div>

@@ -484,26 +484,31 @@ class ReportView(object):
           return default
       return value
 
-    def _format_date_range(self, dates):
+    def _format_date_range(self, dates, include_time=False):
       dates = sorted(filter(None, dates))
       if not dates:
           return "-"
 
-      first = self.to_localized_date(dates[0])
-      last = self.to_localized_date(dates[-1])
+      formatter = (
+          self.to_localized_time if include_time else self.to_localized_date
+      )
+      first = formatter(dates[0])
+      last = formatter(dates[-1])
 
       if first == last:
           return first
       return "{} to {}".format(first, last)
 
-    def get_collection_date_range(self, collection, field):
+    def get_collection_date_range(self, collection, field,
+                                    include_time=False):
       dates = [
           getattr(model, field, None)
           for model in collection
       ]
-      return self._format_date_range(dates)
+      return self._format_date_range(dates, include_time=include_time)
 
-    def get_collection_analyzed_range(self, collection):
+    def get_collection_analyzed_range(self, collection,
+                                       include_time=False):
       """Earliest through latest result-capture datetime."""
       dates = []
 
@@ -514,9 +519,10 @@ class ReportView(object):
               if analysis.ResultCaptureDate
           ])
 
-      return self._format_date_range(dates)
+      return self._format_date_range(dates, include_time=include_time)
 
-    def get_collection_incubation_range(self, collection):
+    def get_collection_incubation_range(self, collection,
+                                         include_time=False):
         """Earliest incubation start through latest incubation end."""
         starts = []
         ends = []
@@ -555,9 +561,11 @@ class ReportView(object):
         start = min(starts or ends)
         end = max(ends or starts)
 
-        return self._format_date_range([start, end])
+        return self._format_date_range(
+            [start, end], include_time=include_time
+        )
 
-    def get_last_analyzed_date(self, model):
+    def get_last_analyzed_date(self, model, include_time=False):
         analyzed_to = ""
         all_dates = []
         for analysis in model.Analyses:
@@ -565,10 +573,13 @@ class ReportView(object):
             if date_analyzed:
                 all_dates.append(date_analyzed)
         all_dates.sort()
+        formatter = (
+            self.to_localized_time if include_time else self.to_localized_date
+        )
         if len(all_dates) > 1:
-            analyzed_to = self.to_localized_date(all_dates[-1])
+            analyzed_to = formatter(all_dates[-1])
         if len(all_dates) == 1:
-            analyzed_to = self.to_localized_date(all_dates[0])
+            analyzed_to = formatter(all_dates[0])
         return analyzed_to
 
 
