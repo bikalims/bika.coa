@@ -304,7 +304,7 @@
           <h1>
             <span name='coa_num'  tal:content="coa_num"/>
             <span tal:content="
-              python:view.to_localized_time(
+              python:view.to_localized_date(
                 primarymodel.DatePublished or view.timestamp
               )"/>
           </h1>
@@ -452,6 +452,11 @@
                   model,
                   title='Legionella count',
                   keyword='LegionellaCount'
+                );
+                detection python:view.get_legionella_analysis(
+                  model,
+                  title='Legionella Detection',
+                  keyword='LegionellaID'
                 )">
 
                 <td tal:content="
@@ -473,12 +478,24 @@
                         keyword='VTotFiltered'
                       )"/>
 
-                <td class="text-center" tal:content="
-                  structure python:view.get_legionella_result(
-                    model,
-                    title='Legionella Detection',
-                    keyword='LegionellaID'
-                  )"/>
+                <td class="text-center">
+                  <span tal:content="
+                    structure python:view.get_legionella_result(
+                      model,
+                      title='Legionella Detection',
+                      keyword='LegionellaID'
+                    )"/>
+
+                  <span
+                    tal:condition="
+                      python:detection
+                      and model.is_out_of_range(detection)"
+                    class="outofrange text-danger">
+                    <img tal:attributes="
+                      src python:
+                      report_images['outofrange_symbol_url']"/>
+                  </span>
+                </td>
 
                 <td class="numeric"
                     tal:content="
