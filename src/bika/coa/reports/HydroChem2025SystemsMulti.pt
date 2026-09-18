@@ -331,7 +331,7 @@
       <!-- Header Table -->
       <div>
           <img class="logo image-fluid full-width" style="height: auto;"
-                src = "++resource++bika.coa.images/HydroChemBanner.jpeg"/>
+                src = "++resource++bika.coa.images/HydroChemBanner.png"/>
       </div>
     </div>
   </tal:render>
