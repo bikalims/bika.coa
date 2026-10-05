@@ -10,6 +10,7 @@ from zope.component._api import getAdapters
 
 from bika.coa import _
 from bika.coa import logger
+from bika.coa.extenders.methodsupplier import get_method_supplier
 from bika.coa.vocabulary import SEXES
 
 from bika.lims import api
@@ -307,7 +308,7 @@ class ReportView(object):
 
     def is_analysis_method_subcontracted(self, analysis):
         if analysis.Method:
-            if analysis.Method.Supplier:
+            if get_method_supplier(analysis.Method):
                 return True
         return False
 
@@ -2289,12 +2290,7 @@ class MultiReportView(MRV, ReportView):
                 title = method.Title()
                 description = method.Description()
                 accredited = method.Accredited
-                # TODO:
-                # supplier = analysis.Method.getSupplier()
-                try:
-                    supplier = True if method["Supplier"] else False
-                except AttributeError:
-                    supplier = False
+                supplier = bool(get_method_supplier(method))
                 rec = {
                     "title": title,
                     "description": description,

@@ -3,6 +3,8 @@
   <property name="title">Controls available content types in senaite</property>
 
 
+  <object name="Method" meta_type="Dexterity FTI" />
+
   <!-- Results Report -->
   <object name="ResultsReport" meta_type="Dexterity FTI" />
 

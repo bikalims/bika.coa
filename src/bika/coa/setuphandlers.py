@@ -41,6 +41,7 @@ def post_install(portal_setup):
         pc.addColumn('getSupplier')
         pc.manage_reindexIndex('getSupplier')
     add_results_report_extras_behavior(portal)
+    add_method_supplier_behavior(portal)
 
     logger.info("{} post-install handler [DONE]".format(PRODUCT_NAME.upper()))
 
@@ -55,3 +56,13 @@ def add_results_report_extras_behavior(portal):
     if behavior_name not in behaviors:
         behaviors.append(behavior_name)
         fti.behaviors = tuple(behaviors)
+
+
+def add_method_supplier_behavior(portal):
+    """Enable Supplier on DX Methods without replacing existing behaviors."""
+    fti = getToolByName(portal, "portal_types").get("Method")
+    if fti is None or fti.meta_type != "Dexterity FTI":
+        return
+    behavior_name = "bika.coa.method_supplier"
+    if behavior_name not in fti.behaviors:
+        fti.behaviors = tuple(fti.behaviors) + (behavior_name,)

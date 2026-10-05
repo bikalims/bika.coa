@@ -28,4 +28,6 @@
       marker=".arreport.IExtendedResultsReportMarker"
       />
 
+  <include file="methodsupplier.zcml" />
+
 </configure>

@@ -27,4 +27,12 @@
      handler="bika.coa.upgrade.v02_07_00.upgrade"
      profile="bika.coa:default"/>
 
+ <genericsetup:upgradeStep
+     title="Add Supplier behavior to Dexterity Methods"
+     description="Enable the subcontractor reference on DX Methods"
+     source="2.7.0"
+     destination="2.7.1"
+     handler="bika.coa.upgrade.v02_07_01.upgrade"
+     profile="bika.coa:default"/>
+
 </configure>

@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<object name="Method" meta_type="Dexterity FTI" i18n:domain="bika.coa"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <property name="behaviors" purge="False">
+    <element value="bika.coa.method_supplier" />
+  </property>
+</object>
