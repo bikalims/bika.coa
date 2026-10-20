@@ -3,7 +3,7 @@
 from plone.namedfile.file import NamedBlobFile
 
 from bika.lims import api
-from bika.lims.idserver import generateUniqueId
+from bika.coa.idserver import get_coa_number
 from senaite.impress import logger
 from senaite.impress.decorators import synchronized
 from senaite.impress.storage import PdfReportStorageAdapter as PRSA
@@ -99,12 +99,4 @@ class PdfReportStorageAdapter(PRSA):
         return report
 
     def get_coa_number(self):
-        kwargs = {"portal_type": "ResultsReport", "dry_run": True}
-        coa_num = generateUniqueId(self.context, **kwargs)
-        increment = 0 if int(coa_num.split("-")[-1]) == 1 else 1
-        items = self.get_items()
-        if items:
-            increment += items.index(self.model.uid)
-        num = "{:05d}".format(int(coa_num.split("-")[-1]) + increment)
-        dry_run = coa_num.replace(coa_num.split("-")[-1], num)
-        return dry_run
+        return get_coa_number(self.context)
