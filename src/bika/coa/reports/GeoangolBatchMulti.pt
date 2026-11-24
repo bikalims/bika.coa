@@ -212,7 +212,7 @@
           <img class="img-fluid"
               style="max-width:200px;"
               tal:condition="accreditation_logo"
-              tal:attributes="src accreditation_logo/absolute_url"/>
+              tal:attributes="src python:view.get_accreditation_logo_url()"/>
           <img class="img-fluid"
               style="max-width:200px;"
               tal:condition="not:accreditation_logo"

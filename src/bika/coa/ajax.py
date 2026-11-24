@@ -456,7 +456,7 @@ class AjaxPublishView(AP):
         sample = samples[0]
         current_user = api.get_current_user()
         user = api.get_user_contact(current_user)
-        lab_obj = self.context.bika_setup.laboratory
+        lab_obj = api.get_senaite_setup().laboratory
         if not user:
             user = "{}".format(current_user.id)
         headers = []
